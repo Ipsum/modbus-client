@@ -57,12 +57,12 @@ def writeSerial(s,data):
 
     ser.flushInput()
     ser.flushOutput()
-    ser.sendBreak(util.rtu_delay(s[1]))
+    ser.sendBreak(util.rtu_delay(s['baud']))
     v = ser.write(data)
     if not v==len(data):
         print 'WRITE ERROR'
         return False
-    ser.sendBreak(util.rtu_delay(s[1]))
+    ser.sendBreak(util.rtu_delay(s['baud']))
     return True
     
 def writeReg(s,address,fc,reg,data):
