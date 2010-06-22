@@ -63,7 +63,12 @@ def writeSerial(s,data):
         print 'WRITE ERROR'
         return False
     ser.sendBreak(util.rtu_delay(s['baud']))
+    ser.close()
     return True
+
+def checkReply(s,dataout):
+    pass #TODO
+    
     
 def writeReg(s,address,fc,reg,data):
     reg -= OFFSET #MODBUS registers are offset
