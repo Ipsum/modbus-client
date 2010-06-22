@@ -132,10 +132,11 @@ class Mainmenu(toplevels):
     def read(self):
         pass #TODO
 
-root = Tk()
-root.option_add("*Font", "Helvetica 15 bold")
-root.option_add("*Button*Relief", "raised")
-root.option_add("*Borderwidth", "10")
-root.title("Clark Sonic")
-Mainmenu(root)
-root.mainloop()
+
+if __name__ == "__main__":        
+    root = Tk()
+    root.option_add("*Font", "Helvetica 15 bold")
+    root.option_add("*Button*Relief", "raised")
+    root.title("Clark Sonic")
+    Mainmenu(root)
+    root.mainloop()
