@@ -16,7 +16,7 @@ class toplevels:
 
     def comset(self, master):
 
-        Label(master, text="New Device ID").grid(row=0, columnspan=2)
+        Label(master, text="Device ID").grid(row=0, columnspan=2)
         self.did = Spinbox(master, from_=1, to=248, increment=1, justify=CENTER)
         self.did.grid(row=1, columnspan=2)
 
@@ -49,8 +49,49 @@ class toplevels:
         modbus.writeReg(s,1,6,251,long(self.did.get()))
         modbus.writeReg(s,1,6,252,self.optionList.index(self.par.get()))
         modbus.writeReg(s,1,6,253,long(self.sb.get()))
-
+        
+    def read(self,master):
+        
+        Label(master, text="Flow Rate").grid(row=1,column=0,sticky=E)
+        Label(master, text="Energy Rate").grid(row=2,column=0,sticky=E)
+        Label(master, text="Local Temperature").grid(row=3,column=0,sticky=E)
+        Label(master, text="Remote Temperature").grid(row=4,column=0,sticky=E)
+        Label(master, text="Flow Total").grid(row=5,column=0,sticky=E)
+        Label(master, text="Energy Total").grid(row=6,column=0,sticky=E)
+        
+        self.flowr = StringVar()
+        self.energyr = StringVar()
+        self.ltemp = StringVar()
+        self.rtemp = StringVar()
+        self.ftotal = StringVar()
+        self.etotal = StringVar()
+        
+        Label(master, textvariable=self.flowr).grid(row=1,column=1)
+        Label(master, textvariable=self.energyr).grid(row=2,column=1)
+        Label(master, textvariable=self.ltemp).grid(row=3,column=1)
+        Label(master, textvariable=self.rtemp).grid(row=4,column=1)
+        Label(master, textvariable=self.ftotal).grid(row=5,column=1)
+        Label(master, textvariable=self.etotal).grid(row=6,column=1)
+        
+        Button(master, text="Reset", command=self.resetf).grid(row=5,column=2)
+        Button(master, text="Reset", command=self.resete).grid(row=6,column=2)
+        
+        Button(master, text="Get Data", command=self.getdata).grid(row=7,column=0,columnspan=2,sticky=E+W)
     
+    def resetf():
+        pass
+      
+    def resete():
+        pass
+    def getdata(self):
+        self.flowr.set("0.000")
+        #self.energyr = StringVar()
+        #self.ltemp = StringVar()
+        #self.rtemp = StringVar()
+        #self.ftotal = StringVar()
+        #self.etotal = StringVar()
+
+'''    
     def appset(self,master):
         
         Label(master, text="Current Device ID").grid(row=0, column=0)
@@ -92,17 +133,25 @@ class toplevels:
         s['party'] = self.par.get()[0]
         s['stopbits'] = self.sb.get()
         s['id'] = self.did.get()
-        
+'''        
 class Mainmenu(toplevels):
 
     def __init__(self,master):
         """Setup main menu"""
 
-        Button(master,text="Application Settings",command=self.appset).grid(row=1,ipadx=7,ipady=5,sticky=E+W)
-        Button(master,text="Meter Communications Settings",command=self.comset).grid(row=2,ipady=5,sticky=E+W)
-        Button(master,text="Meter General Settings",command=self.mset).grid(row=3,ipady=5,sticky=E+W)
-        Button(master,text="Read Meter Data",command=self.read).grid(row=4,ipady=5,sticky=E+W)
+        #Button(master,text="Application Settings",command=self.appset).grid(row=1,ipadx=7,ipady=5,sticky=E+W)
+        Button(master,text="Device Setup",command=self.comset).grid(row=2,columnspan=2,ipady=5,sticky=E+W)
+        #Button(master,text="Meter General Settings",command=self.mset).grid(row=3,ipady=5,sticky=E+W)
+        Button(master,text="Read Device Data",command=self.read).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
 
+        Label(master, text="COM Port:").grid(row=1, column=0)
+        self.comList = ("COM1","COM2","COM3","COM4")
+        self.com = StringVar()
+        self.com.set(self.comList[0])
+        self.comp = OptionMenu(master,self.com,*self.comList)
+        self.comp.grid(row=1,column=1,sticky=E+W)
+        
+        '''
     def appset(self):
         """Configure settings for this application"""
         
@@ -114,23 +163,34 @@ class Mainmenu(toplevels):
         apps.focus_force()
         apps.wait_window(apps)
         root.deiconify()
-        
+'''        
     def comset(self):
         """Configure settings on device"""
     
         appc = Toplevel(bd=10)
-        appc.title("Meter Settings")
+        appc.title("Device Setup")
         toplevels.comset(self,appc)
+        appc.group(root)
         
         root.withdraw()
         appc.focus_force()
         appc.wait_window(appc)
         root.deiconify()
-        
+    '''       
     def mset(self):
         pass #TODO
+'''
     def read(self):
-        pass #TODO
+        
+        read = Toplevel(bd=10)
+        read.title("Read Data")
+        toplevels.read(self,read)
+        read.group(root)
+        
+        root.withdraw()
+        read.focus_force()
+        read.wait_window(read)
+        root.deiconify()
 
 
 if __name__ == "__main__":        
