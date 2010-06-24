@@ -26,7 +26,7 @@ class toplevels:
     def comset(self, master):
 
         Label(master, text="Device ID").grid(row=0, column=0)
-        self.did = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focusout", wrap=True, justify=CENTER)
+        self.did = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focus", validatecommand=self.validate, wrap=True, justify=CENTER)
         self.did.grid(row=0, column=1)
 
         Label(master, text="Baud Rate").grid(row=1, column=0)
@@ -51,6 +51,13 @@ class toplevels:
         Button(master, text="Apply Changes", command=self.apply).grid(row=6, columnspan=2,sticky=E+W)
         
 
+    def validate(self):
+    
+        if 1<self.did.get()<248:
+            return True
+        else:
+            return False
+            
     def apply(self):
         
         print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
