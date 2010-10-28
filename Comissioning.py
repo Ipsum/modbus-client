@@ -26,12 +26,13 @@ class toplevels:
     def comset(self, master):
 
         Label(master, text="Device ID").grid(row=0, column=0)
-        self.did = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focus", validatecommand=self.validate, wrap=True, justify=CENTER)
+        self.check = IntVar()
+        self.did = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focus",textvariable=self.check, validatecommand=self.validate, wrap=True, justify=CENTER)
         self.did.grid(row=0, column=1)
 
         Label(master, text="Baud Rate").grid(row=1, column=0)
         self.br = IntVar()
-        self.br.set(9600)
+        self.br.set(0)
         Radiobutton(master, text="9600", variable=self.br, value=0).grid(row=1, column=1,sticky=W)
         Radiobutton(master, text="19200", variable=self.br, value=1).grid(row=2, column=1,sticky=W)
 
@@ -53,18 +54,23 @@ class toplevels:
 
     def validate(self):
     
-        if 1<self.did.get()<248:
+        if 1<self.check.get()<248:
+            print 'true'
             return True
         else:
+            print 'false'
             return False
-            
+        pass
+        
     def apply(self):
         
         print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
-        modbus.writeReg(s,1,6,250,long(self.br.get()))
-        modbus.writeReg(s,1,6,251,long(self.did.get()))
-        modbus.writeReg(s,1,6,252,self.optionList.index(self.par.get()))
-        modbus.writeReg(s,1,6,253,long(self.sb.get()))
+        ser = modbus.openConn(s)
+        modbus.writeReg(ser,1,6,250,long(self.br.get()))
+        modbus.writeReg(ser,1,6,251,long(self.did.get()))
+        modbus.writeReg(ser,1,6,252,self.optionList.index(self.par.get()))
+        modbus.writeReg(ser,1,6,253,long(self.sb.get()))
+        ser.close()
         
     def read(self,master):
         
@@ -191,7 +197,7 @@ class Mainmenu(toplevels):
         toplevels.comset(self,appc)
         appc.group(root)
         
-        root.withdraw()
+        #root.withdraw()
         appc.focus_force()
         appc.wait_window(appc)
         root.deiconify()
@@ -207,7 +213,7 @@ class Mainmenu(toplevels):
         toplevels.read(self,read)
         read.group(root)
         
-        root.withdraw()
+        #root.withdraw()
         read.focus_force()
         read.wait_window(read)
         root.deiconify()

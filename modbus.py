@@ -39,7 +39,7 @@ import serial
 
 OFFSET=1
 
-def writeSerial(s,data):
+def openConn(s):
     ser = serial.Serial()
     ser.port = s['port']
     ser.baudrate = s['baud']
@@ -49,9 +49,17 @@ def writeSerial(s,data):
         ser.open()
     except serial.SerialException,serial.ValueError:
         print 'ERROR OPENING PORT'
-        return False
+        return ser
 
-    if not ser.isOpen():
+    ser.flushInput()
+    ser.flushOutput()
+    ser.sendBreak(util.rtu_delay(s['baud']))
+    
+    return ser
+    
+def writeSerial(ser,data):
+
+    if not ser.writable():
         print 'SERIAL PORT NOT OPEN'
         return False
 
@@ -62,21 +70,35 @@ def writeSerial(s,data):
     if not v==len(data):
         print 'WRITE ERROR'
         return False
-    ser.sendBreak(util.rtu_delay(s['baud']))
-    ser.close()
-    return True
+        
+    ser.flushInput()
+    return checkReply(ser, data)
 
-def checkReply(s,dataout):
-    pass #TODO
+def checkReply(ser,dataout):
+    ser.timeout = 2
+    try:
+        datain = ser.read(size=6)
+    except serial.SerialException,serial.SerialTimeoutException:
+        print 'ERROR READING RESPONSE'
+        return False
+
+    crcout = struct.unpack('>BBHHH',dataout)[4]
+    crcin = struct.unpack('>BBHHH',datain)[4]
+    if crcout == crcin:
+        return True
+    else:
+        print 'CRC MISMATCH'
+        return False
     
     
-def writeReg(s,address,fc,reg,data):
+    
+def writeReg(ser,address,fc,reg,data):
     reg -= OFFSET #MODBUS registers are offset
     packet = struct.pack('>BBHH',address,fc,reg,data)
     packet += struct.pack('>H',util.calc_crc(packet))
 
     print packet.encode('hex_codec')
-    return writeSerial(s,packet)
+    return writeSerial(ser,packet)
 
 if __name__=="__main__":
     s=dict(port=0, baud=9600, parity='N', stopbits=2)
