@@ -87,6 +87,7 @@ def checkReply(ser,dataout):
     if crcout == crcin:
         return True
     else:
+        #
         print 'CRC MISMATCH'
         return False
     
@@ -97,6 +98,14 @@ def writeReg(ser,address,fc,reg,data):
     packet = struct.pack('>BBHH',address,fc,reg,data)
     packet += struct.pack('>H',util.calc_crc(packet))
 
+    print packet.encode('hex_codec')
+    return writeSerial(ser,packet)
+    
+ def readReg(ser,address,sreg,numreg):
+    fc = 3
+    sreg -= OFFSET
+    packet = struct.pack('>BBHH',address,fc,sreg,numreg)
+    packet += struct.pact('>H',util.calc_crc(packet))
     print packet.encode('hex_codec')
     return writeSerial(ser,packet)
 
