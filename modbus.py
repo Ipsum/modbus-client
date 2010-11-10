@@ -40,6 +40,7 @@ import serial
 OFFSET=1
 
 def openConn(s):
+'''open serial connection and return the connection object'''
     ser = serial.Serial()
     ser.port = s['port']
     ser.baudrate = s['baud']
@@ -57,7 +58,8 @@ def openConn(s):
     
     return ser
     
-def writeSerial(ser,data):
+def writeSerial(ser,data,mode='write'):
+'''Write data and for write requests check returned crc = sent crc'''
 
     if not ser.writable():
         print 'SERIAL PORT NOT OPEN'
@@ -72,22 +74,25 @@ def writeSerial(ser,data):
         return False
         
     ser.flushInput()
-    return checkReply(ser, data)
+    if mode == 'write':
+        readReply(ser)
+    return checkReply(ser,data)
 
 def checkReply(ser,dataout):
+'''TODO: change this to only verify the crc is correct on incoming
+    data and return the crc'''
     ser.timeout = 2
     try:
         datain = ser.read(size=6)
     except serial.SerialException,serial.SerialTimeoutException:
         print 'ERROR READING RESPONSE'
-        return False
-
+        return False   
     crcout = struct.unpack('>BBHHH',dataout)[4]
     crcin = struct.unpack('>BBHHH',datain)[4]
+    crcchk = util.calc_crc(struct.pack('>BBHH',struct.unpack('>BBHHH',datain)[0:3]).encode('hex'))
     if crcout == crcin:
         return True
     else:
-        #
         print 'CRC MISMATCH'
         return False
     

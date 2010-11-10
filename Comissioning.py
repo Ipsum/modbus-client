@@ -1,5 +1,6 @@
 #TODO
 #-Check Responses to writes
+#-implement exceptions
 #-implement logging
 #-implement config file
 #-implement cli
