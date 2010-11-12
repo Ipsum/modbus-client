@@ -36,20 +36,32 @@ import struct
 
 import util
 import serial
+import ConfigParser
 
-OFFSET=1
+DEVICE_ID = 1
 
 def openConn(s):
 '''open serial connection and return the connection object'''
+    #read in configs
+    try:
+        config = ConfigParser.ConfigParser()
+        config.read('modbus.cfg')
+        s = ConfigParser.items('Serial')
+        global fc = ConfigParser.items('Function Codes')
+        global reg = ConfigParser.items('Registry Mappings')
+    except ConfigParser.Error:
+        util.err('Error Reading Config File')
+        
+    #open serial conn
     ser = serial.Serial()
-    ser.port = s['port']
+    ser.port = port
     ser.baudrate = s['baud']
     ser.parity = s['parity']
     ser.stopbits = s['stopbits']
     try:
         ser.open()
     except serial.SerialException,serial.ValueError:
-        print 'ERROR OPENING PORT'
+        util.err('Cannot open serial port')
         return ser
 
     ser.flushInput()
@@ -98,13 +110,40 @@ def checkReply(ser,dataout):
     
     
     
-def writeReg(ser,address,fc,reg,data):
+def writeReg(ser,fc,reg,data):
     reg -= OFFSET #MODBUS registers are offset
     packet = struct.pack('>BBHH',address,fc,reg,data)
     packet += struct.pack('>H',util.calc_crc(packet))
 
     print packet.encode('hex_codec')
-    return writeSerial(ser,packet)
+    
+    if not ser.writable():
+        util.err('Serial port not open')
+        return False
+    ser.flushInput()
+    ser.flushOutput()
+    ser.sendBreak(util.rtu_delay(s['baud']))
+    v = ser.write(data)
+    if not v==len(data):
+        util.error('Write error')
+        return False    
+    ser.flushInput()
+    
+    ser.timeout = 2
+    
+    try:
+        datain = ser.read(size=6)
+    except serial.SerialException,serial.SerialTimeoutException:
+        util.err('ERROR READING RESPONSE')
+        return False   
+    crcout = struct.unpack('>BBHHH',dataout)[4]
+    crcin = struct.unpack('>BBHHH',datain)[4]
+    crcchk = util.calc_crc(struct.pack('>BBHH',struct.unpack('>BBHHH',datain)[0:3]).encode('hex'))
+    if crcout == crcin:
+        return True
+    else:
+        util.err('CRC MISMATCH')
+        return False
     
  def readReg(ser,address,sreg,numreg):
     fc = 3

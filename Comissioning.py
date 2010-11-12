@@ -20,7 +20,8 @@ from Tkinter import *
 
 import modbus
 
-s=dict(id=1, port=0, baud=9600, parity='N', stopbits=2)
+#s=dict(id=1, port=0, baud=9600, parity='N', stopbits=2)
+port=0
 
 class toplevels:
 
@@ -67,10 +68,10 @@ class toplevels:
         
         print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
         ser = modbus.openConn(s)
-        modbus.writeReg(ser,1,6,250,long(self.br.get()))
-        modbus.writeReg(ser,1,6,251,long(self.did.get()))
-        modbus.writeReg(ser,1,6,252,self.optionList.index(self.par.get()))
-        modbus.writeReg(ser,1,6,253,long(self.sb.get()))
+        modbus.writeReg(ser,fc['set'],reg['set baudrate'],long(self.br.get()))
+        modbus.writeReg(ser,fc['set'],reg['set slave id'],long(self.did.get()))
+        modbus.writeReg(ser,fc['set'],reg['set parity'],self.optionList.index(self.par.get()))
+        modbus.writeReg(ser,fc['set'],reg['set stop bits'],long(self.sb.get()))
         ser.close()
         
     def read(self,master):
@@ -191,7 +192,7 @@ class Mainmenu(toplevels):
     def comset(self):
         """Configure settings on device in default mode"""
         
-        s["port"] =self.comList.index(self.com.get())
+        port =self.comList.index(self.com.get())
         
         appc = Toplevel(bd=10)
         appc.title("Device Setup")
@@ -207,7 +208,7 @@ class Mainmenu(toplevels):
     def read(self):
         """Read in data from device in default mode"""
         
-        s["port"] =self.comList.index(self.com.get())
+        port =self.comList.index(self.com.get())
         
         read = Toplevel(bd=10)
         read.title("Read Data")
