@@ -53,16 +53,16 @@ def setup(s,data):
 def openConn(s):
     """open serial connection and return the connection object""" 
     #open serial conn
-    ser = serial.Serial()
+    ser = serial.Serial(port=None)
     ser.port = s['port']
     ser.baudrate = s['baud']
     ser.parity = s['parity']
     ser.stopbits = s['stopbits']
     try:
         ser.open()
-    except serial.SerialException,serial.ValueError:
+    except:
         util.err('Cannot open serial port')
-        return ser
+        return False
 
     ser.flushInput()
     ser.flushOutput()
@@ -73,19 +73,22 @@ def openConn(s):
 def writeSerial(ser,data):
     """Write data to serial connection"""
 
-    if not ser.writable():
-        print 'SERIAL PORT NOT OPEN'
-        return False
+    try:
+        if not ser.writable():
+            util.err('SERIAL PORT NOT OPEN')
+            return False
 
-    ser.flushInput()
-    ser.flushOutput()
-    ser.sendBreak(util.rtu_delay(ser.baudrate))
-    v = ser.write(data.encode('hex_codec'))
-    if not v==len(data):
-        print 'WRITE ERROR'
+        ser.flushInput()
+        ser.flushOutput()
+        ser.sendBreak(util.rtu_delay(ser.baudrate))
+        v = ser.write(data.encode('hex_codec'))
+        if not v==len(data):
+            util.err('WRITE ERROR')
+            return False    
+        ser.flushInput()
+    except:
+        util.err('ERROR WRITING DATA')
         return False
-        
-    ser.flushInput()
     return True     
 
 def writeReg(ser,m_fc,m_reg,m_data):
@@ -122,6 +125,4 @@ def readReg(ser,address,sreg,numreg):
     return writeSerial(ser,packet)
 
 if __name__=="__main__":
-    s=dict(port=0, baud=9600, parity='N', stopbits=2)
     writeReg(s,1,6,250,9600)
-    
