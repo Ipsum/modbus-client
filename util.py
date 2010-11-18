@@ -1,7 +1,6 @@
 #*        File: util.py
 #*              utilities for MODBUS communications
 #*
-
 def rtu_delay(baudrate):
     """calculates the interchar delay from the baudrate"""
     if baudrate <= 19200:
@@ -26,6 +25,9 @@ def calc_crc(data):
             if tmp:
                 crc = crc ^ 0xA001
     return swap_bytes(crc)
-
-
     
+def err(code):
+    """Function for catching errors"""
+    #TODO: Make a popup
+    #for now, just print error to std out
+    print 'ERROR---> '+str(code)

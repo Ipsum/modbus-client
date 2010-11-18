@@ -17,12 +17,13 @@ When jumper on the device is set to default mode, the device has:
  
 import os
 from Tkinter import *
+import ConfigParser
 
 import modbus
+import util
 
-#s=dict(id=1, port=0, baud=9600, parity='N', stopbits=2)
+s=dict(id=1, port=0, baud=9600, parity='N', stopbits=2)
 port=0
-
 class toplevels:
 
     def comset(self, master):
@@ -65,13 +66,17 @@ class toplevels:
         pass
         
     def apply(self):
-        
+        data = dict()
         print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
+        
+        data['baudrate'] = long(self.br.get())
+        data['slave id'] = long(self.did.get())
+        data['parity'] = self.optionList.index(self.par.get())
+        data['stop bits'] = long(self.sb.get())
+        
+        s['port'] = self.comList.index(self.com.get())
         ser = modbus.openConn(s)
-        modbus.writeReg(ser,fc['set'],reg['set baudrate'],long(self.br.get()))
-        modbus.writeReg(ser,fc['set'],reg['set slave id'],long(self.did.get()))
-        modbus.writeReg(ser,fc['set'],reg['set parity'],self.optionList.index(self.par.get()))
-        modbus.writeReg(ser,fc['set'],reg['set stop bits'],long(self.sb.get()))
+        modbus.setup(ser,data)
         ser.close()
         
     def read(self,master):
@@ -221,7 +226,20 @@ class Mainmenu(toplevels):
         root.deiconify()
 
 
-if __name__ == "__main__":        
+if __name__ == "__main__":
+
+    #first read in our config file to a dictionary
+    try:
+        config = ConfigParser.ConfigParser()
+        config.read('modbus.cfg')
+        #s = dict(config.items('Serial'))
+        for item in config.items('Function Codes'):
+            modbus.fc[item[0]] = int(item[1])
+        for item in config.items('Registry Mappings'):
+            modbus.reg[item[0]] = int(item[1])
+    except ConfigParser.Error:
+        util.err('Error Reading Config File')
+    #init gui
     root = Tk()
     root.option_add("*Font", "Helvetica 15 bold")
     root.option_add("*Button*Relief", "raised")

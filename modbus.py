@@ -31,30 +31,30 @@
         1 Byte = start + 8 bits + parity + stop = 11 bits
         (1/Baud)(bits) = delay seconds
 '''
-
 import struct
-
 import util
 import serial
 import ConfigParser
 
 DEVICE_ID = 1
+OFFSET = 0
+fc = dict()
+reg = dict()
+
+def setup(s,data):
+    """Set commisioning registers"""
+    writeReg(s,int(fc['set']),reg['set baudrate'],data['baudrate'])
+    writeReg(s,fc['set'],reg['set slave id'],data['slave id'])
+    writeReg(s,fc['set'],reg['set parity'],data['parity'])
+    writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
+    
+    return True
 
 def openConn(s):
-'''open serial connection and return the connection object'''
-    #read in configs
-    try:
-        config = ConfigParser.ConfigParser()
-        config.read('modbus.cfg')
-        s = ConfigParser.items('Serial')
-        global fc = ConfigParser.items('Function Codes')
-        global reg = ConfigParser.items('Registry Mappings')
-    except ConfigParser.Error:
-        util.err('Error Reading Config File')
-        
+    """open serial connection and return the connection object""" 
     #open serial conn
     ser = serial.Serial()
-    ser.port = port
+    ser.port = s['port']
     ser.baudrate = s['baud']
     ser.parity = s['parity']
     ser.stopbits = s['stopbits']
@@ -70,8 +70,8 @@ def openConn(s):
     
     return ser
     
-def writeSerial(ser,data,mode='write'):
-'''Write data and for write requests check returned crc = sent crc'''
+def writeSerial(ser,data):
+    """Write data to serial connection"""
 
     if not ser.writable():
         print 'SERIAL PORT NOT OPEN'
@@ -79,58 +79,26 @@ def writeSerial(ser,data,mode='write'):
 
     ser.flushInput()
     ser.flushOutput()
-    ser.sendBreak(util.rtu_delay(s['baud']))
-    v = ser.write(data)
+    ser.sendBreak(util.rtu_delay(ser.baudrate))
+    v = ser.write(data.encode('hex_codec'))
     if not v==len(data):
         print 'WRITE ERROR'
         return False
         
     ser.flushInput()
-    if mode == 'write':
-        readReply(ser)
-    return checkReply(ser,data)
+    return True     
 
-def checkReply(ser,dataout):
-'''TODO: change this to only verify the crc is correct on incoming
-    data and return the crc'''
-    ser.timeout = 2
-    try:
-        datain = ser.read(size=6)
-    except serial.SerialException,serial.SerialTimeoutException:
-        print 'ERROR READING RESPONSE'
-        return False   
-    crcout = struct.unpack('>BBHHH',dataout)[4]
-    crcin = struct.unpack('>BBHHH',datain)[4]
-    crcchk = util.calc_crc(struct.pack('>BBHH',struct.unpack('>BBHHH',datain)[0:3]).encode('hex'))
-    if crcout == crcin:
-        return True
-    else:
-        print 'CRC MISMATCH'
-        return False
-    
-    
-    
-def writeReg(ser,fc,reg,data):
-    reg -= OFFSET #MODBUS registers are offset
-    packet = struct.pack('>BBHH',address,fc,reg,data)
+def writeReg(ser,m_fc,m_reg,m_data):
+    """Write a single comissioning setting"""
+    m_reg -= OFFSET #MODBUS registers are offset
+    packet = struct.pack('>BBHH',DEVICE_ID,m_fc,m_reg,m_data)
     packet += struct.pack('>H',util.calc_crc(packet))
-
     print packet.encode('hex_codec')
-    
-    if not ser.writable():
-        util.err('Serial port not open')
+    sucess = writeSerial(ser,packet)
+    if not sucess:
         return False
-    ser.flushInput()
-    ser.flushOutput()
-    ser.sendBreak(util.rtu_delay(s['baud']))
-    v = ser.write(data)
-    if not v==len(data):
-        util.error('Write error')
-        return False    
-    ser.flushInput()
-    
+        
     ser.timeout = 2
-    
     try:
         datain = ser.read(size=6)
     except serial.SerialException,serial.SerialTimeoutException:
@@ -145,7 +113,7 @@ def writeReg(ser,fc,reg,data):
         util.err('CRC MISMATCH')
         return False
     
- def readReg(ser,address,sreg,numreg):
+def readReg(ser,address,sreg,numreg):
     fc = 3
     sreg -= OFFSET
     packet = struct.pack('>BBHH',address,fc,sreg,numreg)
