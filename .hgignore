@@ -2,3 +2,6 @@ syntax: glob
 *.pyc
 *.zip
 *.7zip
+*.7z
+*.dll
+*.manifest

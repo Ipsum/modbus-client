@@ -36,29 +36,29 @@ class toplevels:
         n.add(w1, text='Comm Settings')
         n.add(w2, text='Unit Settings')
         
-        Label(w1, text="Device ID").grid(row=0, column=0)
+        Label(w1, text="Device ID").grid(row=0, column=0, pady=(10,20))
         self.check = IntVar()
         self.did = Spinbox(w1, from_=1, to=248, increment=1, width=5, validate="focus",textvariable=self.check, validatecommand=self.validate, wrap=True, justify=CENTER)
-        self.did.grid(row=0, column=1)
+        self.did.grid(row=0, column=1, pady=(10,20))
 
-        Label(w1, text="Baud Rate").grid(row=1, column=0)
+        Label(w1, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
         self.br = IntVar()
         self.br.set(0)
-        Radiobutton(w1, text="9600", variable=self.br, value=0).grid(row=1, column=1,sticky=W)
-        Radiobutton(w1, text="19200", variable=self.br, value=1).grid(row=2, column=1,sticky=W)
+        Radiobutton(w1, text="9600", variable=self.br, value=0).grid(row=2, column=1)
+        Radiobutton(w1, text="19200", variable=self.br, value=1).grid(row=3, column=1, sticky=N)
 
-        Label(w1, text="Stop Bits").grid(row=3, column=0)
+        Label(w1, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
         self.sb = IntVar()
         self.sb.set(2)
-        Radiobutton(w1, text="1", variable=self.sb, value=1).grid(row=3, column=1,sticky=W)
-        Radiobutton(w1, text="2", variable=self.sb, value=2).grid(row=4, column=1,sticky=W)
+        Radiobutton(w1, text="1", variable=self.sb, value=1).grid(row=4, column=1,pady=(20,0))
+        Radiobutton(w1, text="2", variable=self.sb, value=2).grid(row=5, column=1)
 
-        Label(w1, text="Parity").grid(row=5, column=0)
+        Label(w1, text="Parity").grid(row=6, column=0,pady=(20,0))
         self.optionList = ("NONE","ODD","EVEN")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w1,self.par,*self.optionList)
-        self.parity.grid(row=5,column=1,sticky=E+W)
+        self.parity.grid(row=6,column=1,pady=(20,0))
 #units
         Label(w2, text="Flow Rate Units").grid(row=0, column=0,sticky=W)
         self.optionList = ("Gal/min","L/min","L/sec")
@@ -68,49 +68,49 @@ class toplevels:
         self.parity.grid(row=0,column=1,sticky=E+W)
         
         Label(w2, text="Energy Rate Units").grid(row=1, column=0,sticky=W)
-        self.optionList = ("NONE","ODD","EVEN")
+        self.optionList = ("BTU/min","kBTU/min","kBTU/hr","kW")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w2,self.par,*self.optionList)
         self.parity.grid(row=1,column=1,sticky=E+W)        
 
         Label(w2, text="Mass Flow Rate Units").grid(row=2, column=0,sticky=W)
-        self.optionList = ("NONE","ODD","EVEN")
+        self.optionList = ("lbs/min","Kg/min")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w2,self.par,*self.optionList)
         self.parity.grid(row=2,column=1,sticky=E+W)
 
         Label(w2, text="Flow Total Units").grid(row=3, column=0,sticky=W)
-        self.optionList = ("NONE","ODD","EVEN")
+        self.optionList = ("Gal","Liters","Cubic Meters")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w2,self.par,*self.optionList)
         self.parity.grid(row=3,column=1,sticky=E+W)
 
         Label(w2, text="Energy Total Units").grid(row=4, column=0,sticky=W)
-        self.optionList = ("NONE","ODD","EVEN")
+        self.optionList = ("kBTU","W-hrs","kW-hrs")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w2,self.par,*self.optionList)
         self.parity.grid(row=4,column=1,sticky=E+W)   
         
         Label(w2, text="Mass Total Units").grid(row=5, column=0,sticky=W)
-        self.optionList = ("NONE","ODD","EVEN")
+        self.optionList = ("lbs","Kg")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w2,self.par,*self.optionList)
         self.parity.grid(row=5,column=1,sticky=E+W)
 
         Label(w2, text="Pulse Output Type").grid(row=6, column=0,sticky=W)
-        self.optionList = ("NONE","ODD","EVEN")
+        self.optionList = ("FLOW","ENERGY","MASS")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w2,self.par,*self.optionList)
         self.parity.grid(row=6,column=1,sticky=E+W)
 
         Label(w2, text="Temp Output Units").grid(row=7, column=0,sticky=W)
-        self.optionList = ("NONE","ODD","EVEN")
+        self.optionList = ("F","C")
         self.par = StringVar()
         self.par.set(self.optionList[0])
         self.parity = OptionMenu(w2,self.par,*self.optionList)
@@ -140,7 +140,7 @@ class toplevels:
         data['parity'] = self.optionList.index(self.par.get())
         data['stop bits'] = long(self.sb.get())
         
-        s['port'] = self.comList.index(self.com.get())
+        s['port'] = self.comp['values'].index(self.com.get())
         print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
         ser = modbus.openConn(s)
         if ser:
@@ -149,12 +149,12 @@ class toplevels:
         
     def read(self,master):
         
-        Label(master, text="Flow Rate").grid(row=1,column=0,sticky=E)
-        Label(master, text="Energy Rate").grid(row=2,column=0,sticky=E)
-        Label(master, text="Local Temperature").grid(row=3,column=0,sticky=E)
-        Label(master, text="Remote Temperature").grid(row=4,column=0,sticky=E)
-        Label(master, text="Flow Total").grid(row=5,column=0,sticky=E)
-        Label(master, text="Energy Total").grid(row=6,column=0,sticky=E)
+        Label(master, text="Flow Rate").grid(row=1,column=0,sticky=W)
+        Label(master, text="Energy Rate").grid(row=2,column=0,sticky=W)
+        Label(master, text="Local Temperature").grid(row=3,column=0,sticky=W)
+        Label(master, text="Remote Temperature").grid(row=4,column=0,sticky=W)
+        Label(master, text="Flow Total").grid(row=5,column=0,sticky=W)
+        Label(master, text="Energy Total").grid(row=6,column=0,sticky=W)
         
         self.flowr = StringVar()
         self.energyr = StringVar()
@@ -162,6 +162,13 @@ class toplevels:
         self.rtemp = StringVar()
         self.ftotal = StringVar()
         self.etotal = StringVar()
+        #init values so screen looks ok
+        self.flowr.set("0.000")
+        self.energyr.set("0.000")
+        self.ltemp.set("0.000")
+        self.rtemp.set("0.000")
+        self.ftotal.set("0.000")
+        self.etotal.set("0.000")
         
         Label(master, textvariable=self.flowr).grid(row=1,column=1)
         Label(master, textvariable=self.energyr).grid(row=2,column=1)
@@ -181,56 +188,14 @@ class toplevels:
     def resete():
         pass
     def getdata(self):
-        self.flowr.set("0.000")
-        #self.energyr = StringVar()
-        #self.ltemp = StringVar()
-        #self.rtemp = StringVar()
-        #self.ftotal = StringVar()
-        #self.etotal = StringVar()
+        self.flowr.set("20")
+        self.energyr.set("5")
+        self.ltemp.set("60")
+        self.rtemp.set("65")
+        self.ftotal.set("789.5")
+        self.etotal.set("197.4")
 
-'''    
-    def appset(self,master):
-        
-        Label(master, text="Current Device ID").grid(row=0, column=0)
-        self.did = Spinbox(master, from_=1, to=248, increment=1, justify=CENTER)
-        self.did.grid(row=0, column=1)
-        
-        Label(master, text="Computer COM Port").grid(row=1, column=0)
-        self.comList = ("COM1","COM2","COM3","COM4")
-        self.com = StringVar()
-        self.com.set(self.comList[0])
-        self.comp = OptionMenu(master,self.com,*self.comList)
-        self.comp.grid(row=1,column=1,sticky=E+W)
-        
-        Label(master, text="Baud Rate").grid(row=2, column=0)
-        self.br = IntVar()
-        self.br.set(9600)
-        Radiobutton(master, text="9600", variable=self.br, value=9600).grid(row=2, column=1,sticky=W)
-        Radiobutton(master, text="19200", variable=self.br, value=19200).grid(row=3, column=1,sticky=W)
-        
-        Label(master, text="Stop Bits").grid(row=4, column=0)
-        self.sb = IntVar()
-        self.sb.set(2)
-        Radiobutton(master, text="1", variable=self.sb, value=1).grid(row=4, column=1,sticky=W)
-        Radiobutton(master, text="2", variable=self.sb, value=2).grid(row=5, column=1,sticky=W)
-        
-        Label(master, text="Parity").grid(row=6, column=0)
-        self.optionList = ("NONE","ODD","EVEN")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(master,self.par,*self.optionList)
-        self.parity.grid(row=6,column=1,sticky=E+W)
-
-        Button(master, text="Apply Changes", command=self.upapp).grid(row=7, columnspan=2,sticky=E+W)
     
-    def upapp(self):
-        
-        s['port'] = self.comList.index(self.com.get())
-        s['baud'] = self.br.get()
-        s['party'] = self.par.get()[0]
-        s['stopbits'] = self.sb.get()
-        s['id'] = self.did.get()
-'''        
 class Mainmenu(toplevels):
 
     def __init__(self,master):
@@ -241,11 +206,11 @@ class Mainmenu(toplevels):
         #Button(master,text="Meter General Settings",command=self.mset).grid(row=3,ipady=5,sticky=E+W)
         Button(master,text="Read Device Data",command=self.read).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
 
-        Label(master, text="COM Port:").grid(row=1, column=0)
-        self.comList = ("COM1","COM2","COM3","COM4")
+        Label(master, text="COM Port: ").grid(row=1, column=0)
         self.com = StringVar()
-        self.com.set(self.comList[0])
-        self.comp = OptionMenu(master,self.com,*self.comList)
+        self.com.set("COM1")
+        self.comp = Combobox(master,textvariable=self.com,width=7)
+        self.comp['values'] = ("COM1","COM2","COM3","COM4")
         self.comp.grid(row=1,column=1,sticky=E+W)
         
         
@@ -265,11 +230,12 @@ class Mainmenu(toplevels):
     def comset(self):
         """Configure settings on device in default mode"""
         
-        port =self.comList.index(self.com.get())
+        port =self.comp['values'].index(self.com.get())
         
         appc = Toplevel(bd=10)
-        appc.title("Device Setup")
+        appc.title("clark Sonic Energy Meter")
         #appc.option_add("*Background","blue")
+        appc.iconbitmap(r'res/favicon.ico')
         toplevels.comset(self,appc)
         appc.group(root)
         
@@ -282,10 +248,11 @@ class Mainmenu(toplevels):
     def read(self):
         """Read in data from device in default mode"""
         
-        port =self.comList.index(self.com.get())
+        port =self.comp['values'].index(self.com.get())
         
         read = Toplevel(bd=10)
-        read.title("Read Data")
+        read.title("clark Sonic Energy Meter")
+        read.iconbitmap(r'res/favicon.ico')
         toplevels.read(self,read)
         read.group(root)
         
@@ -300,7 +267,7 @@ if __name__ == "__main__":
     #first read in our config file to a dictionary
     try:
         config = ConfigParser.ConfigParser()
-        config.read('modbus.cfg')
+        config.read(r'res/modbus.cfg')
         #s = dict(config.items('Serial'))
         for item in config.items('Function Codes'):
             modbus.fc[item[0]] = int(item[1])
@@ -320,5 +287,6 @@ if __name__ == "__main__":
     s.configure('Tab', font='helvetica 8 bold')
     print s.layout('Tab')
     root.title("clark Sonic")
+    root.iconbitmap(r'res/favicon.ico')
     Mainmenu(root)
     root.mainloop()
