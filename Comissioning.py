@@ -19,6 +19,7 @@ import os
 from Tkinter import *
 from ttk import *
 import ConfigParser
+import warnings
 
 import modbus
 import util
@@ -149,50 +150,83 @@ class toplevels:
         
     def read(self,master):
         
-        Label(master, text="Flow Rate").grid(row=1,column=0,sticky=W)
-        Label(master, text="Energy Rate").grid(row=2,column=0,sticky=W)
-        Label(master, text="Local Temperature").grid(row=3,column=0,sticky=W)
-        Label(master, text="Remote Temperature").grid(row=4,column=0,sticky=W)
-        Label(master, text="Flow Total").grid(row=5,column=0,sticky=W)
-        Label(master, text="Energy Total").grid(row=6,column=0,sticky=W)
+        Label(master, text="Volume Flow Rate").grid(row=1,column=0,sticky=W)
+        Label(master, text="Mass Flow Rate").grid(row=2,column=0,sticky=W)
+        Label(master, text="Energy Rate").grid(row=3,column=0,sticky=W)
+        Label(master, text="Local Temperature").grid(row=4,column=0,sticky=W,pady=(15,0))
+        Label(master, text="Remote Temperature").grid(row=5,column=0,sticky=W)
+        Label(master, text="Volume Flow Total").grid(row=6,column=0,sticky=W,pady=(15,0))
+        Label(master, text="Mass Flow Total").grid(row=7,column=0,sticky=W)
+        Label(master, text="Heating Energy Total").grid(row=8,column=0,sticky=W)
+        Label(master, text="Cooling Energy Total").grid(row=9,column=0,sticky=W)
+        Label(master, text="Energy Total").grid(row=10,column=0,sticky=W)
         
-        self.flowr = StringVar()
+        self.volr = StringVar()
+        self.massr = StringVar()
         self.energyr = StringVar()
         self.ltemp = StringVar()
         self.rtemp = StringVar()
-        self.ftotal = StringVar()
+        self.vftotal = StringVar()
+        self.mftotal = StringVar()
+        self.hetotal = StringVar()
+        self.cetotal = StringVar()
         self.etotal = StringVar()
         #init values so screen looks ok
-        self.flowr.set("0.000")
+        self.volr.set("0.000")
+        self.massr.set("0.000")
         self.energyr.set("0.000")
         self.ltemp.set("0.000")
         self.rtemp.set("0.000")
-        self.ftotal.set("0.000")
+        self.vftotal.set("0.000")
+        self.mftotal.set("0.000")
+        self.hetotal.set("0.000")
+        self.cetotal.set("0.000")
         self.etotal.set("0.000")
         
-        Label(master, textvariable=self.flowr).grid(row=1,column=1)
-        Label(master, textvariable=self.energyr).grid(row=2,column=1)
-        Label(master, textvariable=self.ltemp).grid(row=3,column=1)
-        Label(master, textvariable=self.rtemp).grid(row=4,column=1)
-        Label(master, textvariable=self.ftotal).grid(row=5,column=1)
-        Label(master, textvariable=self.etotal).grid(row=6,column=1)
+        Label(master, textvariable=self.volr).grid(row=1,column=1,padx=10)
+        Label(master, textvariable=self.massr).grid(row=2,column=1,padx=10)
+        Label(master, textvariable=self.energyr).grid(row=3,column=1,padx=10)
+        Label(master, textvariable=self.ltemp).grid(row=4,column=1,padx=10,pady=(15,0))
+        Label(master, textvariable=self.rtemp).grid(row=5,column=1,padx=10)
+        Label(master, textvariable=self.vftotal).grid(row=6,column=1,padx=10,pady=(15,0))
+        Label(master, textvariable=self.mftotal).grid(row=7,column=1,padx=10)
+        Label(master, textvariable=self.hetotal).grid(row=8,column=1,padx=10)
+        Label(master, textvariable=self.cetotal).grid(row=9,column=1,padx=10)
+        Label(master, textvariable=self.etotal).grid(row=10,column=1,padx=10)
         
-        Button(master, text="Reset", command=self.resetf).grid(row=5,column=2)
-        Button(master, text="Reset", command=self.resete).grid(row=6,column=2)
+        Button(master, text="Reset", command=self.resetvf).grid(row=6,column=2,pady=(15,0))
+        Button(master, text="Reset", command=self.resetmf).grid(row=7,column=2)
+        Button(master, text="Reset", command=self.resethe).grid(row=8,column=2)
+        Button(master, text="Reset", command=self.resetce).grid(row=9,column=2)
+        Button(master, text="Reset", command=self.resete).grid(row=10,column=2)
         
-        Button(master, text="Get Data", command=self.getdata).grid(row=7,column=0,columnspan=2,sticky=E+W)
+        Button(master, text="Get Data", command=self.getdata).grid(row=11,column=0,columnspan=2,sticky=E+W)
     
-    def resetf():
+    def resetvf():
+        pass
+    
+    def resetmf():
         pass
       
+    def resethe():
+        pass
+        
+    def resetce():
+        pass
+        
     def resete():
         pass
+    
     def getdata(self):
-        self.flowr.set("20")
+        self.volr.set("20")
+        self.massr.set("6")
         self.energyr.set("5")
         self.ltemp.set("60")
         self.rtemp.set("65")
-        self.ftotal.set("789.5")
+        self.vftotal.set("789.5")
+        self.mftotal.set("236.9")
+        self.hetotal.set("96.7")
+        self.cetotal.set("100.7")
         self.etotal.set("197.4")
 
     
@@ -242,7 +276,7 @@ class Mainmenu(toplevels):
         #root.withdraw()
         appc.focus_force()
         appc.wait_window(appc)
-        root.deiconify()
+        #root.deiconify()
         
 
     def read(self):
@@ -259,11 +293,15 @@ class Mainmenu(toplevels):
         #root.withdraw()
         read.focus_force()
         read.wait_window(read)
-        root.deiconify()
+        #root.deiconify()
 
 
 if __name__ == "__main__":
 
+    #add this to supress error on program close
+    sys.stdout = open("run.log", "w")
+    sys.stderr = open("error.log", "w")
+    
     #first read in our config file to a dictionary
     try:
         config = ConfigParser.ConfigParser()
@@ -285,7 +323,6 @@ if __name__ == "__main__":
     #s.theme_use('xpnative')
     s.configure('.', font='helvetica 15')
     s.configure('Tab', font='helvetica 8 bold')
-    print s.layout('Tab')
     root.title("clark Sonic")
     root.iconbitmap(r'res/favicon.ico')
     Mainmenu(root)

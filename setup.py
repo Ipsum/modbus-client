@@ -1,6 +1,6 @@
 #Setup file for py2exe
 #usage: python setup.py install
-#       python setup.py py2exe
+#       python -OO setup.py py2exe
 
 from distutils.core import setup
 from glob import glob
@@ -13,12 +13,21 @@ setup(
     version="1.0",
     description="Initial setup of DNEM",
     author="David Tyler",
-    windows=['Comissioning.py'],
+    windows=[
+        {
+            "script": "Comissioning.py",
+            "icon_resources": [(1, "res/favicon.ico")]
+        }
+    ],
     data_files = appdata_files,
     options={
         "py2exe":{
+            "ascii": True,
+            "excludes": ["_ssl","doctest","pdb","unittest","difflib","inspect","pickle","calendar","optparse","locale"],
+            "compressed": True,
             "unbuffered": True,
-            "optimize": 2
+            "optimize": 2,
+            "bundle_files": 3,
         }
     }
 )

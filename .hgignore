@@ -5,3 +5,7 @@ syntax: glob
 *.7z
 *.dll
 *.manifest
+*.ini
+*.csv
+*.exe
+serpdrv
