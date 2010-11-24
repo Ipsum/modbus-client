@@ -8,4 +8,5 @@ syntax: glob
 *.ini
 *.csv
 *.exe
+*.log
 serpdrv

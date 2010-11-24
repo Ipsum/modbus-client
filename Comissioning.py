@@ -117,21 +117,41 @@ class toplevels:
         self.parity = OptionMenu(w2,self.par,*self.optionList)
         self.parity.grid(row=7,column=1,sticky=E+W)
      
+        Label(w2, text="% Ethylene Glycol").grid(row=8, column=0,sticky=W)
+        self.peg = IntVar()
+        self.did = Spinbox(w2, from_=0, to=30, increment=1, width=1, textvariable=self.peg,command=self.pegf, wrap=True, justify=CENTER)
+        self.did.grid(row=8,column=1,sticky=E+W)
         
-            
+        Label(w2, text="% Propylene Glycol").grid(row=9, column=0,sticky=W)
+        self.ppg = StringVar()
+        self.did = Spinbox(w2, from_=0, to=30, increment=1, width=1, textvariable=self.ppg,command=self.ppgf, wrap=True, justify=CENTER)
+        self.did.grid(row=9,column=1,sticky=E+W)    
         
         n.grid(row=0,column=0)
-        Button(master, text="Apply Changes", command=self.apply).grid(row=6, columnspan=2,sticky=E+W)
+        Button(master, text="Apply Changes", command=self.apply).grid(row=10, columnspan=2,sticky=E+W)
         
 
     def validate(self):
-    
         if 1<self.check.get()<248:
             print 'true'
             return True
         else:
             print 'false'
             return False
+        pass
+        
+    def pegf(self):
+        print "in"
+        if 0<=self.peg.get()<=30:
+            return True
+        elif self.peg.get()>30:
+            self.peg = 30
+            return True
+        else:
+            self.peg = 0
+            return True
+        return False
+    def ppgf(self):
         pass
         
     def apply(self):
@@ -234,10 +254,7 @@ class Mainmenu(toplevels):
 
     def __init__(self,master):
         """Setup main menu"""
-
-        #Button(master,text="Application Settings",command=self.appset).grid(row=1,ipadx=7,ipady=5,sticky=E+W)
         Button(master,text="Device Setup",command=self.comset).grid(row=2,columnspan=2,ipady=5,sticky=E+W)
-        #Button(master,text="Meter General Settings",command=self.mset).grid(row=3,ipady=5,sticky=E+W)
         Button(master,text="Read Device Data",command=self.read).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
 
         Label(master, text="COM Port: ").grid(row=1, column=0)
@@ -246,21 +263,7 @@ class Mainmenu(toplevels):
         self.comp = Combobox(master,textvariable=self.com,width=7)
         self.comp['values'] = ("COM1","COM2","COM3","COM4")
         self.comp.grid(row=1,column=1,sticky=E+W)
-        
-        
-        '''
-    def appset(self):
-        """Configure settings for this application"""
-        
-        apps = Toplevel(bd=10)
-        apps.title("Application Settings")
-        toplevels.appset(self,apps)
-        
-        root.withdraw()
-        apps.focus_force()
-        apps.wait_window(apps)
-        root.deiconify()
-'''        
+                   
     def comset(self):
         """Configure settings on device in default mode"""
         
@@ -268,17 +271,13 @@ class Mainmenu(toplevels):
         
         appc = Toplevel(bd=10)
         appc.title("clark Sonic Energy Meter")
-        #appc.option_add("*Background","blue")
         appc.iconbitmap(r'res/favicon.ico')
         toplevels.comset(self,appc)
         appc.group(root)
         
-        #root.withdraw()
         appc.focus_force()
         appc.wait_window(appc)
-        #root.deiconify()
         
-
     def read(self):
         """Read in data from device in default mode"""
         
@@ -295,12 +294,11 @@ class Mainmenu(toplevels):
         read.wait_window(read)
         #root.deiconify()
 
-
 if __name__ == "__main__":
 
     #add this to supress error on program close
-    sys.stdout = open("run.log", "w")
-    sys.stderr = open("error.log", "w")
+    #sys.stdout = open("run.log", "w")
+    #sys.stderr = open("error.log", "w")
     
     #first read in our config file to a dictionary
     try:
@@ -313,12 +311,9 @@ if __name__ == "__main__":
             modbus.reg[item[0]] = int(item[1])
     except ConfigParser.Error:
         util.err('Error Reading Config File')
+        
     #init gui
     root = Tk()
-    #root.option_add("*Font", "Helvetica 15 bold")
-    #root.option_add("*Background","light blue")
-    #root.option_add("*Button*Background", "gray")
-    #root.option_add("*Button*Relief", "raised")
     s = Style()
     #s.theme_use('xpnative')
     s.configure('.', font='helvetica 15')
