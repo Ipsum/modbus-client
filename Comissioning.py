@@ -55,110 +55,117 @@ class toplevels:
         Radiobutton(w1, text="2", variable=self.sb, value=2).grid(row=5, column=1)
 
         Label(w1, text="Parity").grid(row=6, column=0,pady=(20,0))
-        self.optionList = ("NONE","ODD","EVEN")
         self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w1,self.par,*self.optionList)
+        self.par.set("NONE")
+        self.parity = Combobox(w1,textvariable=self.par)
+        self.parity['values'] = ("NONE","ODD","EVEN")
         self.parity.grid(row=6,column=1,pady=(20,0))
 #units
         Label(w2, text="Flow Rate Units").grid(row=0, column=0,sticky=W)
-        self.optionList = ("Gal/min","L/min","L/sec")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=0,column=1,sticky=E+W)
+        self.fru = StringVar()
+        self.fr = Combobox(w2,textvariable=self.fru,width=10)
+        self.fr['values'] = ("Gal/min","L/min","L/sec")
+        self.fru.set(self.fr['values'][0])
+        self.fr.grid(row=0,column=1,sticky=E+W)
         
         Label(w2, text="Energy Rate Units").grid(row=1, column=0,sticky=W)
-        self.optionList = ("BTU/min","kBTU/min","kBTU/hr","kW")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=1,column=1,sticky=E+W)        
+        self.eru = StringVar()
+        self.er = Combobox(w2,textvariable=self.eru)
+        self.er['values'] = ("BTU/min","kBTU/min","kBTU/hr","kW")
+        self.eru.set(self.er['values'][0])
+        self.er.grid(row=1,column=1,sticky=E+W)        
 
-        Label(w2, text="Mass Flow Rate Units").grid(row=2, column=0,sticky=W)
-        self.optionList = ("lbs/min","Kg/min")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=2,column=1,sticky=E+W)
+        Label(w2, text="Mass Rate Units").grid(row=2, column=0,sticky=W)
+        self.mfru = StringVar()
+        self.mf = Combobox(w2,textvariable=self.mfru)
+        self.mf['values'] = ("lbs/min","Kg/min")
+        self.mfru.set(self.mf['values'][0])
+        self.mf.grid(row=2,column=1,sticky=E+W)
 
         Label(w2, text="Flow Total Units").grid(row=3, column=0,sticky=W)
-        self.optionList = ("Gal","Liters","Cubic Meters")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=3,column=1,sticky=E+W)
+        self.ftu = StringVar()
+        self.ft = Combobox(w2,textvariable=self.ftu)
+        self.ft['values'] = ("Gal","Liters","Cubic Meters")
+        self.ftu.set(self.ft['values'][0])
+        self.ft.grid(row=3,column=1,sticky=E+W)
 
         Label(w2, text="Energy Total Units").grid(row=4, column=0,sticky=W)
-        self.optionList = ("kBTU","W-hrs","kW-hrs")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=4,column=1,sticky=E+W)   
+        self.etu = StringVar()
+        self.et = Combobox(w2,textvariable=self.etu)
+        self.et['values'] = ("kBTU","W-hrs","kW-hrs")
+        self.etu.set(self.et['values'][0])
+        self.et.grid(row=4,column=1,sticky=E+W)   
         
         Label(w2, text="Mass Total Units").grid(row=5, column=0,sticky=W)
-        self.optionList = ("lbs","Kg")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=5,column=1,sticky=E+W)
+        self.mtu = StringVar()
+        self.mt = Combobox(w2,textvariable=self.mtu)
+        self.mt['values'] = ("lbs","Kg")
+        self.mtu.set(self.mt['values'][0])
+        self.mt.grid(row=5,column=1,sticky=E+W)
 
         Label(w2, text="Pulse Output Type").grid(row=6, column=0,sticky=W)
-        self.optionList = ("FLOW","ENERGY","MASS")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=6,column=1,sticky=E+W)
+        self.pot = StringVar()
+        self.po = Combobox(w2,textvariable=self.pot)
+        self.po['values'] = ("FLOW","ENERGY","MASS")
+        self.pot.set(self.po['values'][0])
+        self.po.grid(row=6,column=1,sticky=E+W)
 
         Label(w2, text="Temp Output Units").grid(row=7, column=0,sticky=W)
-        self.optionList = ("F","C")
-        self.par = StringVar()
-        self.par.set(self.optionList[0])
-        self.parity = OptionMenu(w2,self.par,*self.optionList)
-        self.parity.grid(row=7,column=1,sticky=E+W)
+        self.tou = StringVar()
+        self.to = Combobox(w2,textvariable=self.tou)
+        self.to['values'] = ("F","C")
+        self.tou.set(self.to['values'][0])
+        self.to.grid(row=7,column=1,sticky=E+W)
      
         Label(w2, text="% Ethylene Glycol").grid(row=8, column=0,sticky=W)
         self.peg = IntVar()
-        self.did = Spinbox(w2, from_=0, to=30, increment=1, width=1, textvariable=self.peg,command=self.pegf, wrap=True, justify=CENTER)
-        self.did.grid(row=8,column=1,sticky=E+W)
+        self.esb = Spinbox(w2,from_=0,to=30,increment=1,width=1,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
+        self.esb['vcmd'] = self.pegf
+        self.esb.grid(row=8,column=1,sticky=E+W)
         
         Label(w2, text="% Propylene Glycol").grid(row=9, column=0,sticky=W)
         self.ppg = StringVar()
-        self.did = Spinbox(w2, from_=0, to=30, increment=1, width=1, textvariable=self.ppg,command=self.ppgf, wrap=True, justify=CENTER)
-        self.did.grid(row=9,column=1,sticky=E+W)    
+        self.didi = Spinbox(w2,from_=0,to=30,increment=1,width=1,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
+        self.didi['vcmd'] = self.ppgf
+        self.didi.grid(row=9,column=1,sticky=E+W)    
         
         n.grid(row=0,column=0)
         Button(master, text="Apply Changes", command=self.apply).grid(row=10, columnspan=2,sticky=E+W)
         
-
-    def validate(self):
-        if 1<self.check.get()<248:
-            print 'true'
-            return True
-        else:
-            print 'false'
-            return False
-        pass
-        
     def pegf(self):
-        print "in"
-        if 0<=self.peg.get()<=30:
-            return True
-        elif self.peg.get()>30:
-            self.peg = 30
-            return True
+        try:
+            self.peg.get()
+        except:
+            self.peg.set('0')
+        if 0<=int(self.peg.get())<=30:
+            pass
+        elif int(self.peg.get())>30:
+            self.peg.set('30')
         else:
-            self.peg = 0
-            return True
-        return False
+            self.peg.set('0')
+        self.esb['validate'] = 'focusout'
+        return True
+        
     def ppgf(self):
+        if not self.ppg.get():
+            self.ppg.set('0')
+        elif 0<=int(self.ppg.get())<=30:
+            pass
+        elif int(self.ppg.get())>30:
+            self.ppg.set('30')
+        else:
+            self.ppg.set('0')   
+        self.didi['validate'] = 'focusout'
+        return True
+    
+    def validate(self):
         pass
         
     def apply(self):
         data = dict()
         data['baudrate'] = long(self.br.get())
         data['slave id'] = long(self.did.get())
-        data['parity'] = self.optionList.index(self.par.get())
+        data['parity'] = self.parity['values'].index(self.par.get())
         data['stop bits'] = long(self.sb.get())
         
         s['port'] = self.comp['values'].index(self.com.get())
