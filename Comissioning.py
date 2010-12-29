@@ -38,8 +38,9 @@ class toplevels:
         n.add(w2, text='Unit Settings')
         
         Label(w1, text="Device ID").grid(row=0, column=0, pady=(10,20))
-        self.check = IntVar()
-        self.did = Spinbox(w1, from_=1, to=248, increment=1, width=5, validate="focus",textvariable=self.check, validatecommand=self.validate, wrap=True, justify=CENTER)
+        self.id = IntVar()
+        self.did = Spinbox(w1, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.id, wrap=True, justify=CENTER)
+        self.did['vcmd'] = self.didf
         self.did.grid(row=0, column=1, pady=(10,20))
 
         Label(w1, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
@@ -131,7 +132,21 @@ class toplevels:
         
         n.grid(row=0,column=0)
         Button(master, text="Apply Changes", command=self.apply).grid(row=10, columnspan=2,sticky=E+W)
-        
+    
+    def didf(self):
+        try:
+            self.id.get()
+        except:
+            self.id.set(1)
+        if 1<=self.id.get()<=248:
+            pass
+        elif self.id.get()>248:
+            self.id.set(248)
+        else:
+            self.id.set(1)
+        self.did['validate'] = 'focusout'
+        return True
+            
     def pegf(self):
         try:
             self.peg.get()
@@ -168,7 +183,7 @@ class toplevels:
         data['parity'] = self.parity['values'].index(self.par.get())
         data['stop bits'] = long(self.sb.get())
         
-        s['port'] = self.comp['values'].index(self.com.get())
+        s['port'] = int(self.com.get()[-1])
         print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
         ser = modbus.openConn(s)
         if ser:
