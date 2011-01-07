@@ -244,19 +244,19 @@ class toplevels:
         
         Button(master, text="Get Data", command=self.getdata).grid(row=11,column=0,columnspan=2,sticky=E+W)
     
-    def resetvf():
+    def resetvf(self):
         pass
     
-    def resetmf():
+    def resetmf(self):
         pass
       
-    def resethe():
+    def resethe(self):
         pass
         
-    def resetce():
+    def resetce(self):
         pass
         
-    def resete():
+    def resete(self):
         pass
     
     def getdata(self):
@@ -273,7 +273,6 @@ class toplevels:
 
     
 class Mainmenu(toplevels):
-
     def __init__(self,master):
         """Setup main menu"""
         Button(master,text="Device Setup",command=self.comset).grid(row=2,columnspan=2,ipady=5,sticky=E+W)
@@ -290,15 +289,14 @@ class Mainmenu(toplevels):
         """Configure settings on device in default mode"""
         
         port =self.comp['values'].index(self.com.get())
-        
         appc = Toplevel(bd=10)
         appc.title("clark Sonic Energy Meter")
         appc.iconbitmap(r'res/favicon.ico')
         toplevels.comset(self,appc)
         appc.group(root)
-        
         appc.focus_force()
         appc.wait_window(appc)
+        root.focus_force()
         
     def read(self):
         """Read in data from device in default mode"""
@@ -314,6 +312,7 @@ class Mainmenu(toplevels):
         #root.withdraw()
         read.focus_force()
         read.wait_window(read)
+        root.focus_force()
         #root.deiconify()
 
 if __name__ == "__main__":
@@ -336,10 +335,10 @@ if __name__ == "__main__":
         
     #init gui
     root = Tk()
-    s = Style()
+    sty = Style()
     #s.theme_use('xpnative')
-    s.configure('.', font='helvetica 15')
-    s.configure('Tab', font='helvetica 8 bold')
+    sty.configure('.', font='helvetica 15')
+    sty.configure('Tab', font='helvetica 8 bold')
     root.title("clark Sonic")
     root.iconbitmap(r'res/favicon.ico')
     Mainmenu(root)
