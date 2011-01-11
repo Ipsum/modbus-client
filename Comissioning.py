@@ -24,7 +24,7 @@ import warnings
 import modbus
 import util
 
-s=dict(id=1, port=0, baud=9600, parity='N', stopbits=2)
+s=dict(id=1, port=1, baud=9600, parity='N', stopbits=2)
 port=0
 class toplevels:
 
@@ -41,6 +41,7 @@ class toplevels:
         self.id = IntVar()
         self.did = Spinbox(w1, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.id, wrap=True, justify=CENTER)
         self.did['vcmd'] = self.didf
+        
         self.did.grid(row=0, column=1, pady=(10,20))
 
         Label(w1, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
@@ -183,7 +184,8 @@ class toplevels:
         data['parity'] = self.parity['values'].index(self.par.get())
         data['stop bits'] = long(self.sb.get())
         
-        s['port'] = int(self.com.get()[-1])
+        s['port'] = int(self.com.get()[-1])-1
+        print "sport:::"+str(s['port'])
         print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
         ser = modbus.openConn(s)
         if ser:
