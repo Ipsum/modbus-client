@@ -1,4 +1,5 @@
 #TODO
+#-Remove stopbits
 #-Check Responses to writes
 #-implement exceptions
 #-implement logging
@@ -24,28 +25,31 @@ import warnings
 import modbus
 import util
 
-s=dict(id=1, port=0, baud=9600, parity='N', stopbits=2)
+s=dict(id=1, port=1, baud=9600, parity='N', stopbits=2)
+default = dict()
 port=0
 class toplevels:
 
     def comset(self, master):
         
         #setup a tabbed interface
-        n = Notebook(master)
-        w1 = Frame(n)
-        w2 = Frame(n)
-        n.add(w1, text='Comm Settings')
-        n.add(w2, text='Unit Settings')
+        self.n = Notebook(master)
+        w1 = Frame(self.n)
+        w2 = Frame(self.n)
+        self.n.add(w1, text='Comm Settings')
+        self.n.add(w2, text='Unit Settings')
         
         Label(w1, text="Device ID").grid(row=0, column=0, pady=(10,20))
         self.id = IntVar()
+        self.id.set(default["id"])
         self.did = Spinbox(w1, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.id, wrap=True, justify=CENTER)
         self.did['vcmd'] = self.didf
+        
         self.did.grid(row=0, column=1, pady=(10,20))
 
         Label(w1, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
         self.br = IntVar()
-        self.br.set(0)
+        self.br.set(default["br"])
         Radiobutton(w1, text="9600", variable=self.br, value=0).grid(row=2, column=1)
         Radiobutton(w1, text="19200", variable=self.br, value=1).grid(row=3, column=1, sticky=N)
 
@@ -57,82 +61,116 @@ class toplevels:
 
         Label(w1, text="Parity").grid(row=6, column=0,pady=(20,0))
         self.par = StringVar()
-        self.par.set("NONE")
-        self.parity = Combobox(w1,textvariable=self.par)
+        self.parity = Combobox(w1,textvariable=self.par,justify=CENTER,width=10)
         self.parity['values'] = ("NONE","ODD","EVEN")
+        self.par.set(self.parity['values'][default["pa"]])
         self.parity.grid(row=6,column=1,pady=(20,0))
+        self.parity['state'] = 'readonly'
 #units
         Label(w2, text="Flow Rate Units").grid(row=0, column=0,sticky=W)
         self.fru = StringVar()
-        self.fr = Combobox(w2,textvariable=self.fru,width=10)
+        self.fr = Combobox(w2,textvariable=self.fru,justify=CENTER,width=15)
         self.fr['values'] = ("Gal/min","L/min","L/sec")
-        self.fru.set(self.fr['values'][0])
-        self.fr.grid(row=0,column=1,sticky=E+W)
+        self.fru.set(self.fr['values'][default["fr"]])
+        self.fr.grid(row=0,column=1)
+        self.fr['state'] = 'readonly'
         
         Label(w2, text="Energy Rate Units").grid(row=1, column=0,sticky=W)
         self.eru = StringVar()
-        self.er = Combobox(w2,textvariable=self.eru)
+        self.er = Combobox(w2,textvariable=self.eru,justify=CENTER,width=15)
         self.er['values'] = ("BTU/min","kBTU/min","kBTU/hr","kW")
-        self.eru.set(self.er['values'][0])
-        self.er.grid(row=1,column=1,sticky=E+W)        
+        self.eru.set(self.er['values'][default["er"]])
+        self.er.grid(row=1,column=1)
+        self.er['state'] = 'readonly'        
 
         Label(w2, text="Mass Rate Units").grid(row=2, column=0,sticky=W)
         self.mfru = StringVar()
-        self.mf = Combobox(w2,textvariable=self.mfru)
+        self.mf = Combobox(w2,textvariable=self.mfru,justify=CENTER,width=15)
         self.mf['values'] = ("lbs/min","Kg/min")
-        self.mfru.set(self.mf['values'][0])
-        self.mf.grid(row=2,column=1,sticky=E+W)
+        self.mfru.set(self.mf['values'][default["mf"]])
+        self.mf.grid(row=2,column=1)
+        self.mf['state'] = 'readonly'
 
         Label(w2, text="Flow Total Units").grid(row=3, column=0,sticky=W)
         self.ftu = StringVar()
-        self.ft = Combobox(w2,textvariable=self.ftu)
+        self.ft = Combobox(w2,textvariable=self.ftu,justify=CENTER,width=15)
         self.ft['values'] = ("Gal","Liters","Cubic Meters")
-        self.ftu.set(self.ft['values'][0])
-        self.ft.grid(row=3,column=1,sticky=E+W)
+        self.ftu.set(self.ft['values'][default["ft"]])
+        self.ft.grid(row=3,column=1)
+        self.ft['state'] = 'readonly'
 
         Label(w2, text="Energy Total Units").grid(row=4, column=0,sticky=W)
         self.etu = StringVar()
-        self.et = Combobox(w2,textvariable=self.etu)
+        self.et = Combobox(w2,textvariable=self.etu,justify=CENTER,width=15)
         self.et['values'] = ("kBTU","W-hrs","kW-hrs")
-        self.etu.set(self.et['values'][0])
-        self.et.grid(row=4,column=1,sticky=E+W)   
+        self.etu.set(self.et['values'][default["et"]])
+        self.et.grid(row=4,column=1)
+        self.et['state'] = 'readonly'        
         
         Label(w2, text="Mass Total Units").grid(row=5, column=0,sticky=W)
         self.mtu = StringVar()
-        self.mt = Combobox(w2,textvariable=self.mtu)
+        self.mt = Combobox(w2,textvariable=self.mtu,justify=CENTER,width=15)
         self.mt['values'] = ("lbs","Kg")
-        self.mtu.set(self.mt['values'][0])
-        self.mt.grid(row=5,column=1,sticky=E+W)
+        self.mtu.set(self.mt['values'][default["mt"]])
+        self.mt.grid(row=5,column=1)
+        self.mt['state'] = 'readonly'
 
         Label(w2, text="Pulse Output Type").grid(row=6, column=0,sticky=W)
         self.pot = StringVar()
-        self.po = Combobox(w2,textvariable=self.pot)
+        self.po = Combobox(w2,textvariable=self.pot,justify=CENTER,width=15)
         self.po['values'] = ("FLOW","ENERGY","MASS")
-        self.pot.set(self.po['values'][0])
-        self.po.grid(row=6,column=1,sticky=E+W)
+        self.pot.set(self.po['values'][default["po"]])
+        self.po.grid(row=6,column=1)
+        self.po['state'] = 'readonly'
 
         Label(w2, text="Temp Output Units").grid(row=7, column=0,sticky=W)
         self.tou = StringVar()
-        self.to = Combobox(w2,textvariable=self.tou)
+        self.to = Combobox(w2,textvariable=self.tou,justify=CENTER,width=15)
         self.to['values'] = ("F","C")
-        self.tou.set(self.to['values'][0])
-        self.to.grid(row=7,column=1,sticky=E+W)
-     
-        Label(w2, text="% Ethylene Glycol").grid(row=8, column=0,sticky=W)
+        self.tou.set(self.to['values'][default["to"]])
+        self.to.grid(row=7,column=1)
+        self.to['state'] = 'readonly'
+        
+        Label(w2, text="Media Type").grid(row=8, column=0,sticky=W)
+        self.met = StringVar()
+        self.me = Combobox(w2,textvariable=self.met,justify=CENTER,width=15)
+        self.me['values'] = ("Water","Ethylene (92%)","Ethylene (95.5%)","Propylene (94%)","Propylene (96%)")
+        self.met.set(self.me['values'][default["me"]])
+        self.me.grid(row=8,column=1)
+        self.me.bind('<<ComboboxSelected>>', self.mediaf)
+        self.me['state'] = 'readonly'
+        
+        Label(w2, text="% Ethylene Glycol").grid(row=9, column=0,sticky=W)
         self.peg = IntVar()
-        self.esb = Spinbox(w2,from_=0,to=30,increment=1,width=1,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
+        self.peg.set(default["peg"])
+        self.esb = Spinbox(w2,from_=10,to=60,increment=1,width=5,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
         self.esb['vcmd'] = self.pegf
-        self.esb.grid(row=8,column=1,sticky=E+W)
-        
-        Label(w2, text="% Propylene Glycol").grid(row=9, column=0,sticky=W)
+        self.esb.grid(row=9,column=1)
+        self.esb['state'] = 'disabled'
+    
+        Label(w2, text="% Propylene Glycol").grid(row=10, column=0,sticky=W)
         self.ppg = StringVar()
-        self.didi = Spinbox(w2,from_=0,to=30,increment=1,width=1,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
+        self.ppg.set(default["ppg"])
+        self.didi = Spinbox(w2,from_=10,to=60,increment=1,width=5,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
         self.didi['vcmd'] = self.ppgf
-        self.didi.grid(row=9,column=1,sticky=E+W)    
+        self.didi.grid(row=10,column=1)   
+        self.didi['state'] = 'disabled'
         
-        n.grid(row=0,column=0)
+        self.n.grid(row=0,column=0)
         Button(master, text="Apply Changes", command=self.apply).grid(row=10, columnspan=2,sticky=E+W)
     
+    def mediaf(self,master):
+        media = self.me.get()[0]
+        if media=="W":
+            self.esb['state'] = 'disabled'
+            self.didi['state'] = 'disabled'
+        elif media=="E":
+            self.esb['state'] = 'normal'
+            self.didi['state'] = 'disabled'
+        elif media=="P":
+            self.esb['state'] = 'disabled'
+            self.didi['state'] = 'normal'
+        
     def didf(self):
         try:
             self.id.get()
@@ -151,25 +189,25 @@ class toplevels:
         try:
             self.peg.get()
         except:
-            self.peg.set('0')
-        if 0<=int(self.peg.get())<=30:
+            self.peg.set('10')
+        if 10<=int(self.peg.get())<=60:
             pass
-        elif int(self.peg.get())>30:
-            self.peg.set('30')
+        elif int(self.peg.get())>60:
+            self.peg.set('60')
         else:
-            self.peg.set('0')
+            self.peg.set('10')
         self.esb['validate'] = 'focusout'
         return True
         
     def ppgf(self):
         if not self.ppg.get():
-            self.ppg.set('0')
-        elif 0<=int(self.ppg.get())<=30:
+            self.ppg.set('10')
+        elif 10<=int(self.ppg.get())<=60:
             pass
-        elif int(self.ppg.get())>30:
-            self.ppg.set('30')
+        elif int(self.ppg.get())>60:
+            self.ppg.set('60')
         else:
-            self.ppg.set('0')   
+            self.ppg.set('10')   
         self.didi['validate'] = 'focusout'
         return True
     
@@ -181,14 +219,49 @@ class toplevels:
         data['baudrate'] = long(self.br.get())
         data['slave id'] = long(self.did.get())
         data['parity'] = self.parity['values'].index(self.par.get())
-        data['stop bits'] = long(self.sb.get())
+        data['flow rate units'] = self.fr['values'].index(self.fru.get())
+        data['energy rate units'] = self.er['values'].index(self.eru.get())+3
+        data['mass flow rate units'] = self.mf['values'].index(self.mfru.get())+7
+        data['flow total units'] = self.ft['values'].index(self.ftu.get())+9
+        data['energy total units'] = self.et['values'].index(self.etu.get())+12
+        data['mass total units'] = self.mt['values'].index(self.mtu.get())+15
+        data['pulse output'] = self.po['values'].index(self.pot.get())
+        data['temperature units'] = self.to['values'].index(self.tou.get())
+        data['media type'] = self.fr['values'].index(self.fru.get())
+        if self.esb["state"]=="normal":
+            data['per cent'] = long(self.peg.get())
+        elif self.didi["state"]=="normal":
+            data['per cent'] = long(self.ppg.get())
+        else:
+            data['per cent'] = 10
         
-        s['port'] = int(self.com.get()[-1])
-        print 'ID: '+str(self.did.get()) + ' COM: '+ str(s['port']) + ' Baud: '+str(self.br.get()) + ' Stop: '+str(self.sb.get()) +' Parity: '+str(self.par.get())
+        #set defaults
+        defaults.set("Settings","id",str(self.did.get()))
+        defaults.set("Settings","br",str(self.br.get()))
+        defaults.set("Settings","pa",str(self.parity['values'].index(self.par.get())))
+        defaults.set("Settings","fr",str(self.fr['values'].index(self.fru.get())))
+        defaults.set("Settings","er",str(self.er['values'].index(self.eru.get())))
+        defaults.set("Settings","mf",str(self.mf['values'].index(self.mfru.get())))
+        defaults.set("Settings","ft",str(self.ft['values'].index(self.ftu.get())))
+        defaults.set("Settings","et",str(self.et['values'].index(self.etu.get())))
+        defaults.set("Settings","mt",str(self.mt['values'].index(self.mtu.get())))
+        defaults.set("Settings","po",str(self.po['values'].index(self.pot.get())))
+        defaults.set("Settings","to",str(self.to['values'].index(self.tou.get())))
+        defaults.set("Settings","me",str(default["me"]))
+        defaults.set("Settings","peg",str(default["peg"]))
+        defaults.set("Settings","ppg",str(default["ppg"]))
+        
+        s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
         if ser:
-            modbus.setup(ser,data)
+            win = Toplevel(root)
+            pbar = Progressbar(win,orient="horizontal",length=40,mode="determinate",maximum=100,value=0)
+            pbar.grid(row=0,column=0)
+            pbar.start()
+            win.focus_force()
+            modbus.setup(win,ser,data)
             ser.close()
+            win.destroy()
         
     def read(self,master):
         
@@ -260,60 +333,87 @@ class toplevels:
         pass
     
     def getdata(self):
-        self.volr.set("20")
-        self.massr.set("6")
-        self.energyr.set("5")
-        self.ltemp.set("60")
-        self.rtemp.set("65")
-        self.vftotal.set("789.5")
-        self.mftotal.set("236.9")
-        self.hetotal.set("96.7")
-        self.cetotal.set("100.7")
-        self.etotal.set("197.4")
+        resp = 0
+        s['port'] = int(self.com.get()[-1])-1
+        ser = modbus.openConn(s)
+        if ser:
+            resp = modbus.getData(ser)
+            ser.close()
+        if resp:
+            print resp
+            self.volr.set("%.8s"%resp[3])
+            self.energyr.set("%.8s"%resp[4])
+            self.massr.set("%.8s"%resp[5])
+            self.vftotal.set("%.8s"%resp[6])
+            self.hetotal.set("%.8s"%resp[7])
+            self.cetotal.set("%.8s"%resp[8])
+            self.mftotal.set("%.8s"%resp[9])
+            self.ltemp.set("%.8s"%resp[10])
+            self.rtemp.set("%.8s"%resp[11])
+            self.etotal.set("%.8s"%(resp[7]+resp[8]))
+        else:
+            util.err("RESPONSE INVALID")
 
     
 class Mainmenu(toplevels):
     def __init__(self,master):
         """Setup main menu"""
-        Button(master,text="Device Setup",command=self.comset).grid(row=2,columnspan=2,ipady=5,sticky=E+W)
-        Button(master,text="Read Device Data",command=self.read).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
+        Button(master,text="Device Setup",command=self.comset).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
+        Button(master,text="Read Device Data",command=self.read).grid(row=4,columnspan=2,ipady=5,sticky=E+W)
 
-        Label(master, text="COM Port: ").grid(row=1, column=0)
+        Label(master, text="COM Port: ").grid(row=1, column=0,sticky='w')
         self.com = StringVar()
         self.com.set("COM1")
         self.comp = Combobox(master,textvariable=self.com,width=7)
         self.comp['values'] = ("COM1","COM2","COM3","COM4")
         self.comp.grid(row=1,column=1,sticky=E+W)
+        
+        Label(master, text="MODBUS ID: ").grid(row=2, column=0,sticky='w')
+        self.mod = IntVar()
+        self.modid = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.mod, wrap=True, justify=CENTER)
+        #self.modid['vcmd'] = self.didf
+        self.modid.grid(row=2,column=1,sticky=E+W)
                    
     def comset(self):
         """Configure settings on device in default mode"""
         
         port =self.comp['values'].index(self.com.get())
-        appc = Toplevel(bd=10)
-        appc.title("clark Sonic Energy Meter")
-        appc.iconbitmap(r'res/favicon.ico')
-        toplevels.comset(self,appc)
-        appc.group(root)
-        appc.focus_force()
-        appc.wait_window(appc)
-        root.focus_force()
+        try:
+            self.appc.deiconify()
+            self.appc.focus_force()
+        except:
+            self.appc = Toplevel(bd=10)
+            self.appc.title("clark Sonic Energy Meter")
+            self.appc.iconbitmap(r'res/favicon.ico')
+            toplevels.comset(self,self.appc)
+            self.appc.group(root)
+            self.appc.focus_force()
+            self.appc.wait_window(self.appc)
+            #write default settings
+            with open(r'res/settings.cfg','w') as defaultwriter:
+                defaults.write(defaultwriter)
+            for item in defaults.items('Settings'):
+                default[item[0]]=int(item[1])
+            root.deiconify()    
+            root.focus_force()
         
     def read(self):
         """Read in data from device in default mode"""
         
         port =self.comp['values'].index(self.com.get())
-        
-        read = Toplevel(bd=10)
-        read.title("clark Sonic Energy Meter")
-        read.iconbitmap(r'res/favicon.ico')
-        toplevels.read(self,read)
-        read.group(root)
-        
-        #root.withdraw()
-        read.focus_force()
-        read.wait_window(read)
-        root.focus_force()
-        #root.deiconify()
+        try:
+            self.read.deiconify()
+            self.read.focus_force()
+        except:
+            self.read = Toplevel(bd=10)
+            self.read.title("clark Sonic Energy Meter")
+            self.read.iconbitmap(r'res/favicon.ico')
+            toplevels.read(self,self.read)
+            self.read.group(root)
+            self.read.focus_force()
+            self.read.wait_window(self.read)
+            root.deiconify() 
+            root.focus_force()
 
 if __name__ == "__main__":
 
@@ -331,6 +431,35 @@ if __name__ == "__main__":
         for item in config.items('Registry Mappings'):
             modbus.reg[item[0]] = int(item[1])
     except ConfigParser.Error:
+        util.err('Error Reading Config File')
+    try:
+        defaults = ConfigParser.ConfigParser()
+        #open file for both reading and writing
+        #defaultwriter = open(r'res/settings.cfg')
+        defaults.read(r'res/settings.cfg')
+        for item in defaults.items('Settings'):
+            default[item[0]]=int(item[1])
+    except ConfigParser.Error:
+        with open(r'res/settings.cfg','w') as defaultwriter:
+            defaults.add_section("Settings")
+            defaults.set("Settings","id","1")
+            defaults.set("Settings","br","0")
+            defaults.set("Settings","pa","0")
+            defaults.set("Settings","fr","0")
+            defaults.set("Settings","er","0")
+            defaults.set("Settings","mf","0")
+            defaults.set("Settings","ft","0")
+            defaults.set("Settings","et","0")
+            defaults.set("Settings","mt","0")
+            defaults.set("Settings","po","0")
+            defaults.set("Settings","to","0")
+            defaults.set("Settings","me","0")
+            defaults.set("Settings","peg","30")
+            defaults.set("Settings","ppg","30")
+            defaults.write(defaultwriter)
+            for item in defaults.items('Settings'):
+                default[item[0]]=int(item[1])
+    except:
         util.err('Error Reading Config File')
         
     #init gui

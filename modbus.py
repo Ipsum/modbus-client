@@ -35,38 +35,57 @@ import struct
 import util
 import serial
 import ConfigParser
+import time
+from Tkinter import *
+from ttk import *
 
 DEVICE_ID = 1
-OFFSET = 0
+OFFSET = 40001
 fc = dict()
 reg = dict()
 
-def setup(s,data):
+def setup(win,s,data):
     """Set commisioning registers"""
-    writeReg(s,int(fc['set']),reg['set baudrate'],data['baudrate'])
+    writeReg(s,fc['set'],int(reg['set baudrate']),data['baudrate'])
     writeReg(s,fc['set'],reg['set slave id'],data['slave id'])
     writeReg(s,fc['set'],reg['set parity'],data['parity'])
-    writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
+    #writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
+    
+    writeReg(s,fc['set'],reg['set flow rate units'],data['flow rate units'])
+    writeReg(s,fc['set'],reg['set energy rate units'],data['energy rate units'])
+    writeReg(s,fc['set'],reg['set mass flow rate units'],data['mass flow rate units'])
+    writeReg(s,fc['set'],reg['set flow total units'],data['flow total units'])
+    writeReg(s,fc['set'],reg['set energy total units'],data['energy total units'])
+    writeReg(s,fc['set'],reg['set mass total units'],data['mass total units'])
+    writeReg(s,fc['set'],reg['select pulse output'],data['pulse output'])
+    writeReg(s,fc['set'],reg['select temperature units'],data['temperature units'])
+    writeReg(s,fc['set'],reg['select media type'],data['media type'])
+    writeReg(s,fc['set'],reg['select per cent'],data['per cent'])
     
     return True
+def getData(s):
+    resp = readReg(s,fc['read'],reg['flow rate'],18)
+    if not resp:
+        return False
+    else:
+        return resp
 
 def openConn(s):
     """open serial connection and return the connection object""" 
     #open serial conn
     ser = serial.Serial(port=None)
     ser.port = s['port']
-    ser.baudrate = s['baud']
-    ser.parity = s['parity']
-    ser.stopbits = s['stopbits']
+    ser.baudrate = 9600
+    ser.parity = serial.PARITY_NONE
+    ser.stopbits = serial.STOPBITS_TWO
     try:
         ser.open()
-    except:
+    except Exception, e:
+        print e
         util.err('Cannot open serial port')
         return False
 
-    ser.flushInput()
-    ser.flushOutput()
-    ser.sendBreak(util.rtu_delay(s['baud']))
+    #ser.sendBreak(util.rtu_delay(s['baud']))
     
     return ser
     
@@ -78,14 +97,12 @@ def writeSerial(ser,data):
             util.err('SERIAL PORT NOT OPEN')
             return False
 
-        ser.flushInput()
-        ser.flushOutput()
-        ser.sendBreak(util.rtu_delay(ser.baudrate))
-        v = ser.write(data.encode('hex_codec'))
-        if not v==len(data):
+        #ser.sendBreak(util.rtu_delay(ser.baudrate))
+        v = ser.write(data)
+        print data.encode('hex_codec')
+        if not v==8:
             util.err('WRITE ERROR')
             return False    
-        ser.flushInput()
     except:
         util.err('ERROR WRITING DATA')
         return False
@@ -93,36 +110,59 @@ def writeSerial(ser,data):
 
 def writeReg(ser,m_fc,m_reg,m_data):
     """Write a single comissioning setting"""
+    ser.flushInput()
+    ser.flushOutput()
     m_reg -= OFFSET #MODBUS registers are offset
     packet = struct.pack('>BBHH',DEVICE_ID,m_fc,m_reg,m_data)
     packet += struct.pack('>H',util.calc_crc(packet))
-    print packet.encode('hex_codec')
     sucess = writeSerial(ser,packet)
     if not sucess:
         return False
-        
-    ser.timeout = 2
-    try:
-        datain = ser.read(size=6)
-    except serial.SerialException,serial.SerialTimeoutException:
-        util.err('ERROR READING RESPONSE')
-        return False   
-    crcout = struct.unpack('>BBHHH',dataout)[4]
-    crcin = struct.unpack('>BBHHH',datain)[4]
-    crcchk = util.calc_crc(struct.pack('>BBHH',struct.unpack('>BBHHH',datain)[0:3]).encode('hex'))
-    if crcout == crcin:
-        return True
-    else:
-        util.err('CRC MISMATCH')
-        return False
+    readResponse(ser,packet)
+    time.sleep(1)
     
-def readReg(ser,address,sreg,numreg):
-    fc = 3
+def readReg(ser,fc,sreg,numreg):
     sreg -= OFFSET
-    packet = struct.pack('>BBHH',address,fc,sreg,numreg)
-    packet += struct.pact('>H',util.calc_crc(packet))
-    print packet.encode('hex_codec')
-    return writeSerial(ser,packet)
+    packet = struct.pack('>BBHH',DEVICE_ID,fc,sreg,numreg)
+    packet += struct.pack('>H',util.calc_crc(packet))
+    sucess = writeSerial(ser,packet)
+    if not sucess:
+        return False
+    data = readResponse(ser,regs=18)
+    time.sleep(1)
+    return data
 
+def readResponse(ser,sent=0,regs=1):
+    ser.timeout = 1
+    dsize=regs*2+6
+    if not sent:
+        try:
+            response = ser.read(size=dsize-1)
+            print "Response: "+response.encode('hex_codec')
+        except serial.SerialException,serial.SerialTimeoutException:
+            util.err('ERROR READING RESPONSE')
+            return False
+        #check crc
+        #TODO: check for error response
+        if not len(response)==(dsize-1):
+            print "wrong len: "+str(len(response))
+            util.err('INVALID RESPONSE')
+            return False
+        baseresp = struct.unpack('>BBB'+str(regs/2)+'fH',response)
+        return baseresp
+        
+    else:
+        try:
+            response = ser.read(size=dsize)
+            print "response: " + response.encode('hex_codec')
+        except serial.SerialException,serial.SerialTimeoutException:
+            util.err('ERROR READING RESPONSE')
+            return False   
+        if sent == response:
+            return True
+        else:
+            util.err('CRC MISMATCH')
+            return False
+            
 if __name__=="__main__":
     writeReg(s,1,6,250,9600)
