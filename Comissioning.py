@@ -33,6 +33,7 @@ class toplevels:
     def comset(self, master):
         
         #setup a tabbed interface
+        self.master = master
         self.n = Notebook(master)
         w1 = Frame(self.n)
         w2 = Frame(self.n)
@@ -157,7 +158,12 @@ class toplevels:
         self.didi['state'] = 'disabled'
         
         self.n.grid(row=0,column=0)
-        Button(master, text="Apply Changes", command=self.apply).grid(row=10, columnspan=2,sticky=E+W)
+        self.applyButton = Button(master, text="Apply Changes", command=self.apply)
+        self.applyButton.grid(row=10, columnspan=2,sticky=E+W)
+        
+        self.pbar = Progressbar(master,orient="horizontal",maximum=20,mode="determinate")
+        self.pbar.grid(row=10, columnspan=2, sticky=E+W)
+        self.pbar.grid_remove()
     
     def mediaf(self,master):
         media = self.me.get()[0]
@@ -254,15 +260,16 @@ class toplevels:
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
         if ser:
-            win = Toplevel(root)
-            pbar = Progressbar(win,orient="horizontal",length=40,mode="determinate",maximum=100,value=0)
-            pbar.grid(row=0,column=0)
-            pbar.start()
-            win.focus_force()
-            modbus.setup(win,ser,data)
+            self.pbar.grid()
+            self.applyButton.grid_remove()
+            self.pbar.start(50)
+            self.master.update()
+            modbus.setup(self.master,ser,data)
             ser.close()
-            win.destroy()
-        
+            self.pbar.stop()
+            self.pbar.grid_remove()
+            self.applyButton.grid()
+            
     def read(self,master):
         
         Label(master, text="Volume Flow Rate").grid(row=1,column=0,sticky=W)
@@ -313,21 +320,68 @@ class toplevels:
         Button(master, text="Reset", command=self.resetmf).grid(row=7,column=2)
         Button(master, text="Reset", command=self.resethe).grid(row=8,column=2)
         Button(master, text="Reset", command=self.resetce).grid(row=9,column=2)
-        Button(master, text="Reset", command=self.resete).grid(row=10,column=2)
+        #Button(master, text="Reset", command=self.resete).grid(row=10,column=2)
         
         Button(master, text="Get Data", command=self.getdata).grid(row=11,column=0,columnspan=2,sticky=E+W)
     
     def resetvf(self):
-        pass
+        print "vf"
+        resp = 0
+        s['port'] = int(self.com.get()[-1])-1
+        ser = modbus.openConn(s)
+        if ser:
+            try:
+                print "ser=yes"
+                resp = modbus.writeReg(ser,modbus.fc['reset'],int(modbus.reg['reset flow total']),0)
+                ser.close()
+            except Exception, e:
+                print "exception: "+str(e)
+                return False
+        if resp:
+            print "zeroed"
+            self.vftotal.set("0.0")
+        else:
+            print "bad resp: "+str(resp)
+            
     
     def resetmf(self):
-        pass
+        resp = 0
+        s['port'] = int(self.com.get()[-1])-1
+        ser = modbus.openConn(s)
+        if ser:
+            try:
+                resp = modbus.writeReg(ser,modbus.fc['reset'],int(modbus.reg['reset mass total']),0)
+                ser.close()
+            except:
+                return False
+        if resp:
+            self.mftotal.set("0.0")
       
     def resethe(self):
-        pass
+        resp = 0
+        s['port'] = int(self.com.get()[-1])-1
+        ser = modbus.openConn(s)
+        if ser:
+            try:
+                resp = modbus.writeReg(ser,modbus.fc['reset'],int(modbus.reg['reset heating total']),0)
+                ser.close()
+            except:
+                return False
+        if resp:
+            self.hetotal.set("0.0")
         
     def resetce(self):
-        pass
+        resp = 0
+        s['port'] = int(self.com.get()[-1])-1
+        ser = modbus.openConn(s)
+        if ser:
+            try:
+                resp = modbus.writeReg(ser,modbus.fc['reset'],int(modbus.reg['reset cooling total']),0)
+                ser.close()
+            except:
+                return False
+        if resp:
+            self.cetotal.set("0.0")
         
     def resete(self):
         pass
@@ -352,7 +406,7 @@ class toplevels:
             self.rtemp.set("%.8s"%resp[11])
             self.etotal.set("%.8s"%(resp[7]+resp[8]))
         else:
-            util.err("RESPONSE INVALID")
+            return False
 
     
 class Mainmenu(toplevels):
@@ -368,11 +422,11 @@ class Mainmenu(toplevels):
         self.comp['values'] = ("COM1","COM2","COM3","COM4")
         self.comp.grid(row=1,column=1,sticky=E+W)
         
-        Label(master, text="MODBUS ID: ").grid(row=2, column=0,sticky='w')
-        self.mod = IntVar()
-        self.modid = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.mod, wrap=True, justify=CENTER)
+        #Label(master, text="MODBUS ID: ").grid(row=2, column=0,sticky='w')
+        #self.mod = IntVar()
+        #self.modid = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.mod, wrap=True, justify=CENTER)
         #self.modid['vcmd'] = self.didf
-        self.modid.grid(row=2,column=1,sticky=E+W)
+        #self.modid.grid(row=2,column=1,sticky=E+W)
                    
     def comset(self):
         """Configure settings on device in default mode"""

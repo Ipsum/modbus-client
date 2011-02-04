@@ -1,6 +1,9 @@
 #*        File: util.py
 #*              utilities for MODBUS communications
 #*
+
+import tkMessageBox
+
 def rtu_delay(baudrate):
     """calculates the interchar delay from the baudrate"""
     if baudrate <= 19200:
@@ -31,3 +34,4 @@ def err(code):
     #TODO: Make a popup
     #for now, just print error to std out
     print 'ERROR---> '+str(code)
+    tkMessageBox.showerror(message=code,icon='error',title='ERROR')

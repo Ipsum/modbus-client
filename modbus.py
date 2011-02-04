@@ -44,26 +44,41 @@ OFFSET = 40001
 fc = dict()
 reg = dict()
 
-def setup(win,s,data):
+def setup(master,s,data):
     """Set commisioning registers"""
-    writeReg(s,fc['set'],int(reg['set baudrate']),data['baudrate'])
-    print "fc:"+str(fc['set'])+"reg:"+str(reg['set slave id'])+"data:"+str(data['slave id'])
-    writeReg(s,fc['set'],reg['set slave id'],data['slave id'])
-    writeReg(s,fc['set'],reg['set parity'],data['parity'])
-    #writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
-    
-    writeReg(s,fc['set'],reg['set flow rate units'],data['flow rate units'])
-    writeReg(s,fc['set'],reg['set energy rate units'],data['energy rate units'])
-    writeReg(s,fc['set'],reg['set mass flow rate units'],data['mass flow rate units'])
-    writeReg(s,fc['set'],reg['set flow total units'],data['flow total units'])
-    writeReg(s,fc['set'],reg['set energy total units'],data['energy total units'])
-    writeReg(s,fc['set'],reg['set mass total units'],data['mass total units'])
-    writeReg(s,fc['set'],reg['select pulse output'],data['pulse output'])
-    writeReg(s,fc['set'],reg['select temperature units'],data['temperature units'])
-    writeReg(s,fc['set'],reg['select media type'],data['media type'])
-    writeReg(s,fc['set'],reg['select per cent'],data['per cent'])
-    
-    return True
+    try:
+        writeReg(s,fc['set'],int(reg['set baudrate']),data['baudrate'])
+        master.update()
+        writeReg(s,fc['set'],reg['set slave id'],data['slave id'])
+        master.update()
+        writeReg(s,fc['set'],reg['set parity'],data['parity'])
+        master.update()
+        #writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
+        
+        writeReg(s,fc['set'],reg['set flow rate units'],data['flow rate units'])
+        master.update()
+        writeReg(s,fc['set'],reg['set energy rate units'],data['energy rate units'])
+        master.update()
+        writeReg(s,fc['set'],reg['set mass flow rate units'],data['mass flow rate units'])
+        master.update()
+        writeReg(s,fc['set'],reg['set flow total units'],data['flow total units'])
+        master.update()
+        writeReg(s,fc['set'],reg['set energy total units'],data['energy total units'])
+        master.update()
+        writeReg(s,fc['set'],reg['set mass total units'],data['mass total units'])
+        master.update()
+        writeReg(s,fc['set'],reg['select pulse output'],data['pulse output'])
+        master.update()
+        writeReg(s,fc['set'],reg['select temperature units'],data['temperature units'])
+        master.update()
+        writeReg(s,fc['set'],reg['select media type'],data['media type'])
+        master.update()
+        writeReg(s,fc['set'],reg['select per cent'],data['per cent'])
+        master.update()
+        return True
+    except:
+        return False
+        
 def getData(s):
     resp = readReg(s,fc['read'],reg['flow rate'],18)
     if not resp:
@@ -79,12 +94,11 @@ def openConn(s):
     ser.baudrate = 9600
     ser.parity = serial.PARITY_NONE
     ser.stopbits = serial.STOPBITS_TWO
-    print ser.getSettingsDict()
     try:
         ser.open()
     except Exception, e:
         print e
-        util.err('Cannot open serial port')
+        util.err('The serial port could not be opened. Check that it is not already in use.')
         return False
 
     #ser.sendBreak(util.rtu_delay(s['baud']))
@@ -96,18 +110,17 @@ def writeSerial(ser,data):
 
     try:
         if not ser.writable():
-            util.err('SERIAL PORT NOT OPEN')
+            util.err('The serial port could not be written to. Check that it is not already in use.')
             return False
 
         #ser.sendBreak(util.rtu_delay(ser.baudrate))
         v = ser.write(data)
         print data.encode('hex_codec')
         if not v==8:
-        if not v==8:
-            util.err('WRITE ERROR')
+            util.err('There was a problem writing to the serial port')
             return False    
     except:
-        util.err('ERROR WRITING DATA')
+        util.err('A serial communications error has occured')
         return False
     return True     
 
@@ -116,13 +129,21 @@ def writeReg(ser,m_fc,m_reg,m_data):
     ser.flushInput()
     ser.flushOutput()
     m_reg -= OFFSET #MODBUS registers are offset
+    print str(m_fc)+"::"+str(m_reg)+"::"+str(m_data)
     packet = struct.pack('>BBHH',DEVICE_ID,m_fc,m_reg,m_data)
     packet += struct.pack('>H',util.calc_crc(packet))
     sucess = writeSerial(ser,packet)
     if not sucess:
+        print "write err"
+        raise NameError('WriteErr')
         return False
-    readResponse(ser,packet)
+    sucess = readResponse(ser,packet)
+    if not sucess:
+        print "Resp error"
+        raise NameError('WriteErr')
+        return False
     time.sleep(1)
+    return True
     
 def readReg(ser,fc,sreg,numreg):
     sreg -= OFFSET
@@ -142,15 +163,17 @@ def readResponse(ser,sent=0,regs=1):
         try:
             response = ser.read(size=dsize-1)
             print "Response: "+response.encode('hex_codec')
-        ser.flushInput()
         except serial.SerialException,serial.SerialTimeoutException:
-            util.err('ERROR READING RESPONSE')
+            util.err('There was no response from the meter, please check all connections')
             return False
         #check crc
         #TODO: check for error response
         if not len(response)==(dsize-1):
             print "wrong len: "+str(len(response))
-            util.err('INVALID RESPONSE')
+            if len(response)==0:
+                util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+                return False
+            util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
             return False
         baseresp = struct.unpack('>BBB'+str(regs/2)+'fH',response)
         return baseresp
@@ -160,12 +183,15 @@ def readResponse(ser,sent=0,regs=1):
             response = ser.read(size=dsize)
             print "response: " + response.encode('hex_codec')
         except serial.SerialException,serial.SerialTimeoutException:
-            util.err('ERROR READING RESPONSE')
+            util.err('There was no response from the meter, please check all connections')
             return False   
         if sent == response:
             return True
         else:
-            util.err('CRC MISMATCH')
+            if len(response)==0:
+                util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+                return False
+            util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
             return False
             
 if __name__=="__main__":

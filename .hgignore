@@ -9,4 +9,6 @@ syntax: glob
 *.csv
 *.exe
 *.log
+*.pyc
+*.pyo
 serpdrv

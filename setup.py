@@ -15,14 +15,14 @@ setup(
     author="David Tyler",
     windows=[
         {
-            "script": "Comissioning.py",
+            "script": "Comissioning.pyw",
             "icon_resources": [(1, "res/favicon.ico")]
         }
     ],
     data_files = appdata_files,
     options={
         "py2exe":{
-            "ascii": True,
+            "ascii": False,
             "excludes": ["_ssl","doctest","pdb","unittest","difflib","inspect","pickle","calendar","optparse","locale"],
             "compressed": True,
             "unbuffered": True,
