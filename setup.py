@@ -15,7 +15,7 @@ setup(
     author="David Tyler",
     windows=[
         {
-            "script": "Comissioning.pyw",
+            "script": "Comissioning.py",
             "icon_resources": [(1, "res/favicon.ico")]
         }
     ],
