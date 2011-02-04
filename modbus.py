@@ -47,6 +47,7 @@ reg = dict()
 def setup(win,s,data):
     """Set commisioning registers"""
     writeReg(s,fc['set'],int(reg['set baudrate']),data['baudrate'])
+    print "fc:"+str(fc['set'])+"reg:"+str(reg['set slave id'])+"data:"+str(data['slave id'])
     writeReg(s,fc['set'],reg['set slave id'],data['slave id'])
     writeReg(s,fc['set'],reg['set parity'],data['parity'])
     #writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
@@ -78,6 +79,7 @@ def openConn(s):
     ser.baudrate = 9600
     ser.parity = serial.PARITY_NONE
     ser.stopbits = serial.STOPBITS_TWO
+    print ser.getSettingsDict()
     try:
         ser.open()
     except Exception, e:
@@ -100,6 +102,7 @@ def writeSerial(ser,data):
         #ser.sendBreak(util.rtu_delay(ser.baudrate))
         v = ser.write(data)
         print data.encode('hex_codec')
+        if not v==8:
         if not v==8:
             util.err('WRITE ERROR')
             return False    
@@ -139,6 +142,7 @@ def readResponse(ser,sent=0,regs=1):
         try:
             response = ser.read(size=dsize-1)
             print "Response: "+response.encode('hex_codec')
+        ser.flushInput()
         except serial.SerialException,serial.SerialTimeoutException:
             util.err('ERROR READING RESPONSE')
             return False
