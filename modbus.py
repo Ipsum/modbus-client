@@ -98,6 +98,7 @@ def openConn(s):
         ser.open()
     except Exception, e:
         print e
+        ser.close()
         util.err('The serial port could not be opened. Check that it is not already in use.')
         return False
 

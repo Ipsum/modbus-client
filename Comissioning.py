@@ -271,7 +271,7 @@ class toplevels:
             self.applyButton.grid()
             
     def read(self,master):
-        
+        self.master = master
         Label(master, text="Volume Flow Rate").grid(row=1,column=0,sticky=W)
         Label(master, text="Mass Flow Rate").grid(row=2,column=0,sticky=W)
         Label(master, text="Energy Rate").grid(row=3,column=0,sticky=W)
@@ -281,7 +281,7 @@ class toplevels:
         Label(master, text="Mass Flow Total").grid(row=7,column=0,sticky=W)
         Label(master, text="Heating Energy Total").grid(row=8,column=0,sticky=W)
         Label(master, text="Cooling Energy Total").grid(row=9,column=0,sticky=W)
-        Label(master, text="Energy Total").grid(row=10,column=0,sticky=W)
+        #Label(master, text="Energy Total").grid(row=10,column=0,sticky=W)
         
         self.volr = StringVar()
         self.massr = StringVar()
@@ -314,7 +314,7 @@ class toplevels:
         Label(master, textvariable=self.mftotal).grid(row=7,column=1,padx=10)
         Label(master, textvariable=self.hetotal).grid(row=8,column=1,padx=10)
         Label(master, textvariable=self.cetotal).grid(row=9,column=1,padx=10)
-        Label(master, textvariable=self.etotal).grid(row=10,column=1,padx=10)
+        #Label(master, textvariable=self.etotal).grid(row=10,column=1,padx=10)
         
         Button(master, text="Reset", command=self.resetvf).grid(row=6,column=2,pady=(15,0))
         Button(master, text="Reset", command=self.resetmf).grid(row=7,column=2)
@@ -322,8 +322,9 @@ class toplevels:
         Button(master, text="Reset", command=self.resetce).grid(row=9,column=2)
         #Button(master, text="Reset", command=self.resete).grid(row=10,column=2)
         
-        Button(master, text="Get Data", command=self.getdata).grid(row=11,column=0,columnspan=2,sticky=E+W)
-    
+        self.gdb = Button(master, text="Get Data", command=self.getdata)
+        self.gdb.grid(row=11,column=0,columnspan=2,sticky=E+W)
+        
     def resetvf(self):
         print "vf"
         resp = 0
@@ -387,6 +388,8 @@ class toplevels:
         pass
     
     def getdata(self):
+        self.gdb['state'] = 'disabled'
+        self.master.update()
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -395,19 +398,20 @@ class toplevels:
             ser.close()
         if resp:
             print resp
-            self.volr.set("%.8s"%resp[3])
-            self.energyr.set("%.8s"%resp[4])
-            self.massr.set("%.8s"%resp[5])
-            self.vftotal.set("%.8s"%resp[6])
-            self.hetotal.set("%.8s"%resp[7])
-            self.cetotal.set("%.8s"%resp[8])
-            self.mftotal.set("%.8s"%resp[9])
-            self.ltemp.set("%.8s"%resp[10])
-            self.rtemp.set("%.8s"%resp[11])
-            self.etotal.set("%.8s"%(resp[7]+resp[8]))
+            self.volr.set("%.1f"%resp[3])
+            self.energyr.set("%.1f"%resp[4])
+            self.massr.set("%.1f"%resp[5])
+            self.vftotal.set("%.1f"%resp[6])
+            self.hetotal.set("%.1f"%resp[7])
+            self.cetotal.set("%.1f"%resp[8])
+            self.mftotal.set("%.1f"%resp[9])
+            self.ltemp.set("%.1f"%resp[10])
+            self.rtemp.set("%.1f"%resp[11])
+            #self.etotal.set("%.8s"%(resp[7]+resp[8]))
         else:
+            self.gdb['state'] = 'normal'
             return False
-
+        self.gdb['state'] = 'normal'
     
 class Mainmenu(toplevels):
     def __init__(self,master):

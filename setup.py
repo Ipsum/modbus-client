@@ -22,7 +22,8 @@ setup(
     data_files = appdata_files,
     options={
         "py2exe":{
-            "ascii": False,
+            "ascii": False
+            ,
             "excludes": ["_ssl","doctest","pdb","unittest","difflib","inspect","pickle","calendar","optparse","locale"],
             "compressed": True,
             "unbuffered": True,
