@@ -37,6 +37,7 @@ class toplevels:
         self.n = Notebook(master)
         w1 = Frame(self.n)
         w2 = Frame(self.n)
+        w3 = Frame(master)
         self.n.add(w1, text='Comm Settings')
         self.n.add(w2, text='Unit Settings')
         
@@ -159,12 +160,70 @@ class toplevels:
         
         self.n.grid(row=0,column=0)
         self.applyButton = Button(master, text="Apply Changes", command=self.apply)
-        self.applyButton.grid(row=10, columnspan=2,sticky=E+W)
+        self.applyButton.grid(row=10,column=0,sticky=E+W)
         
         self.pbar = Progressbar(master,orient="horizontal",maximum=20,mode="determinate")
         self.pbar.grid(row=10, columnspan=2, sticky=E+W)
         self.pbar.grid_remove()
     
+        Label(w3, text="Volume Flow Rate").grid(row=1,column=0,sticky=W)
+        Label(w3, text="Mass Flow Rate").grid(row=2,column=0,sticky=W)
+        Label(w3, text="Energy Rate").grid(row=3,column=0,sticky=W)
+        Label(w3, text="Local Temperature").grid(row=4,column=0,sticky=W,pady=(15,0))
+        Label(w3, text="Remote Temperature").grid(row=5,column=0,sticky=W)
+        Label(w3, text="Volume Flow Total").grid(row=6,column=0,sticky=W,pady=(15,0))
+        Label(w3, text="Mass Flow Total").grid(row=7,column=0,sticky=W)
+        Label(w3, text="Heating Energy Total").grid(row=8,column=0,sticky=W)
+        Label(w3, text="Cooling Energy Total").grid(row=9,column=0,sticky=W)
+        
+        self.blank = StringVar()
+        self.volr = StringVar()
+        self.massr = StringVar()
+        self.energyr = StringVar()
+        self.ltemp = StringVar()
+        self.rtemp = StringVar()
+        self.vftotal = StringVar()
+        self.mftotal = StringVar()
+        self.hetotal = StringVar()
+        self.cetotal = StringVar()
+        self.etotal = StringVar()
+        #init values so screen looks ok
+        self.blank.set("  ")
+        self.volr.set("0.000")
+        self.massr.set("0.000")
+        self.energyr.set("0.000")
+        self.ltemp.set("0.000")
+        self.rtemp.set("0.000")
+        self.vftotal.set("0.000")
+        self.mftotal.set("0.000")
+        self.hetotal.set("0.000")
+        self.cetotal.set("0.000")
+        self.etotal.set("0.000")
+        
+        Label(w3, textvariable=self.blank).grid(row=0,column=0,padx=10)
+        Label(master, textvariable=self.blank).grid(row=0,column=1,padx=10)
+        Label(w3, textvariable=self.volr).grid(row=1,column=1,padx=10)
+        Label(w3, textvariable=self.massr).grid(row=2,column=1,padx=10)
+        Label(w3, textvariable=self.energyr).grid(row=3,column=1,padx=10)
+        Label(w3, textvariable=self.ltemp).grid(row=4,column=1,padx=10,pady=(15,0))
+        Label(w3, textvariable=self.rtemp).grid(row=5,column=1,padx=10)
+        Label(w3, textvariable=self.vftotal).grid(row=6,column=1,padx=10,pady=(15,0))
+        Label(w3, textvariable=self.mftotal).grid(row=7,column=1,padx=10)
+        Label(w3, textvariable=self.hetotal).grid(row=8,column=1,padx=10)
+        Label(w3, textvariable=self.cetotal).grid(row=9,column=1,padx=10)
+        #Label(w3, textvariable=self.etotal).grid(row=10,column=1,padx=10)
+        
+        Button(w3, text="Reset", command=self.resetvf).grid(row=6,column=2,pady=(15,0))
+        Button(w3, text="Reset", command=self.resetmf).grid(row=7,column=2)
+        Button(w3, text="Reset", command=self.resethe).grid(row=8,column=2)
+        Button(w3, text="Reset", command=self.resetce).grid(row=9,column=2)
+        #Button(w3, text="Reset", command=self.resete).grid(row=10,column=2)
+        
+        self.gdb = Button(master, text="Get Data", command=self.getdata)
+        self.gdb.grid(row=10,column=2,sticky=E+W)
+        #w3['relief'] = 'raised'
+        w3.grid(row=0,column=2)
+        
     def mediaf(self,master):
         media = self.me.get()[0]
         if media=="W":
