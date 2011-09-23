@@ -476,8 +476,8 @@ class Mainmenu(toplevels):
 if __name__ == "__main__":
 
     #add this to supress error on program close
-    #sys.stdout = open("run.log", "w")
-    #sys.stderr = open("error.log", "w")
+    sys.stdout = open("run.log", "w")
+    sys.stderr = open("error.log", "w")
     
     #first read in our config file to a dictionary
     try:

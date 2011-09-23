@@ -12,3 +12,6 @@ syntax: glob
 *.pyc
 *.pyo
 serpdrv
+dist/*
+build/*
+Installer/*
