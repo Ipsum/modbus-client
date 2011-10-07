@@ -38,7 +38,7 @@ class toplevels:
         w1 = Frame(self.n)
         w2 = Frame(self.n)
         w3 = Frame(master)
-        w4 = Labelframe(w1,text='Current Meter Settings')
+        #w4 = Labelframe(w1,text='Current Meter Settings')
         self.n.add(w1, text='Comm Settings')
         self.n.add(w2, text='Unit Settings')
         
@@ -55,11 +55,11 @@ class toplevels:
         Radiobutton(w1, text="9600", variable=self.br, value=0).grid(row=2, column=1)
         Radiobutton(w1, text="19200", variable=self.br, value=1).grid(row=3, column=1, sticky=N)
 
-        Label(w1, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
-        self.sb = IntVar()
-        self.sb.set(2)
-        Radiobutton(w1, text="1", variable=self.sb, value=1).grid(row=4, column=1,pady=(20,0))
-        Radiobutton(w1, text="2", variable=self.sb, value=2).grid(row=5, column=1)
+        #Label(w1, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
+        #self.sb = IntVar()
+        #self.sb.set(2)
+        #Radiobutton(w1, text="1", variable=self.sb, value=1).grid(row=4, column=1,pady=(20,0))
+        #Radiobutton(w1, text="2", variable=self.sb, value=2).grid(row=5, column=1)
 
         Label(w1, text="Parity").grid(row=6, column=0,pady=(20,0))
         self.par = StringVar()
@@ -69,32 +69,32 @@ class toplevels:
         self.parity.grid(row=6,column=1,pady=(20,0))
         self.parity['state'] = 'readonly'
         
-        Label(w4, text="Device ID").grid(row=0, column=0, pady=(10,20))
-        self.idNow = IntVar()
-        self.idNow.set(default["id"])
-        self.didNow = Spinbox(w4, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.idNow, wrap=True, justify=CENTER)
-        self.didNow['vcmd'] = self.didf
-        self.didNow.grid(row=0, column=1, pady=(10,20))
+        #Label(w4, text="Device ID").grid(row=0, column=0, pady=(10,20))
+        #self.idNow = IntVar()
+        #self.idNow.set(default["id"])
+        #self.didNow = Spinbox(w4, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.idNow, wrap=True, justify=CENTER)
+        #self.didNow['vcmd'] = self.didf
+        #self.didNow.grid(row=0, column=1, pady=(10,20))
         
-        Label(w4, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
-        self.brNow = IntVar()
-        self.brNow.set(default["br"])
-        Radiobutton(w4, text="9600", variable=self.brNow, value=0).grid(row=2, column=1)
-        Radiobutton(w4, text="19200", variable=self.brNow, value=1).grid(row=3, column=1, sticky=N)
+        #Label(w4, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
+        #self.brNow = IntVar()
+        #self.brNow.set(default["br"])
+        #Radiobutton(w4, text="9600", variable=self.brNow, value=0).grid(row=2, column=1)
+        #Radiobutton(w4, text="19200", variable=self.brNow, value=1).grid(row=3, column=1, sticky=N)
 
-        Label(w4, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
-        self.sbNow = IntVar()
-        self.sbNow.set(2)
-        Radiobutton(w4, text="1", variable=self.sbNow, value=1).grid(row=4, column=1,pady=(20,0))
-        Radiobutton(w4, text="2", variable=self.sbNow, value=2).grid(row=5, column=1)
+        #Label(w4, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
+        #self.sbNow = IntVar()
+        #self.sbNow.set(2)
+        #Radiobutton(w4, text="1", variable=self.sbNow, value=1).grid(row=4, column=1,pady=(20,0))
+        #Radiobutton(w4, text="2", variable=self.sbNow, value=2).grid(row=5, column=1)
 
-        Label(w4, text="Parity").grid(row=6, column=0,pady=(20,0))
-        self.parNow = StringVar()
-        self.parityNow = Combobox(w4,textvariable=self.parNow,justify=CENTER,width=10)
-        self.parityNow['values'] = ("NONE","ODD","EVEN")
-        self.parNow.set(self.parityNow['values'][default["pa"]])
-        self.parityNow.grid(row=6,column=1,pady=(20,0))
-        self.parityNow['state'] = 'readonly'
+        #Label(w4, text="Parity").grid(row=6, column=0,pady=(20,0))
+        #self.parNow = StringVar()
+        #self.parityNow = Combobox(w4,textvariable=self.parNow,justify=CENTER,width=10)
+        #self.parityNow['values'] = ("NONE","ODD","EVEN")
+        #self.parNow.set(self.parityNow['values'][default["pa"]])
+        #self.parityNow.grid(row=6,column=1,pady=(20,0))
+        #self.parityNow['state'] = 'readonly'
 #units
         Label(w2, text="Flow Rate Units").grid(row=0, column=0,sticky=W)
         self.fru = StringVar()
@@ -250,7 +250,7 @@ class toplevels:
         self.gdb.grid(row=10,column=2,sticky=E+W)
         #w3['relief'] = 'raised'
         w3.grid(row=0,column=2)
-        w4.grid(row=8,column=0)
+        #w4.grid(row=8,column=0)
         
     def mediaf(self,master):
         media = self.me.get()[0]
