@@ -182,7 +182,7 @@ class toplevels:
         Label(w2, text="% Ethylene Glycol").grid(row=9, column=0,sticky=W)
         self.peg = IntVar()
         self.peg.set(default["peg"])
-        self.esb = Spinbox(w2,from_=10,to=60,increment=1,width=5,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
+        self.esb = Spinbox(w2,from_=10,to=60,increment=5,width=5,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
         self.esb['vcmd'] = self.pegf
         self.esb.grid(row=9,column=1)
         self.esb['state'] = 'disabled'
@@ -190,13 +190,13 @@ class toplevels:
         Label(w2, text="% Propylene Glycol").grid(row=10, column=0,sticky=W)
         self.ppg = StringVar()
         self.ppg.set(default["ppg"])
-        self.didi = Spinbox(w2,from_=10,to=60,increment=1,width=5,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
+        self.didi = Spinbox(w2,from_=10,to=60,increment=5,width=5,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
         self.didi['vcmd'] = self.ppgf
         self.didi.grid(row=10,column=1)   
         self.didi['state'] = 'disabled'
         
         self.n.grid(row=0,column=0)
-        self.applyButton = Button(master, text="Apply Changes", command=self.apply)
+        self.applyButton = Button(master, text="Apply Settings", command=self.apply)
         self.applyButton.grid(row=10,column=0,sticky=E+W)
         
         self.pbar = Progressbar(master,orient="horizontal",maximum=20,mode="determinate")
@@ -574,8 +574,8 @@ class Mainmenu(toplevels):
 if __name__ == "__main__":
 
     #add this to supress error on program close
-    #sys.stdout = open("run.log", "w")
-    #sys.stderr = open("error.log", "w")
+    sys.stdout = open("run.log", "w")
+    sys.stderr = open("error.log", "w")
     
     #first read in our config file to a dictionary
     try:
@@ -590,6 +590,7 @@ if __name__ == "__main__":
         util.err('Error Reading Config File')
     try:
         defaults = ConfigParser.ConfigParser()
+        
         #open file for both reading and writing
         #defaultwriter = open(r'res/settings.cfg')
         defaults.read(r'res/settings.cfg')
