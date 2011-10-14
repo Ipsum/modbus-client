@@ -42,12 +42,22 @@ class toplevels:
         self.n.add(w1, text='Comm Settings')
         self.n.add(w2, text='Unit Settings')
         
-        Label(w1, text="Device ID").grid(row=0, column=0, pady=(10,20))
+        Label(w1, text="COM Port: ").grid(row=0,column=0,pady=(10,20))
+        self.com = StringVar()
+        self.com.set("COM1")
+        self.comp = Combobox(w1,textvariable=self.com,justify=CENTER,width=10)
+        self.comp['values'] = ("COM1","COM2","COM3","COM4")
+        self.comp.grid(row=0,column=1,pady=(10,20))
+        self.comp['state'] = 'readonly'
+        
+        port =self.comp['values'].index(self.com.get())
+        
+        Label(w1, text="Device ID").grid(row=1, column=0, padx=40)
         self.id = IntVar()
         self.id.set(default["id"])
         self.did = Spinbox(w1, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.id, wrap=True, justify=CENTER)
         self.did['vcmd'] = self.didf
-        self.did.grid(row=0, column=1, pady=(10,20))
+        self.did.grid(row=1, column=1, pady=(10,20))
 
         Label(w1, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
         self.br = IntVar()
@@ -503,15 +513,15 @@ class toplevels:
 class Mainmenu(toplevels):
     def __init__(self,master):
         """Setup main menu"""
-        Button(master,text="Device Setup",command=self.comset).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
-        Button(master,text="Read Device Data",command=self.read).grid(row=4,columnspan=2,ipady=5,sticky=E+W)
-
-        Label(master, text="COM Port: ").grid(row=1, column=0,sticky='w')
-        self.com = StringVar()
-        self.com.set("COM1")
-        self.comp = Combobox(master,textvariable=self.com,width=7)
-        self.comp['values'] = ("COM1","COM2","COM3","COM4")
-        self.comp.grid(row=1,column=1,sticky=E+W)
+       # Button(master,text="Device Setup",command=self.comset).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
+       # Button(master,text="Read Device Data",command=self.read).grid(row=4,columnspan=2,ipady=5,sticky=E+W)
+        self.comset()
+       # Label(master, text="COM Port: ").grid(row=1, column=0,sticky='w')
+       # self.com = StringVar()
+       # self.com.set("COM1")
+       # self.comp = Combobox(master,textvariable=self.com,width=7)
+       # self.comp['values'] = ("COM1","COM2","COM3","COM4")
+       # self.comp.grid(row=1,column=1,sticky=E+W)
         
         #Label(master, text="MODBUS ID: ").grid(row=2, column=0,sticky='w')
         #self.mod = IntVar()
@@ -521,8 +531,8 @@ class Mainmenu(toplevels):
                    
     def comset(self):
         """Configure settings on device in default mode"""
-        
-        port =self.comp['values'].index(self.com.get())
+        root.withdraw()
+        #port =self.comp['values'].index(self.com.get())
         try:
             self.appc.deiconify()
             self.appc.focus_force()
@@ -539,9 +549,10 @@ class Mainmenu(toplevels):
                 defaults.write(defaultwriter)
             for item in defaults.items('Settings'):
                 default[item[0]]=int(item[1])
-            root.deiconify()    
-            root.focus_force()
-        
+            #root.deiconify()    
+            #root.focus_force()
+            root.destroy()
+            
     def read(self):
         """Read in data from device in default mode"""
         
