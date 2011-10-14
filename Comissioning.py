@@ -495,15 +495,15 @@ class toplevels:
             ser.close()
         if resp:
             print resp
-            self.volr.set("%.1f"%resp[3])
-            self.energyr.set("%.1f"%resp[4])
-            self.massr.set("%.1f"%resp[5])
-            self.vftotal.set("%.1f"%resp[6])
-            self.hetotal.set("%.1f"%resp[7])
-            self.cetotal.set("%.1f"%resp[8])
-            self.mftotal.set("%.1f"%resp[9])
-            self.ltemp.set("%.1f"%resp[10])
-            self.rtemp.set("%.1f"%resp[11])
+            self.volr.set("%.2f"%resp[3])
+            self.energyr.set("%.3f"%resp[4])
+            self.massr.set("%.2f"%resp[5])
+            self.vftotal.set("%.0f"%resp[6])
+            self.hetotal.set("%.0f"%resp[7])
+            self.cetotal.set("%.0f"%resp[8])
+            self.mftotal.set("%.0f"%resp[9])
+            self.ltemp.set("%.2f"%resp[10])
+            self.rtemp.set("%.2f"%resp[11])
             #self.etotal.set("%.8s"%(resp[7]+resp[8]))
         else:
             self.gdb['state'] = 'normal'
