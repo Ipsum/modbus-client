@@ -88,6 +88,8 @@ def getData(s):
 
 def openConn(s):
     """open serial connection and return the connection object""" 
+    #grab current device ID
+    DEVICE_ID = s["id"]
     #open serial conn
     ser = serial.Serial(port=None)
     ser.port = s['port']

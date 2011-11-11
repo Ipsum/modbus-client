@@ -25,7 +25,8 @@ import warnings
 import modbus
 import util
 
-s=dict(id=1, port=1, baud=9600, parity='N', stopbits=2)
+s=dict(id=1, port=1, baud=9600, parity='N', stopbits=2) #current sets
+ds=dict(id=1, port=1, baud=9600, parity='N', stopbits=2) #default sets
 default = dict()
 port=0
 class toplevels:
@@ -78,6 +79,9 @@ class toplevels:
         self.par.set(self.parity['values'][default["pa"]])
         self.parity.grid(row=6,column=1,pady=(20,0))
         self.parity['state'] = 'readonly'
+        
+        self.jmprButton = Button(w1, text="Jumper is ON", command=self.jmpr)
+        self.jmprButton.grid(row=7,column=0,columnspan=2,pady=(30,0),padx=(40,0))
         
         #Label(w4, text="Device ID").grid(row=0, column=0, pady=(10,20))
         #self.idNow = IntVar()
@@ -316,8 +320,17 @@ class toplevels:
     
     def validate(self):
         pass
+    def jmpr(self):
+        if self.jmprButton['text'][-1]=="N":
+            self.jmprButton['text'] = "Jumper is OFF"
+            self.jmp = 0
+        else:
+            self.jmprButton['text'] = "Jumper is ON"
+            self.jmp = 1
+            
         
     def apply(self):
+        
         data = dict()
         data['baudrate'] = long(self.br.get())
         data['slave id'] = long(self.did.get())
@@ -338,6 +351,16 @@ class toplevels:
         else:
             data['per cent'] = 10
         
+        #Check for jumper and setup comm
+        if not self.jmp:
+            s['id'] = data['slave id']
+            s['parity'] = data['parity']
+            s['baud'] = data['baudrate']
+        else:
+            s['id'] = ds['id']
+            s['parity'] = ds['parity']
+            s['baud'] = ds['baud']
+            
         #set defaults
         defaults.set("Settings","id",str(self.did.get()))
         defaults.set("Settings","br",str(self.br.get()))
