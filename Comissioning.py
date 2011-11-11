@@ -17,6 +17,7 @@ When jumper on the device is set to default mode, the device has:
  '''
  
 import os
+import subprocess
 from Tkinter import *
 from ttk import *
 import ConfigParser
@@ -57,6 +58,7 @@ class toplevels:
         menu_file.add_command(label='Exit', command=self.exitcmd)
         menu_logging.add_checkbutton(label='Log!', variable=self.logEnbled, onvalue=1, offvalue=0)
         menu_logging.add_command(label='Settings...', command=self.logSettings)
+        menu_help.add_command(label='Contents', command=self.help)
         menu_help.add_command(label='About', command=self.about)
         
         Label(w1, text="COM Port: ").grid(row=0,column=0,pady=(10,20))
@@ -285,6 +287,9 @@ class toplevels:
         pass
     def logSettings(self):
         pass
+    def help(self):
+        subprocess.Popen("hh.exe res\comissioning.chm")
+        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
     def about(self,master):
         pass
     def mediaf(self,master):

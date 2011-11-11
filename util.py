@@ -35,3 +35,12 @@ def err(code):
     #for now, just print error to std out
     print 'ERROR---> '+str(code)
     tkMessageBox.showerror(message=code,icon='error',title='ERROR')
+    
+def log(format):
+    """Datalogging Functionality"""
+    #logger = log("excel")
+    #TODO: FILEPATH = date+time.csv
+    #TODO: formats: csv, txt
+    #TODO: user picks file loc
+    #f = open(FILEPATH, "w")
+    
