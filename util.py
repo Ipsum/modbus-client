@@ -45,13 +45,14 @@ def log(format,data):
     date = datetime.timetuple()
     l = open(PATH, 'a')
     if format=="excel":
+        header="Time,
         for d in data:
-            datastr+=str(d)+","
+            datastr+=","+str(d)
     else:
         for d in data:
-            datastr+=str(d)+" "
+            datastr+=" "+str(d)
         
-    l.write(date[3]+":"+date[4]+":"+date[5]+","+datastr
+    l.write(date[3]+":"+date[4]+":"+date[5]+datastr+"\n")
     #TODO: FILEPATH = date+time.csv
     #TODO: formats: csv, txt
     #TODO: user picks file loc
