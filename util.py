@@ -4,6 +4,8 @@
 
 import tkMessageBox
 
+DEVICE_ID = 12
+
 def rtu_delay(baudrate):
     """calculates the interchar delay from the baudrate"""
     if baudrate <= 19200:

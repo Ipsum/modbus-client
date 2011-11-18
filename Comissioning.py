@@ -26,7 +26,8 @@ import warnings
 import modbus
 import util
 
-s=dict(id=1, port=1, baud=9600, parity='N', stopbits=2) #current sets
+util.DEVICE_ID=1
+s=dict(port=1, baud=9600, parity='N', stopbits=2) #current sets
 ds=dict(id=1, port=1, baud=9600, parity='N', stopbits=2) #default sets
 default = dict()
 port=0
@@ -283,6 +284,9 @@ class toplevels:
         #w3['relief'] = 'raised'
         w3.grid(row=0,column=2)
         #w4.grid(row=8,column=0)
+        
+        self.jmp = 0
+        
     def exitcmd(self):
         pass
     def logSettings(self):
@@ -349,10 +353,10 @@ class toplevels:
     def jmpr(self):
         if self.jmprButton['text'][-1]=="N":
             self.jmprButton['text'] = "Jumper is OFF"
-            self.jmp = 0
+            util.DEVICE_ID = long(self.did.get())
         else:
             self.jmprButton['text'] = "Jumper is ON"
-            self.jmp = 1
+            util.DEVICE_ID = ds['id']
             
         
     def apply(self):
@@ -378,12 +382,12 @@ class toplevels:
             data['per cent'] = 10
         
         #Check for jumper and setup comm
-        if not self.jmp:
-            s['id'] = data['slave id']
+        if not self.jmprButton['text'][-1]=="N":
+            util.DEVICE_ID = data['slave id']
             s['parity'] = data['parity']
             s['baud'] = data['baudrate']
         else:
-            s['id'] = ds['id']
+            util.DEVICE_ID = ds['id']
             s['parity'] = ds['parity']
             s['baud'] = ds['baud']
             
@@ -537,6 +541,10 @@ class toplevels:
         self.gdb['state'] = 'disabled'
         self.master.update()
         resp = 0
+        if not self.jmprButton['text'][-1]=="N":
+            util.DEVICE_ID = long(self.did.get())
+        else:
+            util.DEVICE_ID = ds['id']
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
         if ser:
@@ -623,8 +631,8 @@ class Mainmenu(toplevels):
 if __name__ == "__main__":
 
     #add this to supress error on program close
-    sys.stdout = open("run.log", "w")
-    sys.stderr = open("error.log", "w")
+    #sys.stdout = open("run.log", "w")
+    #sys.stderr = open("error.log", "w")
     
     #first read in our config file to a dictionary
     try:

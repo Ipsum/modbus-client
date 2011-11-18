@@ -38,8 +38,8 @@ import ConfigParser
 import time
 from Tkinter import *
 from ttk import *
+import Comissioning
 
-DEVICE_ID = 1
 OFFSET = 40001
 fc = dict()
 reg = dict()
@@ -88,8 +88,6 @@ def getData(s):
 
 def openConn(s):
     """open serial connection and return the connection object""" 
-    #grab current device ID
-    DEVICE_ID = s["id"]
     #open serial conn
     ser = serial.Serial(port=None)
     ser.port = s['port']
@@ -133,7 +131,7 @@ def writeReg(ser,m_fc,m_reg,m_data):
     ser.flushOutput()
     m_reg -= OFFSET #MODBUS registers are offset
     print str(m_fc)+"::"+str(m_reg)+"::"+str(m_data)
-    packet = struct.pack('>BBHH',DEVICE_ID,m_fc,m_reg,m_data)
+    packet = struct.pack('>BBHH',util.DEVICE_ID,m_fc,m_reg,m_data)
     packet += struct.pack('>H',util.calc_crc(packet))
     sucess = writeSerial(ser,packet)
     if not sucess:
@@ -149,8 +147,9 @@ def writeReg(ser,m_fc,m_reg,m_data):
     return True
     
 def readReg(ser,fc,sreg,numreg):
+    print ":::"+str(util.DEVICE_ID) + ":::"
     sreg -= OFFSET
-    packet = struct.pack('>BBHH',DEVICE_ID,fc,sreg,numreg)
+    packet = struct.pack('>BBHH',util.DEVICE_ID,fc,sreg,numreg)
     packet += struct.pack('>H',util.calc_crc(packet))
     sucess = writeSerial(ser,packet)
     if not sucess:
