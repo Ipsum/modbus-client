@@ -3,7 +3,7 @@
 #*
 
 import tkMessageBox
-import datetime
+from datetime import datetime
 
 DEVICE_ID = 12
 
@@ -39,20 +39,27 @@ def err(code):
     print 'ERROR---> '+str(code)
     tkMessageBox.showerror(message=code,icon='error',title='ERROR')
     
-def log(format,data):
+def logcreate(path):
+     l = open(path,'w')
+     header="Time,Volume Rate,Energy Rate,Mass Rate,Local Temp,Remote Temp,Volume Total,Mass Total,Heating Total,Cooling Total,Energy Total\n"
+     l.write(header)
+     l.close()
+     
+def log(path,data):
     """Datalogging Functionality"""
     #logger = log("excel")
-    date = datetime.timetuple()
-    l = open(PATH, 'a')
-    if format=="excel":
-        header="Time,
-        for d in data:
-            datastr+=","+str(d)
-    else:
-        for d in data:
-            datastr+=" "+str(d)
+    d = datetime.now()
+    t = d.strftime("%H:%M:%S")
+    datastr=""
+    try:
+        l = open(path, 'a')
+    except:
+        err("Could not open log file")
+    for d in data:
+        datastr+=","+str(d)
         
-    l.write(date[3]+":"+date[4]+":"+date[5]+datastr+"\n")
+    l.write(t+datastr+"\n")
+    l.close()
     #TODO: FILEPATH = date+time.csv
     #TODO: formats: csv, txt
     #TODO: user picks file loc

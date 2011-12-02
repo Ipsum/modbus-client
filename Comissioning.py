@@ -562,6 +562,9 @@ class toplevels:
             self.ltemp.set("%.2f"%resp[10])
             self.rtemp.set("%.2f"%resp[11])
             #self.etotal.set("%.8s"%(resp[7]+resp[8]))
+            if self.logEnbled:
+                util.logcreate("c:\log.csv")
+                util.log("c:\log.csv",resp[3:11])
         else:
             self.gdb['state'] = 'normal'
             return False
