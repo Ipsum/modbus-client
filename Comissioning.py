@@ -46,22 +46,22 @@ class toplevels:
         #w4 = Labelframe(w1,text='Current Meter Settings')
         self.n.add(w1, text='Comm Settings')
         self.n.add(w2, text='Unit Settings')
-        
+#Disabled for production
         #setup menubar
-        self.logEnbled = StringVar()
-        menu_file = Menu(menubar)
-        menu_logging = Menu(menubar)
-        menu_help = Menu(menubar)
-        menubar.add_cascade(menu=menu_file, label='File')
-        menubar.add_cascade(menu=menu_logging, label='Logging')
-        menubar.add_cascade(menu=menu_help, label='Help')
-        
-        menu_file.add_command(label='Exit', command=self.exitcmd)
-        menu_logging.add_checkbutton(label='Log!', variable=self.logEnbled, onvalue=1, offvalue=0)
-        menu_logging.add_command(label='Settings...', command=self.logSettings)
-        menu_help.add_command(label='Contents', command=self.help)
-        menu_help.add_command(label='About', command=self.about)
-        
+#        self.logEnbled = StringVar()
+#        menu_file = Menu(menubar)
+#        menu_logging = Menu(menubar)
+#        menu_help = Menu(menubar)
+#        menubar.add_cascade(menu=menu_file, label='File')
+#        menubar.add_cascade(menu=menu_logging, label='Logging')
+#        menubar.add_cascade(menu=menu_help, label='Help')
+#        
+#        menu_file.add_command(label='Exit', command=self.exitcmd)
+#        menu_logging.add_checkbutton(label='Log!', variable=self.logEnbled, onvalue=1, offvalue=0)
+#        menu_logging.add_command(label='Settings...', command=self.logSettings)
+#        menu_help.add_command(label='Contents', command=self.help)
+#        menu_help.add_command(label='About', command=self.about)
+#
         Label(w1, text="COM Port: ").grid(row=0,column=0,pady=(10,20))
         self.com = StringVar()
         self.com.set("COM1")
@@ -286,16 +286,17 @@ class toplevels:
         #w4.grid(row=8,column=0)
         
         self.jmp = 0
-        
-    def exitcmd(self):
-        pass
-    def logSettings(self):
-        pass
-    def help(self):
-        subprocess.Popen("hh.exe res\comissioning.chm")
-        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
-    def about(self,master):
-        pass
+#  !Disabled for produciton     
+#    def exitcmd(self):
+#        pass
+#    def logSettings(self):
+#        pass
+#    def help(self):
+#        subprocess.Popen("hh.exe res\comissioning.chm")
+#        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
+#    def about(self,master):
+#        pass
+
     def mediaf(self,master):
         media = self.me.get()[0]
         if media=="W":
