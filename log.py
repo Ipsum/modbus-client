@@ -3,11 +3,12 @@ from datetime import datetime
 import tkFileDialog
 
 PATH = "C:\\"
-LOG = False
+LOGEN = 0
 TYPE = 'csv'
 
 def enablelog():
     "Redirects stdout to a logfile"
+    global LOGEN
     d = datetime.now()
     filename = d.strftime("%m-%d-%y_%H%M%S")
     filepath = PATH+filename+".csv"
@@ -16,18 +17,18 @@ def enablelog():
     except:
         util.err("Could not create log file")
         return
-    LOG = True
+    LOGEN = 1
 
     if TYPE == 'csv':
-        header="Time,Volume Rate,Energy Rate,Mass Rate,Local Temp,Remote Temp," \
-            "Volume Total,Mass Total,Heating Total,Cooling Total,Energy Total\n"
+        header="Time,Volume Rate,Energy Rate,Mass Rate,Volume Total," \
+            "Heating Total,Cooling Total,Mass Total,Local Temp,Remote Temp,"
         print >> sys.stderr, header
     return
     
 def log(message):
     "write data to log"
     d = datetime.now()
-    print >> sys.stderr, d.strftime("%H:%M:%S,")+message
+    print >> sys.stderr, d.strftime("%H:%M:%S,")+message+","
     
 def set_path():
     "allows user to chose log path"

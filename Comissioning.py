@@ -32,6 +32,7 @@ s=dict(port=1, baud=9600, parity='N', stopbits=2) #current sets
 ds=dict(id=1, port=1, baud=9600, parity='N', stopbits=2) #default sets
 default = dict()
 port=0
+#log.LOGEN=0
 class toplevels:
 
     def comset(self, master):
@@ -544,8 +545,11 @@ class toplevels:
             self.ltemp.set("%.2f"%resp[10])
             self.rtemp.set("%.2f"%resp[11])
             #self.etotal.set("%.8s"%(resp[7]+resp[8]))
-            if log.LOG:
-                log(str(resp[3:11])[1:-1].strip())
+            print ":::"
+            print str(log.LOGEN)
+            if log.LOGEN == 1:
+                print "logging!"
+                log.log(str(resp[3:12])[1:-1].strip())
         else:
             self.gdb['state'] = 'normal'
             return False
