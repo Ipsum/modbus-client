@@ -39,29 +39,3 @@ def err(code):
     print 'ERROR---> '+str(code)
     tkMessageBox.showerror(message=code,icon='error',title='ERROR')
     
-def logcreate(path):
-     l = open(path,'w')
-     header="Time,Volume Rate,Energy Rate,Mass Rate,Local Temp,Remote Temp,Volume Total,Mass Total,Heating Total,Cooling Total,Energy Total\n"
-     l.write(header)
-     l.close()
-     
-def log(path,data):
-    """Datalogging Functionality"""
-    #logger = log("excel")
-    d = datetime.now()
-    t = d.strftime("%H:%M:%S")
-    datastr=""
-    try:
-        l = open(path, 'a')
-    except:
-        err("Could not open log file")
-    for d in data:
-        datastr+=","+str(d)
-        
-    l.write(t+datastr+"\n")
-    l.close()
-    #TODO: FILEPATH = date+time.csv
-    #TODO: formats: csv, txt
-    #TODO: user picks file loc
-    #f = open(FILEPATH, "w")
-    

@@ -25,6 +25,7 @@ import warnings
 
 import modbus
 import util
+import log
 
 util.DEVICE_ID=1
 s=dict(port=1, baud=9600, parity='N', stopbits=2) #current sets
@@ -43,9 +44,11 @@ class toplevels:
         w1 = Frame(self.n)
         w2 = Frame(self.n)
         w3 = Frame(master)
+        w4 = Frame(self.n)
         #w4 = Labelframe(w1,text='Current Meter Settings')
         self.n.add(w1, text='Comm Settings')
         self.n.add(w2, text='Unit Settings')
+        self.n.add(w4, text='Logging')
 #Disabled for production
         #setup menubar
 #        self.logEnbled = StringVar()
@@ -187,7 +190,12 @@ class toplevels:
         self.didi['vcmd'] = self.ppgf
         self.didi.grid(row=10,column=1)   
         self.didi['state'] = 'disabled'
-        
+
+        Button(w2, text="Retreive Settings", command=self.readunits).grid(row=11,columnspan=2,sticky=E+W,pady=5)
+#logging
+        self.logButton = Button(w4, text="Logging is Enabled", command=self.logB)
+        self.logButton.grid(row=0,column=0,columnspan=2,pady=(30,0),padx=(65,0))
+#master
         self.n.grid(row=0,column=0)
         self.applyButton = Button(master, text="Apply Settings", command=self.apply)
         self.applyButton.grid(row=10,column=0,sticky=E+W)
@@ -266,7 +274,10 @@ class toplevels:
 #        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
 #    def about(self,master):
 #        pass
-
+    def readunits():
+        pass
+    def logB():
+        pass
     def mediaf(self,master):
         media = self.me.get()[0]
         if media=="W":
@@ -533,9 +544,8 @@ class toplevels:
             self.ltemp.set("%.2f"%resp[10])
             self.rtemp.set("%.2f"%resp[11])
             #self.etotal.set("%.8s"%(resp[7]+resp[8]))
-#            if self.logEnbled:
-#                util.logcreate("c:\log.csv")
-#                util.log("c:\log.csv",resp[3:11])
+            if log.LOG:
+                log(str(resp[3:11])[1:-1].strip())
         else:
             self.gdb['state'] = 'normal'
             return False
@@ -616,7 +626,7 @@ if __name__ == "__main__":
                 default[item[0]]=int(item[1])
     except:
         util.err('Error Reading Config File')
-        
+    log.enablelog()    
     #init gui
     root = Tk()
     sty = Style()
