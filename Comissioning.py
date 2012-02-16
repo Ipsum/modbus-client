@@ -85,11 +85,6 @@ class toplevels:
         Radiobutton(w1, text="9600", variable=self.br, value=0).grid(row=2, column=1)
         Radiobutton(w1, text="19200", variable=self.br, value=1).grid(row=3, column=1, sticky=N)
 
-        #Label(w1, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
-        #self.sb = IntVar()
-        #self.sb.set(2)
-        #Radiobutton(w1, text="1", variable=self.sb, value=1).grid(row=4, column=1,pady=(20,0))
-        #Radiobutton(w1, text="2", variable=self.sb, value=2).grid(row=5, column=1)
 
         Label(w1, text="Parity").grid(row=6, column=0,pady=(20,0))
         self.par = StringVar()
@@ -102,32 +97,7 @@ class toplevels:
         self.jmprButton = Button(w1, text="Jumper is ON", command=self.jmpr)
         self.jmprButton.grid(row=7,column=0,columnspan=2,pady=(30,0),padx=(40,0))
         
-        #Label(w4, text="Device ID").grid(row=0, column=0, pady=(10,20))
-        #self.idNow = IntVar()
-        #self.idNow.set(default["id"])
-        #self.didNow = Spinbox(w4, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.idNow, wrap=True, justify=CENTER)
-        #self.didNow['vcmd'] = self.didf
-        #self.didNow.grid(row=0, column=1, pady=(10,20))
-        
-        #Label(w4, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
-        #self.brNow = IntVar()
-        #self.brNow.set(default["br"])
-        #Radiobutton(w4, text="9600", variable=self.brNow, value=0).grid(row=2, column=1)
-        #Radiobutton(w4, text="19200", variable=self.brNow, value=1).grid(row=3, column=1, sticky=N)
 
-        #Label(w4, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
-        #self.sbNow = IntVar()
-        #self.sbNow.set(2)
-        #Radiobutton(w4, text="1", variable=self.sbNow, value=1).grid(row=4, column=1,pady=(20,0))
-        #Radiobutton(w4, text="2", variable=self.sbNow, value=2).grid(row=5, column=1)
-
-        #Label(w4, text="Parity").grid(row=6, column=0,pady=(20,0))
-        #self.parNow = StringVar()
-        #self.parityNow = Combobox(w4,textvariable=self.parNow,justify=CENTER,width=10)
-        #self.parityNow['values'] = ("NONE","ODD","EVEN")
-        #self.parNow.set(self.parityNow['values'][default["pa"]])
-        #self.parityNow.grid(row=6,column=1,pady=(20,0))
-        #self.parityNow['state'] = 'readonly'
 #units
         Label(w2, text="Flow Rate Units").grid(row=0, column=0,sticky=W)
         self.fru = StringVar()
@@ -574,26 +544,12 @@ class toplevels:
 class Mainmenu(toplevels):
     def __init__(self,master):
         """Setup main menu"""
-       # Button(master,text="Device Setup",command=self.comset).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
-       # Button(master,text="Read Device Data",command=self.read).grid(row=4,columnspan=2,ipady=5,sticky=E+W)
+
         self.comset()
-       # Label(master, text="COM Port: ").grid(row=1, column=0,sticky='w')
-       # self.com = StringVar()
-       # self.com.set("COM1")
-       # self.comp = Combobox(master,textvariable=self.com,width=7)
-       # self.comp['values'] = ("COM1","COM2","COM3","COM4")
-       # self.comp.grid(row=1,column=1,sticky=E+W)
-        
-        #Label(master, text="MODBUS ID: ").grid(row=2, column=0,sticky='w')
-        #self.mod = IntVar()
-        #self.modid = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.mod, wrap=True, justify=CENTER)
-        #self.modid['vcmd'] = self.didf
-        #self.modid.grid(row=2,column=1,sticky=E+W)
-                   
+                
     def comset(self):
         """Configure settings on device in default mode"""
         root.withdraw()
-        #port =self.comp['values'].index(self.com.get())
         try:
             self.appc.deiconify()
             self.appc.focus_force()
@@ -610,27 +566,8 @@ class Mainmenu(toplevels):
                 defaults.write(defaultwriter)
             for item in defaults.items('Settings'):
                 default[item[0]]=int(item[1])
-            #root.deiconify()    
-            #root.focus_force()
+
             root.destroy()
-            
-    def read(self):
-        """Read in data from device in default mode"""
-        
-        port =self.comp['values'].index(self.com.get())
-        try:
-            self.read.deiconify()
-            self.read.focus_force()
-        except:
-            self.read = Toplevel(bd=10)
-            self.read.title("clark Sonic Energy Meter")
-            self.read.iconbitmap(r'res/favicon.ico')
-            toplevels.read(self,self.read)
-            self.read.group(root)
-            self.read.focus_force()
-            self.read.wait_window(self.read)
-            root.deiconify() 
-            root.focus_force()
 
 if __name__ == "__main__":
 
