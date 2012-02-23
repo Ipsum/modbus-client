@@ -196,6 +196,10 @@ class toplevels:
 #logging
         self.logButton = Button(w4, text="Logging is Enabled", command=self.logB)
         self.logButton.grid(row=0,column=0,columnspan=2,pady=(30,0),padx=(65,0))
+        
+        Label(w4,text="Logging Directory").grid(row=1,column=0,columnspan=2,pady=(30,0),padx=(65,0))
+        self.logPathButton = Button(w4, text="C:\\", command=self.logPB)
+        self.logPathButton.grid(row=2,column=0,columnspan=2)
 #master
         self.n.grid(row=0,column=0)
         self.applyButton = Button(master, text="Apply Settings", command=self.apply)
@@ -277,8 +281,13 @@ class toplevels:
 #        pass
     def readunits():
         pass
+        
     def logB():
         pass
+    def logPB(self):
+        fpath=log.set_path(self.master)
+        self.logPathButton['text'] = fpath
+        return
     def mediaf(self,master):
         media = self.me.get()[0]
         if media=="W":

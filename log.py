@@ -30,6 +30,8 @@ def log(message):
     d = datetime.now()
     print >> sys.stderr, d.strftime("%H:%M:%S,")+message+","
     
-def set_path():
+def set_path(master):
     "allows user to chose log path"
-    PATH = tkFileDialog.askdirectory(parent=root,initialdir=PATH) 
+    PATH = tkFileDialog.askdirectory()#parent=master,initialdir=PATH)
+    print "c"
+    return PATH
