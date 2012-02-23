@@ -3,6 +3,9 @@
 #*
 
 import tkMessageBox
+from datetime import datetime
+
+DEVICE_ID = 12
 
 def rtu_delay(baudrate):
     """calculates the interchar delay from the baudrate"""
@@ -35,3 +38,4 @@ def err(code):
     #for now, just print error to std out
     print 'ERROR---> '+str(code)
     tkMessageBox.showerror(message=code,icon='error',title='ERROR')
+    

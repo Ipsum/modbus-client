@@ -15,8 +15,9 @@ When jumper on the device is set to default mode, the device has:
  * no parity
  * 2 stop bits
  '''
- 
+
 import os
+import subprocess
 from Tkinter import *
 from ttk import *
 import ConfigParser
@@ -24,24 +25,47 @@ import warnings
 
 import modbus
 import util
+import log
 
-s=dict(id=1, port=1, baud=9600, parity='N', stopbits=2)
+util.DEVICE_ID=1
+s=dict(port=1, baud=9600, parity='N', stopbits=2) #current sets
+ds=dict(id=1, port=1, baud=9600, parity='N', stopbits=2) #default sets
 default = dict()
 port=0
+#log.LOGEN=0
 class toplevels:
 
     def comset(self, master):
         
         #setup a tabbed interface
         self.master = master
-        self.n = Notebook(master)
+        self.n = Notebook(self.master)
+        menubar = Menu(self.master)
+        self.master['menu'] = menubar
         w1 = Frame(self.n)
         w2 = Frame(self.n)
         w3 = Frame(master)
+        w4 = Frame(self.n)
         #w4 = Labelframe(w1,text='Current Meter Settings')
         self.n.add(w1, text='Comm Settings')
         self.n.add(w2, text='Unit Settings')
-        
+        self.n.add(w4, text='Logging')
+#Disabled for production
+        #setup menubar
+#        self.logEnbled = StringVar()
+#        menu_file = Menu(menubar)
+#        menu_logging = Menu(menubar)
+#        menu_help = Menu(menubar)
+#        menubar.add_cascade(menu=menu_file, label='File')
+#        menubar.add_cascade(menu=menu_logging, label='Logging')
+#        menubar.add_cascade(menu=menu_help, label='Help')
+#        
+#        menu_file.add_command(label='Exit', command=self.exitcmd)
+#        menu_logging.add_checkbutton(label='Log!', variable=self.logEnbled, onvalue=1, offvalue=0)
+#        menu_logging.add_command(label='Settings...', command=self.logSettings)
+#        menu_help.add_command(label='Contents', command=self.help)
+#        menu_help.add_command(label='About', command=self.about)
+#
         Label(w1, text="COM Port: ").grid(row=0,column=0,pady=(10,20))
         self.com = StringVar()
         self.com.set("COM1")
@@ -65,11 +89,6 @@ class toplevels:
         Radiobutton(w1, text="9600", variable=self.br, value=0).grid(row=2, column=1)
         Radiobutton(w1, text="19200", variable=self.br, value=1).grid(row=3, column=1, sticky=N)
 
-        #Label(w1, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
-        #self.sb = IntVar()
-        #self.sb.set(2)
-        #Radiobutton(w1, text="1", variable=self.sb, value=1).grid(row=4, column=1,pady=(20,0))
-        #Radiobutton(w1, text="2", variable=self.sb, value=2).grid(row=5, column=1)
 
         Label(w1, text="Parity").grid(row=6, column=0,pady=(20,0))
         self.par = StringVar()
@@ -79,32 +98,10 @@ class toplevels:
         self.parity.grid(row=6,column=1,pady=(20,0))
         self.parity['state'] = 'readonly'
         
-        #Label(w4, text="Device ID").grid(row=0, column=0, pady=(10,20))
-        #self.idNow = IntVar()
-        #self.idNow.set(default["id"])
-        #self.didNow = Spinbox(w4, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.idNow, wrap=True, justify=CENTER)
-        #self.didNow['vcmd'] = self.didf
-        #self.didNow.grid(row=0, column=1, pady=(10,20))
+        self.jmprButton = Button(w1, text="Jumper is ON", command=self.jmpr)
+        self.jmprButton.grid(row=7,column=0,columnspan=2,pady=(30,0),padx=(40,0))
         
-        #Label(w4, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
-        #self.brNow = IntVar()
-        #self.brNow.set(default["br"])
-        #Radiobutton(w4, text="9600", variable=self.brNow, value=0).grid(row=2, column=1)
-        #Radiobutton(w4, text="19200", variable=self.brNow, value=1).grid(row=3, column=1, sticky=N)
 
-        #Label(w4, text="Stop Bits").grid(row=4, column=0,pady=(20,0))
-        #self.sbNow = IntVar()
-        #self.sbNow.set(2)
-        #Radiobutton(w4, text="1", variable=self.sbNow, value=1).grid(row=4, column=1,pady=(20,0))
-        #Radiobutton(w4, text="2", variable=self.sbNow, value=2).grid(row=5, column=1)
-
-        #Label(w4, text="Parity").grid(row=6, column=0,pady=(20,0))
-        #self.parNow = StringVar()
-        #self.parityNow = Combobox(w4,textvariable=self.parNow,justify=CENTER,width=10)
-        #self.parityNow['values'] = ("NONE","ODD","EVEN")
-        #self.parNow.set(self.parityNow['values'][default["pa"]])
-        #self.parityNow.grid(row=6,column=1,pady=(20,0))
-        #self.parityNow['state'] = 'readonly'
 #units
         Label(w2, text="Flow Rate Units").grid(row=0, column=0,sticky=W)
         self.fru = StringVar()
@@ -182,7 +179,7 @@ class toplevels:
         Label(w2, text="% Ethylene Glycol").grid(row=9, column=0,sticky=W)
         self.peg = IntVar()
         self.peg.set(default["peg"])
-        self.esb = Spinbox(w2,from_=10,to=60,increment=1,width=5,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
+        self.esb = Spinbox(w2,from_=10,to=60,increment=5,width=5,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
         self.esb['vcmd'] = self.pegf
         self.esb.grid(row=9,column=1)
         self.esb['state'] = 'disabled'
@@ -190,13 +187,18 @@ class toplevels:
         Label(w2, text="% Propylene Glycol").grid(row=10, column=0,sticky=W)
         self.ppg = StringVar()
         self.ppg.set(default["ppg"])
-        self.didi = Spinbox(w2,from_=10,to=60,increment=1,width=5,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
+        self.didi = Spinbox(w2,from_=10,to=60,increment=5,width=5,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
         self.didi['vcmd'] = self.ppgf
         self.didi.grid(row=10,column=1)   
         self.didi['state'] = 'disabled'
-        
+
+        Button(w2, text="Retreive Settings", command=self.readunits).grid(row=11,columnspan=2,sticky=E+W,pady=5)
+#logging
+        self.logButton = Button(w4, text="Logging is Enabled", command=self.logB)
+        self.logButton.grid(row=0,column=0,columnspan=2,pady=(30,0),padx=(65,0))
+#master
         self.n.grid(row=0,column=0)
-        self.applyButton = Button(master, text="Apply Changes", command=self.apply)
+        self.applyButton = Button(master, text="Apply Settings", command=self.apply)
         self.applyButton.grid(row=10,column=0,sticky=E+W)
         
         self.pbar = Progressbar(master,orient="horizontal",maximum=20,mode="determinate")
@@ -262,6 +264,21 @@ class toplevels:
         w3.grid(row=0,column=2)
         #w4.grid(row=8,column=0)
         
+        self.jmp = 0
+#  !Disabled for produciton     
+#    def exitcmd(self):
+#        pass
+#    def logSettings(self):
+#        pass
+#    def help(self):
+#        subprocess.Popen("hh.exe res\comissioning.chm")
+#        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
+#    def about(self,master):
+#        pass
+    def readunits():
+        pass
+    def logB():
+        pass
     def mediaf(self,master):
         media = self.me.get()[0]
         if media=="W":
@@ -316,8 +333,17 @@ class toplevels:
     
     def validate(self):
         pass
+    def jmpr(self):
+        if self.jmprButton['text'][-1]=="N":
+            self.jmprButton['text'] = "Jumper is OFF"
+            util.DEVICE_ID = long(self.did.get())
+        else:
+            self.jmprButton['text'] = "Jumper is ON"
+            util.DEVICE_ID = ds['id']
+            
         
     def apply(self):
+        
         data = dict()
         data['baudrate'] = long(self.br.get())
         data['slave id'] = long(self.did.get())
@@ -338,6 +364,16 @@ class toplevels:
         else:
             data['per cent'] = 10
         
+        #Check for jumper and setup comm
+        if not self.jmprButton['text'][-1]=="N":
+            util.DEVICE_ID = data['slave id']
+            s['parity'] = data['parity']
+            s['baud'] = data['baudrate']
+        else:
+            util.DEVICE_ID = ds['id']
+            s['parity'] = ds['parity']
+            s['baud'] = ds['baud']
+            
         #set defaults
         defaults.set("Settings","id",str(self.did.get()))
         defaults.set("Settings","br",str(self.br.get()))
@@ -488,6 +524,10 @@ class toplevels:
         self.gdb['state'] = 'disabled'
         self.master.update()
         resp = 0
+        if not self.jmprButton['text'][-1]=="N":
+            util.DEVICE_ID = long(self.did.get())
+        else:
+            util.DEVICE_ID = ds['id']
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
         if ser:
@@ -495,16 +535,21 @@ class toplevels:
             ser.close()
         if resp:
             print resp
-            self.volr.set("%.1f"%resp[3])
-            self.energyr.set("%.1f"%resp[4])
-            self.massr.set("%.1f"%resp[5])
-            self.vftotal.set("%.1f"%resp[6])
-            self.hetotal.set("%.1f"%resp[7])
-            self.cetotal.set("%.1f"%resp[8])
-            self.mftotal.set("%.1f"%resp[9])
-            self.ltemp.set("%.1f"%resp[10])
-            self.rtemp.set("%.1f"%resp[11])
+            self.volr.set("%.2f"%resp[3])
+            self.energyr.set("%.3f"%resp[4])
+            self.massr.set("%.2f"%resp[5])
+            self.vftotal.set("%.0f"%resp[6])
+            self.hetotal.set("%.0f"%resp[7])
+            self.cetotal.set("%.0f"%resp[8])
+            self.mftotal.set("%.0f"%resp[9])
+            self.ltemp.set("%.2f"%resp[10])
+            self.rtemp.set("%.2f"%resp[11])
             #self.etotal.set("%.8s"%(resp[7]+resp[8]))
+            print ":::"
+            print str(log.LOGEN)
+            if log.LOGEN == 1:
+                print "logging!"
+                log.log(str(resp[3:12])[1:-1].strip())
         else:
             self.gdb['state'] = 'normal'
             return False
@@ -513,26 +558,12 @@ class toplevels:
 class Mainmenu(toplevels):
     def __init__(self,master):
         """Setup main menu"""
-       # Button(master,text="Device Setup",command=self.comset).grid(row=3,columnspan=2,ipady=5,sticky=E+W)
-       # Button(master,text="Read Device Data",command=self.read).grid(row=4,columnspan=2,ipady=5,sticky=E+W)
+
         self.comset()
-       # Label(master, text="COM Port: ").grid(row=1, column=0,sticky='w')
-       # self.com = StringVar()
-       # self.com.set("COM1")
-       # self.comp = Combobox(master,textvariable=self.com,width=7)
-       # self.comp['values'] = ("COM1","COM2","COM3","COM4")
-       # self.comp.grid(row=1,column=1,sticky=E+W)
-        
-        #Label(master, text="MODBUS ID: ").grid(row=2, column=0,sticky='w')
-        #self.mod = IntVar()
-        #self.modid = Spinbox(master, from_=1, to=248, increment=1, width=5, validate="focusout",textvariable=self.mod, wrap=True, justify=CENTER)
-        #self.modid['vcmd'] = self.didf
-        #self.modid.grid(row=2,column=1,sticky=E+W)
-                   
+                
     def comset(self):
         """Configure settings on device in default mode"""
         root.withdraw()
-        #port =self.comp['values'].index(self.com.get())
         try:
             self.appc.deiconify()
             self.appc.focus_force()
@@ -549,27 +580,8 @@ class Mainmenu(toplevels):
                 defaults.write(defaultwriter)
             for item in defaults.items('Settings'):
                 default[item[0]]=int(item[1])
-            #root.deiconify()    
-            #root.focus_force()
+
             root.destroy()
-            
-    def read(self):
-        """Read in data from device in default mode"""
-        
-        port =self.comp['values'].index(self.com.get())
-        try:
-            self.read.deiconify()
-            self.read.focus_force()
-        except:
-            self.read = Toplevel(bd=10)
-            self.read.title("clark Sonic Energy Meter")
-            self.read.iconbitmap(r'res/favicon.ico')
-            toplevels.read(self,self.read)
-            self.read.group(root)
-            self.read.focus_force()
-            self.read.wait_window(self.read)
-            root.deiconify() 
-            root.focus_force()
 
 if __name__ == "__main__":
 
@@ -590,6 +602,7 @@ if __name__ == "__main__":
         util.err('Error Reading Config File')
     try:
         defaults = ConfigParser.ConfigParser()
+        
         #open file for both reading and writing
         #defaultwriter = open(r'res/settings.cfg')
         defaults.read(r'res/settings.cfg')
@@ -617,7 +630,7 @@ if __name__ == "__main__":
                 default[item[0]]=int(item[1])
     except:
         util.err('Error Reading Config File')
-        
+    log.enablelog()    
     #init gui
     root = Tk()
     sty = Style()
@@ -626,5 +639,6 @@ if __name__ == "__main__":
     sty.configure('Tab', font='helvetica 8 bold')
     root.title("clark Sonic")
     root.iconbitmap(r'res/favicon.ico')
+    root.option_add('*tearOff', FALSE)
     Mainmenu(root)
     root.mainloop()

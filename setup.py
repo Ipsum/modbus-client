@@ -10,7 +10,7 @@ appdata_files = [('res', glob(r'res/*.*')), ("Microsoft.VC90.CRT", glob(r'Micros
 
 setup(
     name="clark Sonic Comissioning",
-    version="1.0",
+    version="1.3.1",
     description="Initial setup of DNEM",
     author="David Tyler",
     windows=[
