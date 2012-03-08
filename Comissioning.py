@@ -195,7 +195,10 @@ class toplevels:
         Button(w2, text="Retreive Settings", command=self.readunits).grid(row=11,columnspan=2,sticky=E+W,pady=5)
 #logging
         self.logButton = Button(w4, text="Logging is Enabled", command=self.logB)
-        self.logButton.grid(row=0,column=0,columnspan=2,pady=(30,0),padx=(65,0))
+        self.logButton.grid(row=0,column=0,pady=(30,0))#,padx=(65,0))
+        
+        self.logPathButton = Button(w4, text="C:\\", command=self.logP)
+        self.logPathButton.grid(row=1,column=0,pady=(30,0))
 #master
         self.n.grid(row=0,column=0)
         self.applyButton = Button(master, text="Apply Settings", command=self.apply)
@@ -277,8 +280,21 @@ class toplevels:
 #        pass
     def readunits():
         pass
-    def logB():
-        pass
+        
+    def logB(self):
+        if log.LOGEN:
+            log.disablelog()
+            self.logButton['text'] = "Logging is Disabled"
+        else:
+            log.enablelog()
+            self.logButton['text'] = "Logging is Enabled"
+     
+    def logP(self):
+        log.set_path(self.master)
+        log.disablelog()
+        self.logButton['text'] = "Logging is Disabled"
+        self.logPathButton['text'] = log.PATH
+        
     def mediaf(self,master):
         media = self.me.get()[0]
         if media=="W":
