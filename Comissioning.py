@@ -15,7 +15,7 @@ When jumper on the device is set to default mode, the device has:
  * no parity
  * 2 stop bits
  '''
- 
+
 import os
 import subprocess
 from Tkinter import *
@@ -199,6 +199,7 @@ class toplevels:
         
         self.logPathButton = Button(w4, text="C:\\", command=self.logP)
         self.logPathButton.grid(row=1,column=0,pady=(30,0))
+        self.logPathButton.grid(row=2,column=0,columnspan=2)
 #master
         self.n.grid(row=0,column=0)
         self.applyButton = Button(master, text="Apply Settings", command=self.apply)

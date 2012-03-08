@@ -43,4 +43,4 @@ def log(message):
 def set_path(root):
     "allows user to chose log path"
     global PATH
-    PATH = tkFileDialog.askdirectory(parent=root,initialdir=PATH) 
+    return PATH
