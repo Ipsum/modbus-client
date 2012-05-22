@@ -194,13 +194,16 @@ class toplevels:
 
         Button(w2, text="Retreive Settings", command=self.readunits).grid(row=11,columnspan=2,sticky=E+W,pady=5)
 #logging
-        self.logButton = Button(w4, text="Logging is Enabled", command=self.logB)
-        self.logButton.grid(row=0,column=0,pady=(30,0))#,padx=(65,0))
+        self.logButton = Button(w4, text="Logging is Disabled", command=self.logB)
+        self.logButton.pack(pady=(30,0))
+        #self.logButton.grid(row=0,column=0,pady=(30,0))#,padx=(65,0))
         
-        self.logPathButton = Button(w4, text="C:\\", command=self.logP)
-        self.logPathButton.grid(row=1,column=0,pady=(30,0))
-        self.logPathButton.grid(row=2,column=0,columnspan=2)
+        self.logPathButton = Button(w4, text="C:\\clarklog.csv", command=self.logP)
+        self.logPathButton.pack(pady=(30,0))
+        #self.logPathButton.grid(row=1,column=0,columnspan=3,sticky=E+W,pady=(30,0))
+        #self.logPathButton.grid(row=2,column=0,columnspan=2)
 #master
+        self.n['width']=300
         self.n.grid(row=0,column=0)
         self.applyButton = Button(master, text="Apply Settings", command=self.apply)
         self.applyButton.grid(row=10,column=0,sticky=E+W)
@@ -580,7 +583,7 @@ class Mainmenu(toplevels):
                 
     def comset(self):
         """Configure settings on device in default mode"""
-        root.withdraw()
+        util.root.withdraw()
         try:
             self.appc.deiconify()
             self.appc.focus_force()
@@ -589,7 +592,7 @@ class Mainmenu(toplevels):
             self.appc.title("clark Sonic Energy Meter")
             self.appc.iconbitmap(r'res/favicon.ico')
             toplevels.comset(self,self.appc)
-            self.appc.group(root)
+            self.appc.group(util.root)
             self.appc.focus_force()
             self.appc.wait_window(self.appc)
             #write default settings
@@ -598,7 +601,7 @@ class Mainmenu(toplevels):
             for item in defaults.items('Settings'):
                 default[item[0]]=int(item[1])
 
-            root.destroy()
+            util.root.destroy()
 
 if __name__ == "__main__":
 
@@ -647,15 +650,15 @@ if __name__ == "__main__":
                 default[item[0]]=int(item[1])
     except:
         util.err('Error Reading Config File')
-    log.enablelog()    
+    log.disablelog()    
     #init gui
-    root = Tk()
+    util.root = Tk()
     sty = Style()
     #s.theme_use('xpnative')
     sty.configure('.', font='helvetica 15')
     sty.configure('Tab', font='helvetica 8 bold')
-    root.title("clark Sonic")
-    root.iconbitmap(r'res/favicon.ico')
-    root.option_add('*tearOff', FALSE)
-    Mainmenu(root)
-    root.mainloop()
+    util.root.title("clark Sonic")
+    util.root.iconbitmap(r'res/favicon.ico')
+    util.root.option_add('*tearOff', FALSE)
+    Mainmenu(util.root)
+    util.root.mainloop()

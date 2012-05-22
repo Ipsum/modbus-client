@@ -4,7 +4,7 @@
 
 import tkMessageBox
 from datetime import datetime
-
+root=0
 DEVICE_ID = 12
 
 def rtu_delay(baudrate):
@@ -37,5 +37,6 @@ def err(code):
     #TODO: Make a popup
     #for now, just print error to std out
     print 'ERROR---> '+str(code)
-    tkMessageBox.showerror(message=code,icon='error',title='ERROR')
+    global root
+    tkMessageBox.showerror(master=root,message=code,icon='error',title='ERROR')
     
