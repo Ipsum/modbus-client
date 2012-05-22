@@ -17,6 +17,7 @@ When jumper on the device is set to default mode, the device has:
  '''
 
 import os
+import sys
 import subprocess
 from Tkinter import *
 from ttk import *
@@ -53,17 +54,17 @@ class toplevels:
 #Disabled for production
         #setup menubar
 #        self.logEnbled = StringVar()
-#        menu_file = Menu(menubar)
+        menu_file = Menu(menubar)
 #        menu_logging = Menu(menubar)
-#        menu_help = Menu(menubar)
-#        menubar.add_cascade(menu=menu_file, label='File')
+        menu_help = Menu(menubar)
+        menubar.add_cascade(menu=menu_file, label='File')
 #        menubar.add_cascade(menu=menu_logging, label='Logging')
-#        menubar.add_cascade(menu=menu_help, label='Help')
+        menubar.add_cascade(menu=menu_help, label='Help')
 #        
-#        menu_file.add_command(label='Exit', command=self.exitcmd)
+        menu_file.add_command(label='Exit', command=self.exitcmd)
 #        menu_logging.add_checkbutton(label='Log!', variable=self.logEnbled, onvalue=1, offvalue=0)
 #        menu_logging.add_command(label='Settings...', command=self.logSettings)
-#        menu_help.add_command(label='Contents', command=self.help)
+        menu_help.add_command(label='Contents', command=self.help)
 #        menu_help.add_command(label='About', command=self.about)
 #
         Label(w1, text="COM Port: ").grid(row=0,column=0,pady=(10,20))
@@ -192,7 +193,7 @@ class toplevels:
         self.didi.grid(row=10,column=1)   
         self.didi['state'] = 'disabled'
 
-        Button(w2, text="Retreive Settings", command=self.readunits).grid(row=11,columnspan=2,sticky=E+W,pady=5)
+ # !disabled       Button(w2, text="Retreive Settings", command=self.readunits).grid(row=11,columnspan=2,sticky=E+W,pady=5)
 #logging
         self.logButton = Button(w4, text="Logging is Disabled", command=self.logB)
         self.logButton.pack(pady=(30,0))
@@ -273,13 +274,14 @@ class toplevels:
         
         self.jmp = 0
 #  !Disabled for produciton     
-#    def exitcmd(self):
-#        pass
+    def exitcmd(self):
+        os._exit(99)
+        print "exited?"
 #    def logSettings(self):
 #        pass
-#    def help(self):
-#        subprocess.Popen("hh.exe res\comissioning.chm")
-#        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
+    def help(self):
+        subprocess.Popen("hh.exe res\comissioning.chm")
+        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
 #    def about(self,master):
 #        pass
     def readunits():
