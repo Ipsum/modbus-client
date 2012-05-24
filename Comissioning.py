@@ -193,7 +193,8 @@ class toplevels:
         self.didi.grid(row=10,column=1)   
         self.didi['state'] = 'disabled'
 
- # !disabled       Button(w2, text="Retreive Settings", command=self.readunits).grid(row=11,columnspan=2,sticky=E+W,pady=5)
+        self.retreive = Button(w2, text="Retreive Settings", command=self.readunits)
+        self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5)
 #logging
         self.logButton = Button(w4, text="Logging is Disabled", command=self.logB)
         self.logButton.pack(pady=(30,0))
@@ -276,16 +277,47 @@ class toplevels:
 #  !Disabled for produciton     
     def exitcmd(self):
         os._exit(99)
-        print "exited?"
 #    def logSettings(self):
 #        pass
     def help(self):
         subprocess.Popen("hh.exe res\comissioning.chm")
-        #os.spawnl(os.P_WAIT,'res\comissioning.chm') 
 #    def about(self,master):
 #        pass
-    def readunits():
-        pass
+    def readunits(self):
+        self.retreive['state'] = 'disabled'
+        self.master.update()
+        resp = 0
+        if not self.jmprButton['text'][-1]=="N":
+            util.DEVICE_ID = long(self.did.get())
+        else:
+            util.DEVICE_ID = ds['id']
+        s['port'] = int(self.com.get()[-1])-1
+        ser = modbus.openConn(s)
+        if ser:
+            print "getting units.."
+            resp = modbus.getUnits(ser)
+            ser.close()
+        if resp:
+            units = resp[7:26:2]
+            print units
+            self.pot.set(self.po['values'][int(units[0])%3])
+            self.fru.set(self.fr['values'][int(units[1])%3])
+            self.eru.set(self.er['values'][(int(units[2])-3)%4])
+            self.mfru.set(self.mf['values'][(int(units[3])-7)%2])
+            self.ftu.set(self.ft['values'][(int(units[4],16)-9)%3])
+            self.etu.set(self.et['values'][(int(units[5],16)-12)%3])
+            self.mtu.set(self.mt['values'][(int(units[6],16)-15)%2])
+            print '\n mtu: '+str((int(units[6],16)-15)%2)
+            self.tou.set(self.to['values'][int(units[7])%2])
+            self.met.set(self.me['values'][int(units[8])%5])
+            per=str((int(units[9],16)-10)%51)
+            self.peg.set(per)
+            self.ppg.set(per)
+            self.mediaf(util.root)
+        else:
+            print "units failed"
+            
+        self.retreive['state'] = 'enabled'
         
     def logB(self):
         if log.LOGEN:
@@ -297,10 +329,9 @@ class toplevels:
      
     def logP(self):
         log.set_path(self.master)
-        log.disablelog()
-        self.logButton['text'] = "Logging is Disabled"
-        self.logPathButton['text'] = log.PATH
-        
+        if log.LOGEN:
+            log.enablelog()
+            
     def mediaf(self,master):
         media = self.me.get()[0]
         if media=="W":

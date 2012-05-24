@@ -79,6 +79,14 @@ def setup(master,s,data):
     except:
         return False
         
+def getUnits(s):
+    resp = readReg(s,fc['read'],reg['pulse flow units'],5,h=1)
+    if not resp:
+        return False
+    else:
+        return resp
+    return
+        
 def getData(s):
     resp = readReg(s,fc['read'],reg['flow rate'],18)
     if not resp:
@@ -146,7 +154,7 @@ def writeReg(ser,m_fc,m_reg,m_data):
     time.sleep(1)
     return True
     
-def readReg(ser,fc,sreg,numreg):
+def readReg(ser,fc,sreg,numreg,h=0):
     print ":::"+str(util.DEVICE_ID) + ":::"
     sreg -= OFFSET
     packet = struct.pack('>BBHH',util.DEVICE_ID,fc,sreg,numreg)
@@ -154,12 +162,12 @@ def readReg(ser,fc,sreg,numreg):
     sucess = writeSerial(ser,packet)
     if not sucess:
         return False
-    data = readResponse(ser,regs=18)
+    data = readResponse(ser,regs=numreg,hex=h)
     time.sleep(1)
     return data
 
-def readResponse(ser,sent=0,regs=1):
-    ser.timeout = 1
+def readResponse(ser,sent=0,regs=1,hex=0):
+    ser.timeout = 2
     dsize=regs*2+6
     if not sent:
         try:
@@ -177,7 +185,9 @@ def readResponse(ser,sent=0,regs=1):
                 return False
             util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
             return False
-        baseresp = struct.unpack('>BBB'+str(regs/2)+'fH',response)
+        if hex:
+            return response.encode('hex_codec')
+        baseresp = struct.unpack('>BBB'+str(regs)+'HH',response)
         return baseresp
         
     else:
