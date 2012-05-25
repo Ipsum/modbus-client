@@ -1,0 +1,4 @@
+;aic
+SetVersion 2.0.0
+SetOutputLocation -buildname "Installer Config" -path "C:\Program Files\Mercurial\modbus-client\Automated Build"
+Rebuild
