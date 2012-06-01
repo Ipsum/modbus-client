@@ -5,6 +5,7 @@
 import tkMessageBox
 from datetime import datetime
 root=0
+trys=0
 DEVICE_ID = 12
 
 def rtu_delay(baudrate):

@@ -49,4 +49,4 @@ def set_path(root):
     if not PATH:
         PATH = oldPATH
     print PATH
-    return 
+    return PATH
