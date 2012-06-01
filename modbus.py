@@ -135,6 +135,7 @@ def writeSerial(ser,data):
 
 def writeReg(ser,m_fc,m_reg,m_data):
     """Write a single comissioning setting"""
+    util.trys=0
     ser.flushInput()
     ser.flushOutput()
     m_reg -= OFFSET #MODBUS registers are offset
@@ -156,6 +157,7 @@ def writeReg(ser,m_fc,m_reg,m_data):
     
 def readReg(ser,fc,sreg,numreg,h=0):
     print ":::"+str(util.DEVICE_ID) + ":::"
+    util.trys=0
     sreg -= OFFSET
     packet = struct.pack('>BBHH',util.DEVICE_ID,fc,sreg,numreg)
     packet += struct.pack('>H',util.calc_crc(packet))
@@ -174,8 +176,11 @@ def readResponse(ser,sent=0,regs=1,hex=0):
             response = ser.read(size=dsize-1)
             print "Response: "+response.encode('hex_codec')
         except serial.SerialException,serial.SerialTimeoutException:
-            util.err('There was no response from the meter, please check all connections')
-            return False
+            if util.trys>2:
+                util.err('There was no response from the meter, please check all connections')
+                return False
+            else:
+                readResponse(ser,sent,regs,hex)
         #check crc
         #TODO: check for error response
         if not len(response)==(dsize-1):
@@ -185,9 +190,10 @@ def readResponse(ser,sent=0,regs=1,hex=0):
                 return False
             util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
             return False
+        print " hex: "+str(hex)+"\n"
         if hex:
             return response.encode('hex_codec')
-        baseresp = struct.unpack('>BBB'+str(regs)+'HH',response)
+        baseresp = struct.unpack('>BBB'+str(regs/2)+'fH',response)
         return baseresp
         
     else:
@@ -200,11 +206,16 @@ def readResponse(ser,sent=0,regs=1,hex=0):
         if sent == response:
             return True
         else:
-            if len(response)==0:
-                util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+            if util.trys<=2:
+                util.trys+=1
+                writeSerial(ser,sent)
+                return readResponse(ser,sent)
+            else:
+                if len(response)==0:
+                    util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+                    return False
+                util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
                 return False
-            util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
-            return False
             
 if __name__=="__main__":
     writeReg(s,1,6,250,9600)

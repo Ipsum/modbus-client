@@ -193,7 +193,7 @@ class toplevels:
         self.didi.grid(row=10,column=1)   
         self.didi['state'] = 'disabled'
 
-        self.retreive = Button(w2, text="Retreive Settings", command=self.readunits)
+        self.retreive = Button(w2, text="Retrieve Settings", command=self.readunits)
         self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5)
 #logging
         self.logButton = Button(w4, text="Logging is Disabled", command=self.logB)
@@ -328,7 +328,8 @@ class toplevels:
             self.logButton['text'] = "Logging is Enabled"
      
     def logP(self):
-        log.set_path(self.master)
+        p=log.set_path(self.master)
+        self.logPathButton['text']=p
         if log.LOGEN:
             log.enablelog()
             
