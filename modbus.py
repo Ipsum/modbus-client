@@ -53,8 +53,6 @@ def setup(master,s,data):
         master.update()
         writeReg(s,fc['set'],reg['set parity'],data['parity'])
         master.update()
-        #writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
-        
         writeReg(s,fc['set'],reg['set flow rate units'],data['flow rate units'])
         master.update()
         writeReg(s,fc['set'],reg['set energy rate units'],data['energy rate units'])

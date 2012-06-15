@@ -45,7 +45,12 @@ def set_path(root):
     "allows user to chose log path"
     global PATH
     oldPATH=PATH
-    PATH = tkFileDialog.asksaveasfilename(master=root,defaultextension=".csv",initialfile=PATH)
+    options = {}
+    options['filetypes'] = [('comma seperated values', '.csv')]
+    options['defaultextension'] = '.csv'
+    options['initialfile'] = PATH
+    options['master'] = root
+    PATH = tkFileDialog.asksaveasfilename(**options)
     if not PATH:
         PATH = oldPATH
     print PATH

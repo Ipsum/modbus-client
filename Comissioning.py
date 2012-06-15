@@ -1,12 +1,6 @@
 #TODO
-#-Remove stopbits
-#-Check Responses to writes
-#-implement exceptions
-#-implement logging
-#-implement config file
 #-implement cli
 #-implement debug interface
-#-add help menu
 '''
 Default mode: 
 When jumper on the device is set to default mode, the device has:
@@ -27,6 +21,8 @@ import warnings
 import modbus
 import util
 import log
+
+__version__ = '2.0.0'
 
 util.DEVICE_ID=1
 s=dict(port=1, baud=9600, parity='N', stopbits=2) #current sets
@@ -65,7 +61,7 @@ class toplevels:
 #        menu_logging.add_checkbutton(label='Log!', variable=self.logEnbled, onvalue=1, offvalue=0)
 #        menu_logging.add_command(label='Settings...', command=self.logSettings)
         menu_help.add_command(label='Contents', command=self.help)
-#        menu_help.add_command(label='About', command=self.about)
+        menu_help.add_command(label='About', command=self.about)
 #
         Label(w1, text="COM Port: ").grid(row=0,column=0,pady=(10,20))
         self.com = StringVar()
@@ -99,8 +95,12 @@ class toplevels:
         self.parity.grid(row=6,column=1,pady=(20,0))
         self.parity['state'] = 'readonly'
         
-        self.jmprButton = Button(w1, text="Jumper is ON", command=self.jmpr)
-        self.jmprButton.grid(row=7,column=0,columnspan=2,pady=(30,0),padx=(40,0))
+        Label(w1, text="Jumper").grid(row=7, column=0,pady=(20,0))
+        self.jmprButton = Button(w1, text="ON", command=self.jmpr,width=5)
+        self.jmprButton.grid(row=7,column=1,pady=(20,0))
+        
+        #self.jmprButton = Button(w1, text="Jumper is ON", command=self.jmpr)
+        #self.jmprButton.grid(row=7,column=0,columnspan=2,pady=(30,0),padx=(40,0))
         
 
 #units
@@ -196,12 +196,14 @@ class toplevels:
         self.retreive = Button(w2, text="Retrieve Settings", command=self.readunits)
         self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5)
 #logging
-        self.logButton = Button(w4, text="Logging is Disabled", command=self.logB)
-        self.logButton.pack(pady=(30,0))
+        Label(w4, text="Logging").grid(row=0,column=0,padx=40,pady=(20,0))
+        self.logButton = Button(w4, text="Disabled", command=self.logB)
+        self.logButton.grid(row=0,column=1,pady=(20,0))
         #self.logButton.grid(row=0,column=0,pady=(30,0))#,padx=(65,0))
         
-        self.logPathButton = Button(w4, text="C:\\clarklog.csv", command=self.logP)
-        self.logPathButton.pack(pady=(30,0))
+        Label(w4, text="Path").grid(row=2,column=0,columnspan=2,pady=(40,10))
+        self.logPathButton = Button(w4, text="C:\\clarklog.csv", command=self.logP,width=22)
+        self.logPathButton.grid(row=3,columnspan=2,sticky=E+W,padx=5)
         #self.logPathButton.grid(row=1,column=0,columnspan=3,sticky=E+W,pady=(30,0))
         #self.logPathButton.grid(row=2,column=0,columnspan=2)
 #master
@@ -261,10 +263,14 @@ class toplevels:
         Label(w3, textvariable=self.cetotal).grid(row=9,column=1,padx=10)
         #Label(w3, textvariable=self.etotal).grid(row=10,column=1,padx=10)
         
-        Button(w3, text="Reset", command=self.resetvf).grid(row=6,column=2,pady=(15,0))
-        Button(w3, text="Reset", command=self.resetmf).grid(row=7,column=2)
-        Button(w3, text="Reset", command=self.resethe).grid(row=8,column=2)
-        Button(w3, text="Reset", command=self.resetce).grid(row=9,column=2)
+        self.rvf=Button(w3, text="Reset", command=self.resetvf)
+        self.rvf.grid(row=6,column=2,pady=(15,0))
+        self.rmf=Button(w3, text="Reset", command=self.resetmf)
+        self.rmf.grid(row=7,column=2)
+        self.rthe=Button(w3, text="Reset", command=self.resethe)
+        self.rthe.grid(row=8,column=2)
+        self.rce=Button(w3, text="Reset", command=self.resetce)
+        self.rce.grid(row=9,column=2)
         #Button(w3, text="Reset", command=self.resete).grid(row=10,column=2)
         
         self.gdb = Button(master, text="Get Data", command=self.getdata)
@@ -281,8 +287,17 @@ class toplevels:
 #        pass
     def help(self):
         subprocess.Popen("hh.exe res\comissioning.chm")
-#    def about(self,master):
-#        pass
+    def about(self):
+        util.msg('''
+clark Sonic Commissioning Software
+
+Clark Solutions
+Hudson, MA 01749
+www.clarksol.com
+        
+Version: '''+__version__,'About')
+        return
+        
     def readunits(self):
         self.retreive['state'] = 'disabled'
         self.master.update()
@@ -298,19 +313,18 @@ class toplevels:
             resp = modbus.getUnits(ser)
             ser.close()
         if resp:
-            units = resp[7:26:2]
+            units = resp[7:24:2]+resp[24:26]
             print units
-            self.pot.set(self.po['values'][int(units[0])%3])
-            self.fru.set(self.fr['values'][int(units[1])%3])
-            self.eru.set(self.er['values'][(int(units[2])-3)%4])
-            self.mfru.set(self.mf['values'][(int(units[3])-7)%2])
-            self.ftu.set(self.ft['values'][(int(units[4],16)-9)%3])
-            self.etu.set(self.et['values'][(int(units[5],16)-12)%3])
-            self.mtu.set(self.mt['values'][(int(units[6],16)-15)%2])
-            print '\n mtu: '+str((int(units[6],16)-15)%2)
+            self.pot.set(self.po['values'][int(units[6])%3])
+            self.fru.set(self.fr['values'][int(units[0])%3])
+            self.eru.set(self.er['values'][(int(units[1])-3)%4])
+            self.mfru.set(self.mf['values'][(int(units[2])-7)%2])
+            self.ftu.set(self.ft['values'][(int(units[3],16)-9)%3])
+            self.etu.set(self.et['values'][(int(units[4],16)-12)%3])
+            self.mtu.set(self.mt['values'][(int(units[5],16)-15)%2])
             self.tou.set(self.to['values'][int(units[7])%2])
-            self.met.set(self.me['values'][int(units[8])%5])
-            per=str((int(units[9],16)-10)%51)
+            self.met.set(self.me['values'][int(units[8])])
+            per=str(int(units[9:],16))
             self.peg.set(per)
             self.ppg.set(per)
             self.mediaf(util.root)
@@ -322,10 +336,10 @@ class toplevels:
     def logB(self):
         if log.LOGEN:
             log.disablelog()
-            self.logButton['text'] = "Logging is Disabled"
+            self.logButton['text'] = "Disabled"
         else:
             log.enablelog()
-            self.logButton['text'] = "Logging is Enabled"
+            self.logButton['text'] = "Enabled"
      
     def logP(self):
         p=log.set_path(self.master)
@@ -389,10 +403,10 @@ class toplevels:
         pass
     def jmpr(self):
         if self.jmprButton['text'][-1]=="N":
-            self.jmprButton['text'] = "Jumper is OFF"
+            self.jmprButton['text'] = "OFF"
             util.DEVICE_ID = long(self.did.get())
         else:
-            self.jmprButton['text'] = "Jumper is ON"
+            self.jmprButton['text'] = "ON"
             util.DEVICE_ID = ds['id']
             
         
@@ -410,7 +424,7 @@ class toplevels:
         data['mass total units'] = self.mt['values'].index(self.mtu.get())+15
         data['pulse output'] = self.po['values'].index(self.pot.get())
         data['temperature units'] = self.to['values'].index(self.tou.get())
-        data['media type'] = self.fr['values'].index(self.fru.get())
+        data['media type'] = self.me['values'].index(self.me.get())
         if self.esb["state"]=="normal":
             data['per cent'] = long(self.peg.get())
         elif self.didi["state"]=="normal":
@@ -450,12 +464,26 @@ class toplevels:
             self.pbar.grid()
             self.applyButton.grid_remove()
             self.pbar.start(50)
+            self.retreive['state'] = 'disabled'
+            self.rvf['state'] = 'disabled'
+            self.rmf['state'] = 'disabled'
+            self.rthe['state'] = 'disabled'
+            self.rce['state'] = 'disabled'
+            self.gdb['state'] = 'disabled'
+            self.logPathButton['state'] = 'disabled'
             self.master.update()
             modbus.setup(self.master,ser,data)
             ser.close()
             self.pbar.stop()
             self.pbar.grid_remove()
             self.applyButton.grid()
+            self.retreive['state'] = 'enabled'
+            self.rvf['state'] = 'enabled'
+            self.rmf['state'] = 'enabled'
+            self.rthe['state'] = 'enabled'
+            self.rce['state'] = 'enabled'
+            self.gdb['state'] = 'enabled'
+            self.logPathButton['state'] = 'enabled'
             
     def read(self,master):
         self.master = master
@@ -503,10 +531,10 @@ class toplevels:
         Label(master, textvariable=self.cetotal).grid(row=9,column=1,padx=10)
         #Label(master, textvariable=self.etotal).grid(row=10,column=1,padx=10)
         
-        Button(master, text="Reset", command=self.resetvf).grid(row=6,column=2,pady=(15,0))
-        Button(master, text="Reset", command=self.resetmf).grid(row=7,column=2)
-        Button(master, text="Reset", command=self.resethe).grid(row=8,column=2)
-        Button(master, text="Reset", command=self.resetce).grid(row=9,column=2)
+        self.rvf=Button(master, text="Reset", command=self.resetvf).grid(row=6,column=2,pady=(15,0))
+        self.rmf=Button(master, text="Reset", command=self.resetmf).grid(row=7,column=2)
+        self.rthe=Button(master, text="Reset", command=self.resethe).grid(row=8,column=2)
+        self.rce=Button(master, text="Reset", command=self.resetce).grid(row=9,column=2)
         #Button(master, text="Reset", command=self.resete).grid(row=10,column=2)
         
         self.gdb = Button(master, text="Get Data", command=self.getdata)
