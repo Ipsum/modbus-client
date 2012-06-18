@@ -25,7 +25,7 @@ def enablelog():
             l = open(PATH,"a")
     except:
         util.err("Could not create or open log file")
-        return
+        return 1
     l.close()
     LOGEN = 1
     return
@@ -37,9 +37,13 @@ def disablelog():
 def log(message):
     "write data to log"
     d = datetime.now()
-    l = open(PATH,'a')
-    l.write(d.strftime("%H:%M:%S,")+message+","+"\n")
-    l.close()
+    try:
+        l = open(PATH,'a')
+        l.write(d.strftime("%H:%M:%S,")+message+","+"\n")
+        l.close()
+    except:
+        util.err("Log file unwritable - check that it is not opened by another program")
+        return
     
 def set_path(root):
     "allows user to chose log path"

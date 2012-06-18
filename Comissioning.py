@@ -338,14 +338,19 @@ Version: '''+__version__,'About')
             log.disablelog()
             self.logButton['text'] = "Disabled"
         else:
-            log.enablelog()
-            self.logButton['text'] = "Enabled"
+            fail = log.enablelog()
+            if fail:
+                self.logButton['text'] = "Disabled"
+            else:
+                self.logButton['text'] = "Enabled"
      
     def logP(self):
         p=log.set_path(self.master)
         self.logPathButton['text']=p
         if log.LOGEN:
-            log.enablelog()
+            fail = log.enablelog()
+            if fail:
+                self.logButton['text'] = "Disabled"
             
     def mediaf(self,master):
         media = self.me.get()[0]
@@ -541,13 +546,11 @@ Version: '''+__version__,'About')
         self.gdb.grid(row=11,column=0,columnspan=2,sticky=E+W)
         
     def resetvf(self):
-        print "vf"
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
         if ser:
             try:
-                print "ser=yes"
                 resp = modbus.writeReg(ser,modbus.fc['reset'],int(modbus.reg['reset flow total']),0)
                 ser.close()
             except Exception, e:
