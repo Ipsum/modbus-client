@@ -8,5 +8,10 @@ Language=0x409 English (United States)
 Title=clark Sonic Comissioning Help
 
 
+[FILES]
+troubleshooting.htm
+getting_started.htm
+logging.htm
+
 [INFOTYPES]
 

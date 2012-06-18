@@ -79,6 +79,14 @@ def setup(master,s,data):
     except:
         return False
         
+def getUnits(s):
+    resp = readReg(s,fc['read'],reg['pulse flow units'],5,h=1)
+    if not resp:
+        return False
+    else:
+        return resp
+    return
+        
 def getData(s):
     resp = readReg(s,fc['read'],reg['flow rate'],18)
     if not resp:
@@ -127,6 +135,7 @@ def writeSerial(ser,data):
 
 def writeReg(ser,m_fc,m_reg,m_data):
     """Write a single comissioning setting"""
+    util.trys=0
     ser.flushInput()
     ser.flushOutput()
     m_reg -= OFFSET #MODBUS registers are offset
@@ -146,28 +155,32 @@ def writeReg(ser,m_fc,m_reg,m_data):
     time.sleep(1)
     return True
     
-def readReg(ser,fc,sreg,numreg):
+def readReg(ser,fc,sreg,numreg,h=0):
     print ":::"+str(util.DEVICE_ID) + ":::"
+    util.trys=0
     sreg -= OFFSET
     packet = struct.pack('>BBHH',util.DEVICE_ID,fc,sreg,numreg)
     packet += struct.pack('>H',util.calc_crc(packet))
     sucess = writeSerial(ser,packet)
     if not sucess:
         return False
-    data = readResponse(ser,regs=18)
+    data = readResponse(ser,regs=numreg,hex=h)
     time.sleep(1)
     return data
 
-def readResponse(ser,sent=0,regs=1):
-    ser.timeout = 1
+def readResponse(ser,sent=0,regs=1,hex=0):
+    ser.timeout = 2
     dsize=regs*2+6
     if not sent:
         try:
             response = ser.read(size=dsize-1)
             print "Response: "+response.encode('hex_codec')
         except serial.SerialException,serial.SerialTimeoutException:
-            util.err('There was no response from the meter, please check all connections')
-            return False
+            if util.trys>2:
+                util.err('There was no response from the meter, please check all connections')
+                return False
+            else:
+                readResponse(ser,sent,regs,hex)
         #check crc
         #TODO: check for error response
         if not len(response)==(dsize-1):
@@ -177,6 +190,9 @@ def readResponse(ser,sent=0,regs=1):
                 return False
             util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
             return False
+        print " hex: "+str(hex)+"\n"
+        if hex:
+            return response.encode('hex_codec')
         baseresp = struct.unpack('>BBB'+str(regs/2)+'fH',response)
         return baseresp
         
@@ -190,11 +206,16 @@ def readResponse(ser,sent=0,regs=1):
         if sent == response:
             return True
         else:
-            if len(response)==0:
-                util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+            if util.trys<=2:
+                util.trys+=1
+                writeSerial(ser,sent)
+                return readResponse(ser,sent)
+            else:
+                if len(response)==0:
+                    util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+                    return False
+                util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
                 return False
-            util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
-            return False
             
 if __name__=="__main__":
     writeReg(s,1,6,250,9600)
