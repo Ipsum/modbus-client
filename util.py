@@ -40,4 +40,9 @@ def err(code):
     print 'ERROR---> '+str(code)
     global root
     tkMessageBox.showerror(master=root,message=code,icon='error',title='ERROR')
+
+def msg(code,ttl):
+    """Function for displaying information popups"""
+    global root
+    tkMessageBox.showinfo(master=root,message=code,title=ttl)
     
