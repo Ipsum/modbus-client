@@ -7,7 +7,7 @@
     <ROW Property="ARPPRODUCTICON" Value="favicon.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="www.clarksol.com"/>
     <ROW Property="CTRLS" Value="2"/>
-    <ROW Property="MSIFASTINSTALL" MultiBuildValue="DefaultBuild:7"/>
+    <ROW Property="MSIFASTINSTALL" MultiBuildValue="DefaultBuild:5"/>
     <ROW Property="Manufacturer" Value="Clark Solutions" ValueLocId="*"/>
     <ROW Property="ProductCode" Value="1033:{54EC1CA8-374F-4975-9BD1-3B20AF06CA34} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
