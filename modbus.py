@@ -78,6 +78,7 @@ def setup(master,s,data):
         return False
         
 def getUnits(s):
+    """Retrieve Units"""
     resp = readReg(s,fc['read'],reg['pulse flow units'],5,h=1)
     if not resp:
         return False
@@ -106,10 +107,7 @@ def openConn(s):
         print e
         ser.close()
         util.err('The serial port could not be opened. Check that it is not already in use.')
-        return False
-
-    #ser.sendBreak(util.rtu_delay(s['baud']))
-    
+        return False   
     return ser
     
 def writeSerial(ser,data):
@@ -119,15 +117,13 @@ def writeSerial(ser,data):
         if not ser.writable():
             util.err('The serial port could not be written to. Check that it is not already in use.')
             return False
-
-        #ser.sendBreak(util.rtu_delay(ser.baudrate))
         v = ser.write(data)
         print data.encode('hex_codec')
         if not v==8:
             util.err('There was a problem writing to the serial port')
             return False    
     except:
-        util.err('A serial communications error has occured')
+        util.err('A serial communications error has occurred')
         return False
     return True     
 
@@ -180,7 +176,6 @@ def readResponse(ser,sent=0,regs=1,hex=0):
             else:
                 readResponse(ser,sent,regs,hex)
         #check crc
-        #TODO: check for error response
         if not len(response)==(dsize-1):
             print "wrong len: "+str(len(response))
             if len(response)==0:

@@ -14,16 +14,29 @@
       the Clark Commissioning software, please follow these steps:
     </p>
     <ol>
-      <li>On the clark Sonic device, insert a jumper aross the pins labeled
-      "Commissioning" (JMP1).
+      <li>On the clark Sonic device, insert a jumper across the pins labeled
+      "Commissioning" (JMP1). A jumper is provided in a disconnected position.
       </li>
       <li>Power the device.
       </li>
-      <li>If you are using a PC, connect a RS-485 converter between your
-      computer's COM port and the 485 port on the device labeled "USER". If
-      your computer does not have a COM port, you may have to use a RS-232 to
-      USB bridge. Both of these devices can be purchased from Clark or a local
-      store.
+      <li>If you are using a PC, wire the 3-conductor cable from the energy
+      monitor labeled RS-485 to the model 43-119 RS-485 converter. Connect the
+      RS-485 converter to your computer's COM port. If your computer does not
+      have a COM port, you may have to use a RS-232 to USB bridge. This device
+      can be purchased from Clark or a local store.<br><br>
+        If you wish to modify the settings of a clark Sonic device already on a
+        RS-485 network, we recommend using your existing MODBUS master but this
+        Commissioning software can be used. You will need to input the
+        communications settings of your existing unit into the Commissioning
+        software (Device ID, baudrate, parity) and toggle the "Jumper" setting
+        to "OFF". Move the commissioning jumper on the board to the
+        disconnected position.<br>
+        <br>
+        <i>Note: Installing the Commissioning jumper into the connected
+        position will temporarily set the communications settings of the unit
+        to be: Device ID 1, 9600 baud, Parity NONE. This is handy if
+        settings of a meter have been forgotten or are unknown. The meter
+        resumes normal operation when the jumper is disconnected.</i>
       </li>
       <li>If you are using a MODBUS RTU master, the device may be configured
       and used with it instead of the clark Sonic Commissioning software. A
@@ -37,8 +50,7 @@
       <li>In the Commissioning software, select the COM port to which the
       device is connected.
       </li>
-      <li>Ensure the text on the button on the first screen reads "Jumper is
-      ON". If not, press this button.
+      <li>Ensure the toggle setting for "Jumper" reads "ON" if configuring a single device connected directly to the PC.
       </li>
       <li>If the clark Sonic device is not being used on a MODBUS RTU network,
       the communication settings can be left unchanged. Otherwise, set the
