@@ -29,7 +29,6 @@ s=dict(port=1, baud=9600, parity='N', stopbits=2) #current sets
 ds=dict(id=1, port=1, baud=9600, parity='N', stopbits=2) #default sets
 default = dict()
 port=0
-#log.LOGEN=0
 class toplevels:
 
     def comset(self, master):
@@ -43,26 +42,18 @@ class toplevels:
         w2 = Frame(self.n)
         w3 = Frame(master)
         w4 = Frame(self.n)
-        #w4 = Labelframe(w1,text='Current Meter Settings')
         self.n.add(w1, text='Comm Settings')
         self.n.add(w2, text='Unit Settings')
         self.n.add(w4, text='Logging')
-#Disabled for production
-        #setup menubar
-#        self.logEnbled = StringVar()
+        #create menubar
         menu_file = Menu(menubar)
-#        menu_logging = Menu(menubar)
         menu_help = Menu(menubar)
         menubar.add_cascade(menu=menu_file, label='File')
-#        menubar.add_cascade(menu=menu_logging, label='Logging')
-        menubar.add_cascade(menu=menu_help, label='Help')
-#        
+        menubar.add_cascade(menu=menu_help, label='Help')       
         menu_file.add_command(label='Exit', command=self.exitcmd)
-#        menu_logging.add_checkbutton(label='Log!', variable=self.logEnbled, onvalue=1, offvalue=0)
-#        menu_logging.add_command(label='Settings...', command=self.logSettings)
         menu_help.add_command(label='Contents', command=self.help)
         menu_help.add_command(label='About', command=self.about)
-#
+        #1st tab elements
         Label(w1, text="COM Port: ").grid(row=0,column=0,pady=(10,20))
         self.com = StringVar()
         self.com.set("COM1")
@@ -70,8 +61,8 @@ class toplevels:
         self.comp['values'] = ("COM1","COM2","COM3","COM4")
         self.comp.grid(row=0,column=1,pady=(10,20))
         self.comp['state'] = 'readonly'
-        
-        port =self.comp['values'].index(self.com.get())
+        #grab com port
+        port=self.comp['values'].index(self.com.get())
         
         Label(w1, text="Device ID").grid(row=1, column=0, padx=40)
         self.id = IntVar()
@@ -97,13 +88,8 @@ class toplevels:
         
         Label(w1, text="Jumper").grid(row=7, column=0,pady=(20,0))
         self.jmprButton = Button(w1, text="ON", command=self.jmpr,width=5)
-        self.jmprButton.grid(row=7,column=1,pady=(20,0))
-        
-        #self.jmprButton = Button(w1, text="Jumper is ON", command=self.jmpr)
-        #self.jmprButton.grid(row=7,column=0,columnspan=2,pady=(30,0),padx=(40,0))
-        
-
-#units
+        self.jmprButton.grid(row=7,column=1,pady=(20,0))       
+        #units - 2nd tab
         Label(w2, text="Flow Rate Units").grid(row=0, column=0,sticky=W)
         self.fru = StringVar()
         self.fr = Combobox(w2,textvariable=self.fru,justify=CENTER,width=15)
@@ -192,21 +178,18 @@ class toplevels:
         self.didi['vcmd'] = self.ppgf
         self.didi.grid(row=10,column=1)   
         self.didi['state'] = 'disabled'
-
+        #Retrieve Units button
         self.retreive = Button(w2, text="Retrieve Settings", command=self.readunits)
         self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5)
-#logging
+        #logging
         Label(w4, text="Logging").grid(row=0,column=0,padx=40,pady=(20,0))
         self.logButton = Button(w4, text="Disabled", command=self.logB)
         self.logButton.grid(row=0,column=1,pady=(20,0))
-        #self.logButton.grid(row=0,column=0,pady=(30,0))#,padx=(65,0))
         
         Label(w4, text="Path").grid(row=2,column=0,columnspan=2,pady=(40,10))
         self.logPathButton = Button(w4, text="C:\\clarklog.csv", command=self.logP,width=22)
         self.logPathButton.grid(row=3,columnspan=2,sticky=E+W,padx=5)
-        #self.logPathButton.grid(row=1,column=0,columnspan=3,sticky=E+W,pady=(30,0))
-        #self.logPathButton.grid(row=2,column=0,columnspan=2)
-#master
+        #master
         self.n['width']=300
         self.n.grid(row=0,column=0)
         self.applyButton = Button(master, text="Apply Settings", command=self.apply)
@@ -215,10 +198,11 @@ class toplevels:
         self.pbar = Progressbar(master,orient="horizontal",maximum=20,mode="determinate")
         self.pbar.grid(row=10, columnspan=2, sticky=E+W)
         self.pbar.grid_remove()
-    
+        #Read Data Interface
         Label(w3, text="Volume Flow Rate").grid(row=1,column=0,sticky=W)
         Label(w3, text="Mass Flow Rate").grid(row=2,column=0,sticky=W)
-        Label(w3, text="Energy Rate").grid(row=3,column=0,sticky=W)
+        Label(w3, text="Energy Rate").grid(row=3,
+        column=0,sticky=W)
         Label(w3, text="Local Temperature").grid(row=4,column=0,sticky=W,pady=(15,0))
         Label(w3, text="Remote Temperature").grid(row=5,column=0,sticky=W)
         Label(w3, text="Volume Flow Total").grid(row=6,column=0,sticky=W,pady=(15,0))
@@ -249,7 +233,7 @@ class toplevels:
         self.hetotal.set("0.000")
         self.cetotal.set("0.000")
         self.etotal.set("0.000")
-        
+        #grid labels
         Label(w3, textvariable=self.blank).grid(row=0,column=0,padx=10)
         Label(master, textvariable=self.blank).grid(row=0,column=1,padx=10)
         Label(w3, textvariable=self.volr).grid(row=1,column=1,padx=10)
@@ -261,8 +245,7 @@ class toplevels:
         Label(w3, textvariable=self.mftotal).grid(row=7,column=1,padx=10)
         Label(w3, textvariable=self.hetotal).grid(row=8,column=1,padx=10)
         Label(w3, textvariable=self.cetotal).grid(row=9,column=1,padx=10)
-        #Label(w3, textvariable=self.etotal).grid(row=10,column=1,padx=10)
-        
+        #setup reset buttons
         self.rvf=Button(w3, text="Reset", command=self.resetvf)
         self.rvf.grid(row=6,column=2,pady=(15,0))
         self.rmf=Button(w3, text="Reset", command=self.resetmf)
@@ -271,23 +254,20 @@ class toplevels:
         self.rthe.grid(row=8,column=2)
         self.rce=Button(w3, text="Reset", command=self.resetce)
         self.rce.grid(row=9,column=2)
-        #Button(w3, text="Reset", command=self.resete).grid(row=10,column=2)
-        
+        #get data button
         self.gdb = Button(master, text="Get Data", command=self.getdata)
         self.gdb.grid(row=10,column=2,sticky=E+W)
-        #w3['relief'] = 'raised'
         w3.grid(row=0,column=2)
-        #w4.grid(row=8,column=0)
-        
         self.jmp = 0
-#  !Disabled for produciton     
+    
     def exitcmd(self):
+        """closes program"""
         os._exit(99)
-#    def logSettings(self):
-#        pass
     def help(self):
+        """opens help file in seperate thread"""
         subprocess.Popen("hh.exe res\comissioning.chm")
     def about(self):
+        """prints about message in popup"""
         util.msg('''
 clark Sonic Commissioning Software
 
@@ -299,21 +279,22 @@ Version: '''+__version__,'About')
         return
         
     def readunits(self):
-        self.retreive['state'] = 'disabled'
-        self.master.update()
+        """retrieves unit settings from meter"""
+        self.retreive['state'] = 'disabled' #prevent multiple presses
+        self.master.update() #prob extranious
         resp = 0
-        if not self.jmprButton['text'][-1]=="N":
+        if not self.jmprButton['text'][-1]=="N": #jumper status
             util.DEVICE_ID = long(self.did.get())
         else:
             util.DEVICE_ID = ds['id']
-        s['port'] = int(self.com.get()[-1])-1
+        s['port'] = int(self.com.get()[-1])-1 #COM port num
         ser = modbus.openConn(s)
         if ser:
             print "getting units.."
             resp = modbus.getUnits(ser)
             ser.close()
         if resp:
-            units = resp[7:24:2]+resp[24:26]
+            units = resp[7:24:2]+resp[24:26] #every other num in hex+last 2
             print units
             self.pot.set(self.po['values'][int(units[6])%3])
             self.fru.set(self.fr['values'][int(units[0])%3])
@@ -324,7 +305,7 @@ Version: '''+__version__,'About')
             self.mtu.set(self.mt['values'][(int(units[5],16)-15)%2])
             self.tou.set(self.to['values'][int(units[7])%2])
             self.met.set(self.me['values'][int(units[8])])
-            per=str(int(units[9:],16))
+            per=str(int(units[9:],16)) #since 2 digits must specify hex
             self.peg.set(per)
             self.ppg.set(per)
             self.mediaf(util.root)
@@ -334,6 +315,7 @@ Version: '''+__version__,'About')
         self.retreive['state'] = 'enabled'
         
     def logB(self):
+        """logging enable/disable button"""
         if log.LOGEN:
             log.disablelog()
             self.logButton['text'] = "Disabled"
@@ -345,6 +327,7 @@ Version: '''+__version__,'About')
                 self.logButton['text'] = "Enabled"
      
     def logP(self):
+        """logging path button"""
         p=log.set_path(self.master)
         self.logPathButton['text']=p
         if log.LOGEN:
@@ -353,18 +336,20 @@ Version: '''+__version__,'About')
                 self.logButton['text'] = "Disabled"
             
     def mediaf(self,master):
+        """media selection function"""
         media = self.me.get()[0]
-        if media=="W":
+        if media=="W": #water
             self.esb['state'] = 'disabled'
             self.didi['state'] = 'disabled'
-        elif media=="E":
+        elif media=="E": #ethyl
             self.esb['state'] = 'normal'
             self.didi['state'] = 'disabled'
-        elif media=="P":
+        elif media=="P": #prop
             self.esb['state'] = 'disabled'
             self.didi['state'] = 'normal'
         
     def didf(self):
+        """device id bounding"""
         try:
             self.id.get()
         except:
@@ -379,6 +364,7 @@ Version: '''+__version__,'About')
         return True
             
     def pegf(self):
+        """percent ethyl"""
         try:
             self.peg.get()
         except:
