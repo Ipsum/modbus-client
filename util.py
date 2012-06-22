@@ -7,6 +7,9 @@ from datetime import datetime
 root=0
 trys=0
 DEVICE_ID = 12
+BAUDRATE = 9600
+PARITY = 'N'
+JMP = 1
 
 def rtu_delay(baudrate):
     """calculates the interchar delay from the baudrate"""
