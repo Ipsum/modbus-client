@@ -31,10 +31,15 @@
         communications settings of your existing unit into the Commissioning
         software (Device ID, baudrate, parity) and toggle the "Jumper" setting
         to "OFF". Then, on the device, the commissioning jumper on the board to
-        the disconnected/unjumpered position.<br>
-        If you do not know these communications settings, apply the jumper to
-        the connected/jumpered position on the device. Then, in the software,
-        toggle the "Jumper" setting to "ON".<br><br>
+        the disconnected/unjumpered position. <b>Communication settings (Device
+        ID, baudrate, parity) are not written to the device when the jumper is
+        in the disconnected/unjumped position.</b> This is because these
+        settings are instead telling the Commissioning software how to
+        communicate with the device.<br>
+        If you do not know these communications settings or wish to change
+        them, apply the jumper to the connected/jumpered position on the
+        device. Then, in the software, toggle the "Jumper" setting to "ON".<br>
+        <br>
         <i>Note: Installing the Commissioning jumper into the
         connected/jumpered position will temporarily set the communications
         settings of the unit to: Device ID 1, 9600 baud, Parity NONE. This is

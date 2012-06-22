@@ -23,6 +23,7 @@ import util
 import log
 
 __version__ = '2.0.0'
+__author__ = 'David Tyler'
 
 util.DEVICE_ID=1
 s=dict(port=1, baud=9600, parity='N', stopbits=2) #current sets
@@ -74,9 +75,13 @@ class toplevels:
         Label(w1, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
         self.br = IntVar()
         self.br.set(default["br"])
-        Radiobutton(w1, text="9600", variable=self.br, value=0).grid(row=2, column=1)
-        Radiobutton(w1, text="19200", variable=self.br, value=1).grid(row=3, column=1, sticky=N)
-
+        self.rb1 = Radiobutton(w1, text="9600", variable=self.br, value=0)
+        self.rb2 = Radiobutton(w1, text="19200", variable=self.br, value=1)
+        self.rb1.grid(row=2, column=1)
+        self.rb2.grid(row=3, column=1, sticky=N)
+        self.rb1.bind('<1>', self.rb9600) #trigger of left mouse button
+        self.rb2.bind('<1>', self.rb19200)
+        util.BAUDRATE = [9600,19200][default["br"]]
 
         Label(w1, text="Parity").grid(row=6, column=0,pady=(20,0))
         self.par = StringVar()
@@ -85,6 +90,8 @@ class toplevels:
         self.par.set(self.parity['values'][default["pa"]])
         self.parity.grid(row=6,column=1,pady=(20,0))
         self.parity['state'] = 'readonly'
+        self.parity.bind('<Leave>', self.parglobal) #trigger on mouse-over
+        util.PARITY = self.par.get()[0]
         
         Label(w1, text="Jumper").grid(row=7, column=0,pady=(20,0))
         self.jmprButton = Button(w1, text="ON", command=self.jmpr,width=5)
@@ -160,7 +167,7 @@ class toplevels:
         self.me['values'] = ("Water","Ethylene (92%)","Ethylene (95.5%)","Propylene (94%)","Propylene (96%)")
         self.met.set(self.me['values'][default["me"]])
         self.me.grid(row=8,column=1)
-        self.me.bind('<<ComboboxSelected>>', self.mediaf)
+        self.me.bind('<<ComboboxSelected>>', self.mediaf) #on item selection, activate correct % scrollbox
         self.me['state'] = 'readonly'
         
         Label(w2, text="% Ethylene Glycol").grid(row=9, column=0,sticky=W)
@@ -262,7 +269,7 @@ class toplevels:
     
     def exitcmd(self):
         """closes program"""
-        os._exit(99)
+        os._exit(99) #unconditional shutdown sigil
     def help(self):
         """opens help file in seperate thread"""
         subprocess.Popen("hh.exe res\comissioning.chm")
@@ -275,7 +282,8 @@ Clark Solutions
 Hudson, MA 01749
 www.clarksol.com
         
-Version: '''+__version__,'About')
+Version: {0}
+By: {1}'''.format(__version__,__author__),'About')
         return
         
     def readunits(self):
@@ -285,6 +293,7 @@ Version: '''+__version__,'About')
         resp = 0
         if not self.jmprButton['text'][-1]=="N": #jumper status
             util.DEVICE_ID = long(self.did.get())
+            util.JMP = 0
         else:
             util.DEVICE_ID = ds['id']
         s['port'] = int(self.com.get()[-1])-1 #COM port num
@@ -379,6 +388,7 @@ Version: '''+__version__,'About')
         return True
         
     def ppgf(self):
+        """percent prop glycol"""
         if not self.ppg.get():
             self.ppg.set('10')
         elif 10<=int(self.ppg.get())<=60:
@@ -393,14 +403,13 @@ Version: '''+__version__,'About')
     def validate(self):
         pass
     def jmpr(self):
+        """handle jumper button toggle"""
         if self.jmprButton['text'][-1]=="N":
             self.jmprButton['text'] = "OFF"
             util.DEVICE_ID = long(self.did.get())
         else:
             self.jmprButton['text'] = "ON"
-            util.DEVICE_ID = ds['id']
-            
-        
+            util.DEVICE_ID = ds['id']                
     def apply(self):
         
         data = dict()
@@ -426,8 +435,9 @@ Version: '''+__version__,'About')
         #Check for jumper and setup comm
         if not self.jmprButton['text'][-1]=="N":
             util.DEVICE_ID = data['slave id']
-            s['parity'] = data['parity']
-            s['baud'] = data['baudrate']
+            #util.PARITY = 'NOE'[data['parity']]
+            #util.BAUDRATE = data['baudrate']
+            util.JMP = 0
         else:
             util.DEVICE_ID = ds['id']
             s['parity'] = ds['parity']
@@ -452,20 +462,23 @@ Version: '''+__version__,'About')
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
         if ser:
-            self.pbar.grid()
-            self.applyButton.grid_remove()
+            #setup to write
+            self.pbar.grid() #place progress bar where apply button is
+            self.applyButton.grid_remove() #hide apply button
             self.pbar.start(50)
-            self.retreive['state'] = 'disabled'
+            self.retreive['state'] = 'disabled' #grey out all buttons b/c not threadsafe
             self.rvf['state'] = 'disabled'
             self.rmf['state'] = 'disabled'
             self.rthe['state'] = 'disabled'
             self.rce['state'] = 'disabled'
             self.gdb['state'] = 'disabled'
             self.logPathButton['state'] = 'disabled'
+            if not self.jmprButton['text'][-1]=="N": 
+                util.JMP = 0 #if jumper off,use custom comm settings
             self.master.update()
             modbus.setup(self.master,ser,data)
             ser.close()
-            self.pbar.stop()
+            self.pbar.stop() #restore gui
             self.pbar.grid_remove()
             self.applyButton.grid()
             self.retreive['state'] = 'enabled'
@@ -487,7 +500,6 @@ Version: '''+__version__,'About')
         Label(master, text="Mass Flow Total").grid(row=7,column=0,sticky=W)
         Label(master, text="Heating Energy Total").grid(row=8,column=0,sticky=W)
         Label(master, text="Cooling Energy Total").grid(row=9,column=0,sticky=W)
-        #Label(master, text="Energy Total").grid(row=10,column=0,sticky=W)
         
         self.volr = StringVar()
         self.massr = StringVar()
@@ -530,8 +542,17 @@ Version: '''+__version__,'About')
         
         self.gdb = Button(master, text="Get Data", command=self.getdata)
         self.gdb.grid(row=11,column=0,columnspan=2,sticky=E+W)
-        
+    def rb9600(self,master):
+        util.BAUDRATE = 9600
+        return
+    def rb19200(self,master):
+        util.BAUDRATE = 19200
+        return
+    def parglobal(self,master):
+        util.PARITY = self.par.get()[0]
+        return
     def resetvf(self):
+        """reset volume flow"""
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -550,6 +571,7 @@ Version: '''+__version__,'About')
             
     
     def resetmf(self):
+        """reset mass flow"""
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -563,6 +585,7 @@ Version: '''+__version__,'About')
             self.mftotal.set("0.0")
       
     def resethe(self):
+        """reset heating energy"""
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -576,6 +599,7 @@ Version: '''+__version__,'About')
             self.hetotal.set("0.0")
         
     def resetce(self):
+        """Reset cooling energy"""
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -592,11 +616,13 @@ Version: '''+__version__,'About')
         pass
     
     def getdata(self):
-        self.gdb['state'] = 'disabled'
+        """Read the whole set of data registers once"""
+        self.gdb['state'] = 'disabled' #disable button while reading
         self.master.update()
         resp = 0
-        if not self.jmprButton['text'][-1]=="N":
+        if not self.jmprButton['text'][-1]=="N": #check for jumper
             util.DEVICE_ID = long(self.did.get())
+            util.JMP = 0
         else:
             util.DEVICE_ID = ds['id']
         s['port'] = int(self.com.get()[-1])-1
@@ -606,7 +632,7 @@ Version: '''+__version__,'About')
             ser.close()
         if resp:
             print resp
-            self.volr.set("%.2f"%resp[3])
+            self.volr.set("%.2f"%resp[3]) #read and split response
             self.energyr.set("%.3f"%resp[4])
             self.massr.set("%.2f"%resp[5])
             self.vftotal.set("%.0f"%resp[6])
@@ -615,29 +641,26 @@ Version: '''+__version__,'About')
             self.mftotal.set("%.0f"%resp[9])
             self.ltemp.set("%.2f"%resp[10])
             self.rtemp.set("%.2f"%resp[11])
-            #self.etotal.set("%.8s"%(resp[7]+resp[8]))
             print ":::"
             print str(log.LOGEN)
-            if log.LOGEN == 1:
+            if log.LOGEN == 1: #log?
                 print "logging!"
                 log.log(str(resp[3:12])[1:-1].strip())
         else:
-            self.gdb['state'] = 'normal'
+            self.gdb['state'] = 'normal' #restore get button
             return False
         self.gdb['state'] = 'normal'
     
 class Mainmenu(toplevels):
     def __init__(self,master):
         """Setup main menu"""
-
-        self.comset()
-                
+        self.comset()            
     def comset(self):
         """Configure settings on device in default mode"""
-        util.root.withdraw()
+        util.root.withdraw() #hide root window
         try:
             self.appc.deiconify()
-            self.appc.focus_force()
+            self.appc.focus_force() #bring our gui to the front
         except:
             self.appc = Toplevel(bd=10)
             self.appc.title("clark Sonic Energy Meter")
@@ -647,7 +670,7 @@ class Mainmenu(toplevels):
             self.appc.focus_force()
             self.appc.wait_window(self.appc)
             #write default settings
-            with open(r'res/settings.cfg','w') as defaultwriter:
+            with open(r'res/settings.cfg','w') as defaultwriter: #read in defaults
                 defaults.write(defaultwriter)
             for item in defaults.items('Settings'):
                 default[item[0]]=int(item[1])
