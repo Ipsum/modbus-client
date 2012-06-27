@@ -2,6 +2,7 @@
 Compatibility=1.1 or later
 Compiled file=comissioning.chm
 Contents file=Table of Contents.hhc
+Default topic=troubleshooting.htm
 Display compile progress=No
 Index file=Index.hhk
 Language=0x409 English (United States)
@@ -9,9 +10,10 @@ Title=clark Sonic Comissioning Help
 
 
 [FILES]
-troubleshooting.htm
 getting_started.htm
 logging.htm
+overview.htm
+troubleshooting.htm
 
 [INFOTYPES]
 

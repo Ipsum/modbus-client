@@ -11,9 +11,6 @@ TYPE = 'csv'
 def enablelog():
     "Redirects stdout to a logfile"
     global LOGEN
-    #d = datetime.now()
-    #filename = d.strftime("%m-%d-%y_%H%M%S")
-    #filepath = PATH+filename+".csv"
     try:
         if not os.path.isfile(PATH):
             l = open(PATH,"w")
@@ -31,9 +28,11 @@ def enablelog():
     return
     
 def disablelog():
+    """called to disable logging"""
     global LOGEN
     LOGEN = 0
     return
+    
 def log(message):
     "write data to log"
     d = datetime.now()
