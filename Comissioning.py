@@ -696,14 +696,20 @@ if __name__ == "__main__":
         util.err('Error Reading Config File')
     try:
         defaults = ConfigParser.ConfigParser()
-        
+        cfgpath=os.environ['appdata']+'\\clark Sonic\\'
         #open file for both reading and writing
         #defaultwriter = open(r'res/settings.cfg')
-        defaults.read(r'res/settings.cfg')
+        if not (os.path.isfile(cfgpath+'settings.cfg')):
+            raise ConfigParser.Error
+        defaults.readfp(open(cfgpath+'settings.cfg'))
         for item in defaults.items('Settings'):
             default[item[0]]=int(item[1])
     except ConfigParser.Error:
-        with open(r'res/settings.cfg','w') as defaultwriter:
+        print "error"
+        if not os.path.exists(cfgpath):
+            os.makedirs(cfgpath)
+            print "dir made"
+        with open(cfgpath+'settings.cfg','w') as defaultwriter:
             defaults.add_section("Settings")
             defaults.set("Settings","id","1")
             defaults.set("Settings","br","0")
