@@ -10,7 +10,7 @@ appdata_files = [('res', glob(r'res/*.*')), ("Microsoft.VC90.CRT", glob(r'Micros
 
 setup(
     name="clark Sonic Comissioning",
-    version="2.0.1",
+    version="2.1.0",
     description="Initial setup of DNEM",
     author="David Tyler",
     windows=[
@@ -23,7 +23,7 @@ setup(
     options={
         "py2exe":{
             "ascii": False,
-            "excludes": ["_ssl","doctest","pdb","unittest","difflib","inspect","pickle","calendar","optparse","locale"],
+            "excludes": ["_ssl","doctest","pdb","unittest","difflib","inspect","pickle","calendar","optparse","locale","random"],
             "compressed": True,
             "unbuffered": True,
             "optimize": 2,

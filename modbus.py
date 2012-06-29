@@ -114,7 +114,7 @@ def openConn(s):
     except Exception, e:
         print e
         ser.close()
-        util.err('The serial port could not be opened. Check that it is not already in use.')
+        util.err('The COM port could not be opened. Check that it is not already in use and the correct COM port is selected.')
         return False   
     return ser
     
