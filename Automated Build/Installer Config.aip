@@ -61,6 +61,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="Comissioning.exe_1" Component_="Comissioning.exe_1" FileName="Comiss~1.exe|Comissioning.exe" Attributes="0" SourcePath="..\dist\Comissioning.exe" SelfReg="false" NextFile="library.zip_1" FileNameLocId="error.log"/>
+    <ROW File="LICENSE.rtf" Component_="_ctypes.pyd_1" FileName="LICENSE.rtf" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\LICENSE.rtf" SelfReg="false"/>
     <ROW File="Microsoft.VC90.CRT.manifest" Component_="Microsoft.VC90.CRT.manifest" FileName="Micros~1.man|Microsoft.VC90.CRT.manifest" Attributes="0" SourcePath="..\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest" SelfReg="false" NextFile="msvcr90.dll"/>
     <ROW File="_ctypes.pyd_1" Component_="_ctypes.pyd_1" FileName="_ctypes.pyd" Attributes="0" SourcePath="..\dist\_ctypes.pyd" SelfReg="false" NextFile="_socket.pyd_1" FileNameLocId="_socket.pyd"/>
     <ROW File="_socket.pyd_1" Component_="_ctypes.pyd_1" FileName="_socket.pyd" Attributes="0" SourcePath="..\dist\_socket.pyd" SelfReg="false" NextFile="_tkinter.pyd_1" FileNameLocId="_tkinter.pyd"/>
@@ -80,7 +81,7 @@
     <ROW File="clrpick.tcl" Component_="bgerror.tcl" FileName="clrpick.tcl" Attributes="0" SourcePath="..\dist\tcl\tk8.5\clrpick.tcl" SelfReg="false" NextFile="comdlg.tcl"/>
     <ROW File="combobox.tcl" Component_="altTheme.tcl" FileName="combobox.tcl" Attributes="0" SourcePath="..\dist\tcl\tk8.5\ttk\combobox.tcl" SelfReg="false" NextFile="cursors.tcl"/>
     <ROW File="comdlg.tcl" Component_="bgerror.tcl" FileName="comdlg.tcl" Attributes="0" SourcePath="..\dist\tcl\tk8.5\comdlg.tcl" SelfReg="false" NextFile="console.tcl"/>
-    <ROW File="comissioning.chm" Component_="comissioning.chm" FileName="comiss~1.chm|comissioning.chm" Attributes="0" SourcePath="..\dist\res\comissioning.chm" SelfReg="false"/>
+    <ROW File="comissioning.chm" Component_="comissioning.chm" FileName="comiss~1.chm|comissioning.chm" Attributes="0" SourcePath="..\dist\res\comissioning.chm" SelfReg="false" NextFile="LICENSE.rtf"/>
     <ROW File="console.tcl" Component_="bgerror.tcl" FileName="console.tcl" Attributes="0" SourcePath="..\dist\tcl\tk8.5\console.tcl" SelfReg="false" NextFile="dialog.tcl"/>
     <ROW File="cursors.tcl" Component_="altTheme.tcl" FileName="cursors.tcl" Attributes="0" SourcePath="..\dist\tcl\tk8.5\ttk\cursors.tcl" SelfReg="false" NextFile="defaults.tcl"/>
     <ROW File="defaults.tcl" Component_="altTheme.tcl" FileName="defaults.tcl" Attributes="0" SourcePath="..\dist\tcl\tk8.5\ttk\defaults.tcl" SelfReg="false" NextFile="entry.tcl_2"/>
