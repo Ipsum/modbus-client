@@ -21,6 +21,10 @@
 		<param name="Local" value="logging.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="COM Port">
+		<param name="Local" value="COM_port.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Troubleshooting">
 		<param name="Local" value="troubleshooting.htm">
 		</OBJECT>
