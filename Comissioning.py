@@ -72,6 +72,7 @@ class toplevels:
         self.did['vcmd'] = self.didf
         self.did.grid(row=1, column=1, pady=(10,20))
 
+        #baud rate selection box
         Label(w1, text="Baud Rate").grid(row=2, column=0, padx=40,sticky=S)
         self.br = IntVar()
         self.br.set(default["br"])
@@ -217,6 +218,7 @@ class toplevels:
         Label(w3, text="Heating Energy Total").grid(row=8,column=0,sticky=W)
         Label(w3, text="Cooling Energy Total").grid(row=9,column=0,sticky=W)
         
+        #init ttk vars
         self.blank = StringVar()
         self.volr = StringVar()
         self.massr = StringVar()
@@ -269,7 +271,7 @@ class toplevels:
     
     def exitcmd(self):
         """closes program"""
-        os._exit(99) #unconditional shutdown sigil
+        os._exit(99) #unconditional shutdown signal
     def help(self):
         """opens help file in seperate thread"""
         subprocess.Popen("hh.exe res\comissioning.chm")
