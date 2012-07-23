@@ -22,7 +22,7 @@ import modbus
 import util
 import log
 
-__version__ = '2.2.2'
+__version__ = '2.3.0'
 __author__ = 'David Tyler'
 
 util.DEVICE_ID=1
