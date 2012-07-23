@@ -25,6 +25,10 @@
 		<param name="Local" value="COM_port.htm">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Networked Devices">
+		<param name="Local" value="networked_devices.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Troubleshooting">
 		<param name="Local" value="troubleshooting.htm">
 		</OBJECT>
