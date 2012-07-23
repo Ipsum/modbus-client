@@ -10,71 +10,34 @@
       Getting Started
     </h1>
     <p>
-      In order to perform the first time setup of your clark Sonic device using
-      the Clark Commissioning software, please follow these steps:
+      Instructions for first time setup of your clark Sonic device using the Clark Commissioning software:
     </p>
     <ol>
-      <li>On the clark Sonic device, insert a jumper across the pins labeled
-      "Commissioning" (JMP1). A jumper is provided in a disconnected position.
+      <li><b>Insert Jumper:</b> A jumper is provided with the clark Sonic device in a disconnected position. Insert the jumper across the pins labeled "Commissioning" (JMP1). 
       </li>
-      <li>Power the device.
+      <li><b>Power</b> the clark Sonic device. 
       </li>
-      <li>If you are using a PC, wire the 3-conductor cable from the energy
-      monitor labeled RS-485 to the model 43-119 RS-485 converter. Connect the
-      RS-485 converter to your computer's COM port. If your computer does not
-      have a COM port, you may have to use a RS-232 to USB bridge. This device
-      can be purchased from Clark or a local store.<br>
-        <br>
-        If you wish to modify the settings of a clark Sonic device already on a
-        RS-485 network, we recommend using your existing MODBUS master but this
-        Commissioning software can be used. You will need to input the
-        communications settings of your existing unit into the Commissioning
-        software (Device ID, baudrate, parity) and toggle the "Jumper" setting
-        to "OFF". Then, on the device, the commissioning jumper on the board to
-        the disconnected/unjumpered position. <b>Communication settings (Device
-        ID, baudrate, parity) are not written to the device when the jumper is
-        in the disconnected/unjumped position.</b> This is because these
-        settings are instead telling the Commissioning software how to
-        communicate with the device.<br>
-        If you do not know these communications settings or wish to change
-        them, apply the jumper to the connected/jumpered position on the
-        device. Then, in the software, toggle the "Jumper" setting to "ON".<br>
-        <br>
-        <i>Note: Installing the Commissioning jumper into the
-        connected/jumpered position will temporarily set the communications
-        settings of the unit to: Device ID 1, 9600 baud, Parity NONE. This is
-        handy if settings of a meter have been forgotten or are unknown. The
-        meter resumes normal operation when the jumper is disconnected.</i>
+      <li><b>Establish Serial Connection:</b> If you are using a PC, wire the 3-conductor cable from the energy monitor labeled RS-485 to the model 43-119 RS-485 converter. Connect the RS-485 converter to your computer's COM port. If your computer does not have a COM port, you may have to use a RS-232 to USB bridge. This device can be purchased from Clark Solutions or a local store.
+</li>
+      <li>
+        <b>Modifying clark Sonic device settings on existing RS-485 Network:</b> It is recommended that you use your existing MODBUS master, but this Commissioning software can be used. See <A HREF="networked_devices.htm">Networked Devices</A> for more info.
       </li>
-      <li>If you are using a MODBUS RTU master, the device may be configured
-      and used with it instead of the clark Sonic Commissioning software. A
-      table of registers and values for this purpose can be found in the
-      device's user manual.
+      <li><b>Using a MODBUS RTU master:</b> The device may be configured and used with a MODBUS RTU master.. A table of registers and values for this purpose can be found in the clark Sonic device User Manual. 
       </li>
-      <li>Install and run the clark Sonic Commissioning software from the
-      clarksol.com site or from disk onto the computer to which the clark Sonic
-      device is connected.
+      <li><b>Installing clark Sonic Commissioning software:</b>  The clark Sonic Commissioning software may be downloaded from the <A HREF="http://www.clarksol.com">Clark Solutions</A> website. The installation may be run via the web or saved and installed from disk on the computer to which the clark Sonic device is connected. 
       </li>
-      <li>In the Commissioning software, <A HREF="COM_port.htm">select the COM port</A> to which the
-      device is connected.
+      <li><b>Configuring clark Sonic device with Commissioning Software:</b>
+      <ul>
+      <li> <A HREF="COM_port.htm">Select the COM port</A> to which the device is connected.</li>
+      <li> If configuring a single device connected directly to the PC, ensure that the software toggle setting for "Jumper" is "ON" </li>
+      <li> If the clark Sonic device will not be used on a MODBUS RTU network, the communication settings can be left unchanged. Otherwise, set the device id, baudrate, and parity which you desire the device to have on the MODBUS RTU network. </li>
+      <li>On the <b>"Unit Settings"</b> tab, select your desired units of measure and media type. </li>
+      <li>Press the <b>"Apply Changes"</b> button on the bottom left. </li>
+      <li>Remove the Commissioning jumper. The clark Sonic device is now ready to connect to a MODBUS network or may be monitored via the clark Sonic Commissioning software.</li>
+      </ul>
       </li>
-      <li>Ensure the software toggle setting for "Jumper" reads "ON" if
-      configuring a single device connected directly to the PC.
-      </li>
-      <li>If the clark Sonic device is not being used on a MODBUS RTU network,
-      the communication settings can be left unchanged. Otherwise, set the
-      device id, baudrate, and parity which you desire the device to have on
-      the MODBUS RTU network.
-      </li>
-      <li>Press the tab labeled "Unit Settings" and select your desired units
-      of measure and media type.
-      </li>
-      <li>Press the "Apply Changes" button on the bottom left.
-      </li>
-      <li>You can now remove the Commissioning jumper and place the device in a
-      MODBUS network or use the right-hand screen of the clark Sonic
-      Commissioning software to check the output of the meter.
-      </li>
+      
+  
     </ol>
   </body>
 </html>

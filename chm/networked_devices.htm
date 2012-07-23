@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+    <title></title>
+  </head>
+  <body>
+    <h1>
+      Communicating with devices on a network
+    </h1>
+    <p>
+      Follow these instructions to setup the clark Sonic Commissioning software
+      to communicate with a clark Sonic device already on a MODBUS RTU network
+    </p>
+    <ul>
+      <li>You will need to input the communications settings of your existing
+      unit into the Commissioning software (Device ID, baudrate, parity)
+      </li>
+      <li>Toggle the "Jumper" setting to "OFF".
+      </li>
+      <li>On the device, the commissioning jumper on the board to the
+      disconnected/unjumpered position.
+      </li>
+      <li>
+        <b>Communication settings (Device ID, baudrate, parity) are not written
+        to the device when the jumper is in the disconnected/unjumped
+        position.</b> This is because these settings are instead telling the
+        Commissioning software how to communicate with the device.<br>
+      </li>
+      <li>If you do not know these communications settings or wish to change
+      them, apply the jumper to the connected/jumpered position on the device.
+      Then, in the software, toggle the "Jumper" setting to "ON".<br>
+      </li>
+    </ul><i>Note: Installing the Commissioning jumper into the
+    connected/jumpered position will temporarily set the communications
+    settings of the unit to: Device ID 1, 9600 baud, Parity NONE. This is handy
+    if settings of a meter have been forgotten or are unknown. The meter
+    resumes normal operation when the jumper is disconnected.</i>
+  </body>
+</html>
