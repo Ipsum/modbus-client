@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
   <head>
     <meta name="generator" content=
@@ -10,34 +10,78 @@
       Getting Started
     </h1>
     <p>
-      Instructions for first time setup of your clark Sonic device using the Clark Commissioning software:
+      Instructions for first time setup of your clark Sonic device using the
+      Clark Commissioning software:
     </p>
     <ol>
-      <li><b>Insert Jumper:</b> A jumper is provided with the clark Sonic device in a disconnected position. Insert the jumper across the pins labeled "Commissioning" (JMP1). 
-      </li>
-      <li><b>Power</b> the clark Sonic device. 
-      </li>
-      <li><b>Establish Serial Connection:</b> If you are using a PC, wire the 3-conductor cable from the energy monitor labeled RS-485 to the model 43-119 RS-485 converter. Connect the RS-485 converter to your computer's COM port. If your computer does not have a COM port, you may have to use a RS-232 to USB bridge. This device can be purchased from Clark Solutions or a local store.
-</li>
       <li>
-        <b>Modifying clark Sonic device settings on existing RS-485 Network:</b> It is recommended that you use your existing MODBUS master, but this Commissioning software can be used. See <A HREF="networked_devices.htm">Networked Devices</A> for more info.
+        <b>Insert Jumper:</b> A jumper is provided with the clark Sonic device
+        in a disconnected position. Insert the jumper across the pins labeled
+        "Commissioning" (JMP1).
       </li>
-      <li><b>Using a MODBUS RTU master:</b> The device may be configured and used with a MODBUS RTU master.. A table of registers and values for this purpose can be found in the clark Sonic device User Manual. 
+        <br>
+      <li>
+        <b>Power</b> the clark Sonic device.
       </li>
-      <li><b>Installing clark Sonic Commissioning software:</b>  The clark Sonic Commissioning software may be downloaded from the <A HREF="http://www.clarksol.com">Clark Solutions</A> website. The installation may be run via the web or saved and installed from disk on the computer to which the clark Sonic device is connected. 
+        <br>
+      <li>
+        <b>Establish Serial Connection:</b> If you are using a PC, wire the
+        3-conductor cable from the energy monitor labeled RS-485 to the model
+        43-119 RS-485 converter. Connect the RS-485 converter to your
+        computer's COM port. If your computer does not have a COM port, you may
+        have to use a RS-232 to USB bridge. This device can be purchased from
+        Clark Solutions or a local store.
       </li>
-      <li><b>Configuring clark Sonic device with Commissioning Software:</b>
-      <ul>
-      <li> <A HREF="COM_port.htm">Select the COM port</A> to which the device is connected.</li>
-      <li> If configuring a single device connected directly to the PC, ensure that the software toggle setting for "Jumper" is "ON" </li>
-      <li> If the clark Sonic device will not be used on a MODBUS RTU network, the communication settings can be left unchanged. Otherwise, set the device id, baudrate, and parity which you desire the device to have on the MODBUS RTU network. </li>
-      <li>On the <b>"Unit Settings"</b> tab, select your desired units of measure and media type. </li>
-      <li>Press the <b>"Apply Changes"</b> button on the bottom left. </li>
-      <li>Remove the Commissioning jumper. The clark Sonic device is now ready to connect to a MODBUS network or may be monitored via the clark Sonic Commissioning software.</li>
-      </ul>
+        <br>
+      <li>
+        <b>Modifying clark Sonic device settings on existing RS-485
+        Network:</b> It is recommended that you use your existing MODBUS
+        master, but this Commissioning software can be used. See <a href=
+        "networked_devices.htm">Networked Devices</a> for more info.
       </li>
-      
-  
+        <br>
+      <li>
+        <b>Using a MODBUS RTU master:</b> The device may be configured and used
+        with a MODBUS RTU master (if owned). A table of registers and values for this
+        purpose can be found in the clark Sonic device User Manual.
+      </li>
+        <br>
+      <li>
+        <b>Installing clark Sonic Commissioning software:</b> The clark Sonic
+        Commissioning software may be downloaded from the <a href=
+        "http://www.clarksol.com">Clark Solutions</a> website. The installation
+        may be run via the web or saved and installed from disk on the computer
+        to which the clark Sonic device is connected.
+      </li>
+        <br>
+      <li>
+        <b>Configuring clark Sonic device with Commissioning Software:</b>
+        <ul>
+          <li>
+            <a href="COM_port.htm">Select the COM port</a> to which the device
+            is connected in the "Comm Settings" tab.
+          </li>
+          <li>If configuring a single device connected directly to the PC,
+          ensure that the software toggle setting for "Jumper" is "ON"
+          </li>
+          <li>If the clark Sonic device will not be used on a MODBUS RTU
+          network, the communication settings can be left unchanged. Otherwise,
+          set the device id, baudrate, and parity which you desire the device
+          to have on the MODBUS RTU network.
+          </li>
+          <li>On the <b>"Unit Settings"</b> tab, select your desired units of
+          measure and media type.
+          </li>
+          <li>Press the <b>"Apply Changes"</b> button on the bottom left.
+          </li>
+          <li>Move the Commissioning jumper to the disconnected position and toggle the "Jumper" setting to "OFF" in the "Comm Settings" tab. 
+          </li>
+          <li>The clark Sonic device is now
+          ready to connect to a MODBUS network or may be monitored via the
+          clark Sonic Commissioning software.
+          </li>
+        </ul>
+      </li>
     </ol>
   </body>
 </html>
