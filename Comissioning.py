@@ -188,7 +188,7 @@ class toplevels:
         self.didi['state'] = 'disabled'
         #Retrieve Units button
         self.retreive = Button(w2, text="Retrieve Settings", command=self.readunits)
-        self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5)
+        #self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5) #UNCOMMENT WHEN FIXED
         #logging
         Label(w4, text="Logging").grid(row=0,column=0,padx=40,pady=(20,0))
         self.logButton = Button(w4, text="Disabled", command=self.logB)
@@ -306,7 +306,7 @@ By: {1}'''.format(__version__,__author__),'About')
             ser.close()
         if resp:
             units = resp[7:24:2]+resp[24:26] #every other num in hex+last 2
-            print units
+            print "units: "+str(units)
             self.pot.set(self.po['values'][int(units[6])%3])
             self.fru.set(self.fr['values'][int(units[0])%3])
             self.eru.set(self.er['values'][(int(units[1])-3)%4])
