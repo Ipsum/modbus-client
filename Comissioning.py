@@ -22,7 +22,7 @@ import modbus
 import util
 import log
 
-__version__ = '2.3.1'
+__version__ = '2.3.3'
 __author__ = 'David Tyler'
 
 util.DEVICE_ID=1
@@ -188,7 +188,7 @@ class toplevels:
         self.didi['state'] = 'disabled'
         #Retrieve Units button
         self.retreive = Button(w2, text="Retrieve Settings", command=self.readunits)
-        #self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5) #UNCOMMENT WHEN FIXED
+        self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5) #UNCOMMENT WHEN FIXED
         #logging
         Label(w4, text="Logging").grid(row=0,column=0,padx=40,pady=(20,0))
         self.logButton = Button(w4, text="Disabled", command=self.logB)
@@ -682,8 +682,9 @@ class Mainmenu(toplevels):
 if __name__ == "__main__":
 
     #add this to supress error on program close
-    #sys.stdout = open("run.log", "w")
-    #sys.stderr = open("error.log", "w")
+    cfgpath=os.environ['appdata']+'\\clark Sonic\\'
+    sys.stdout = open(cfgpath+"run.log", "w")
+    sys.stderr = open(cfgpath+"error.log", "w")
     
     #first read in our config file to a dictionary
     try:
