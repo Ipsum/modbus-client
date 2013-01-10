@@ -188,10 +188,17 @@ def readResponse(ser,sent=0,regs=1,hex=0):
         if not len(response)==(dsize-1):
             print "wrong len: "+str(len(response))
             if len(response)==0:
-                util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
-                return False
+                if util.errlvl>=3:
+                    util.errlvl+=1
+                    util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+                    return False
+                else:
+                    util.errlvl+=1
+                    print "errlvl+1"
+                    return False
             util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
             return False
+        util.errlvl=0
         print " hex: "+str(hex)+"\n"
         if hex: #return output in hex instead of array - retrieve units
             return response.encode('hex_codec')
