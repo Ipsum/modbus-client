@@ -11,6 +11,7 @@ syntax: glob
 *.log
 *.pyc
 *.pyo
+*.txt
 serpdrv
 dist/*
 build/*
