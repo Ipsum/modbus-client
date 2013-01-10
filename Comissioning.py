@@ -22,7 +22,7 @@ import modbus
 import util
 import log
 
-__version__ = '2.3.3'
+__version__ = '2.3.4'
 __author__ = 'David Tyler'
 
 util.DEVICE_ID=1
@@ -320,7 +320,7 @@ By: {1}'''.format(__version__,__author__),'About')
             self.peg.set(per)
             self.ppg.set(per)
             self.mediaf(util.root)
-        else:
+        if not resp:
             print "units failed"
             
         self.retreive['state'] = 'enabled'
@@ -619,6 +619,7 @@ By: {1}'''.format(__version__,__author__),'About')
     
     def getdata(self):
         """Read the whole set of data registers once"""
+        sl = self
         self.gdb['state'] = 'disabled' #disable button while reading
         self.master.update()
         resp = 0
@@ -649,8 +650,11 @@ By: {1}'''.format(__version__,__author__),'About')
                 print "logging!"
                 log.log(str(resp[3:12])[1:-1].strip())
         else:
-            self.gdb['state'] = 'normal' #restore get button
-            return False
+            if util.errlvl<=3:
+                self.getdata()
+            else:
+                self.gdb['state'] = 'normal' #restore get button
+                return False
         self.gdb['state'] = 'normal'
     
 class Mainmenu(toplevels):
