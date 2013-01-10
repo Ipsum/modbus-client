@@ -6,6 +6,7 @@ import tkMessageBox
 from datetime import datetime
 root=0
 trys=0
+errlvl=2
 DEVICE_ID = 12
 BAUDRATE = 9600
 PARITY = 'N'
