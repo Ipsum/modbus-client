@@ -36,7 +36,6 @@ class toplevels:
 
     def comset(self, master):
         
-        #self.tmr = Timer(util.repeat,self.getdata())
         #setup a tabbed interface
         self.master = master
         self.n = Notebook(self.master)
@@ -377,7 +376,6 @@ By: {1}'''.format(__version__,__author__),'About')
         """logging enable/disable button"""
         if log.LOGEN:
             log.disablelog()
-            #self.tmr.cancel()
             self.logButton['text'] = "Disabled"
         else:
             fail = log.enablelog()

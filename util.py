@@ -1,11 +1,8 @@
 #*        File: util.py
 #*              utilities for MODBUS communications
 #*
-
 import tkMessageBox
-import os
-from datetime import datetime
-from threading import Timer
+
 root=0
 trys=0
 errlvl=2
