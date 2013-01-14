@@ -3,10 +3,13 @@
 #*
 
 import tkMessageBox
+import os
 from datetime import datetime
+from threading import Timer
 root=0
 trys=0
 errlvl=2
+repeat=0
 DEVICE_ID = 12
 BAUDRATE = 9600
 PARITY = 'N'
@@ -37,13 +40,16 @@ def calc_crc(data):
                 crc = crc ^ 0xA001
     return swap_bytes(crc)
     
-def err(code):
+def err(code,override=0):
     """Function for catching errors"""
     #TODO: Make a popup
     #for now, just print error to std out
+    #override ignores errlvl setting
     print 'ERROR---> '+str(code)
     global root
-    tkMessageBox.showerror(master=root,message=code,icon='error',title='ERROR')
+    global errlvl
+    if errlvl>3 or override:
+        tkMessageBox.showerror(master=root,message=code,icon='error',title='ERROR')
 
 def msg(code,ttl):
     """Function for displaying information popups"""

@@ -6,6 +6,7 @@ import tkFileDialog
 
 PATH = "C:\\clarklog.csv"
 LOGEN = 0
+REEN = 0
 TYPE = 'csv'
 
 def enablelog():
@@ -21,7 +22,7 @@ def enablelog():
         else:
             l = open(PATH,"a")
     except:
-        util.err("Could not create or open log file")
+        util.err("Could not create or open log file",1)
         return 1
     l.close()
     LOGEN = 1
@@ -40,9 +41,10 @@ def log(message):
         l = open(PATH,'a')
         l.write(d.strftime("%H:%M:%S,")+message+","+"\n")
         l.close()
+        return True
     except:
-        util.err("Log file unwritable - check that it is not opened by another program")
-        return
+        util.err("Log file unwritable - check that it is not opened by another program",1)
+        return False
     
 def set_path(root):
     "allows user to chose log path"

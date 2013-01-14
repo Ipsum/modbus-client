@@ -17,12 +17,14 @@ from Tkinter import *
 from ttk import *
 import ConfigParser
 import warnings
+import time
+from threading import Thread
 
 import modbus
 import util
 import log
 
-__version__ = '2.3.4'
+__version__ = '2.4.0'
 __author__ = 'David Tyler'
 
 util.DEVICE_ID=1
@@ -34,6 +36,7 @@ class toplevels:
 
     def comset(self, master):
         
+        #self.tmr = Timer(util.repeat,self.getdata())
         #setup a tabbed interface
         self.master = master
         self.n = Notebook(self.master)
@@ -189,14 +192,28 @@ class toplevels:
         #Retrieve Units button
         self.retreive = Button(w2, text="Retrieve Settings", command=self.readunits)
         self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5) #UNCOMMENT WHEN FIXED
-        #logging
+        #logging - 3rd tab
         Label(w4, text="Logging").grid(row=0,column=0,padx=40,pady=(20,0))
         self.logButton = Button(w4, text="Disabled", command=self.logB)
         self.logButton.grid(row=0,column=1,pady=(20,0))
         
-        Label(w4, text="Path").grid(row=2,column=0,columnspan=2,pady=(40,10))
+        Label(w4, text="Logging Path").grid(row=2,column=0,columnspan=2,pady=(30,10))
         self.logPathButton = Button(w4, text="C:\\clarklog.csv", command=self.logP,width=22)
         self.logPathButton.grid(row=3,columnspan=2,sticky=E+W,padx=5)
+        
+        Label(w4, text="Repeat").grid(row=4,column=0,padx=40,pady=(40,0))
+        self.repeatButton = Button(w4, text="Off", command=self.repeatB)
+        self.repeatButton.grid(row=4,column=1,pady=(40,0))
+        
+        Label(w4, text="Repeat time").grid(row=5,column=0,pady=(20,0))
+        self.rtimev = StringVar()
+        self.rtimev.set("Never")
+        self.repeatTime = Combobox(w4,textvariable=self.rtimev,justify=CENTER,width=10)
+        self.repeatTime['values'] = ("Never", "5 sec", "10 sec", "30 sec", "1 min", "5 min", "30 min", "1 hr")
+        self.repeatTime.grid(row=5,column=1,pady=(20,0))
+        self.repeatTime['state'] = 'readonly'
+        self.repeatTime.bind('<<ComboboxSelected>>', self.repeat)
+        
         #master
         self.n['width']=300
         self.n.grid(row=0,column=0)
@@ -290,6 +307,7 @@ By: {1}'''.format(__version__,__author__),'About')
         
     def readunits(self):
         """retrieves unit settings from meter"""
+        util.errlvl=4
         self.retreive['state'] = 'disabled' #prevent multiple presses
         self.master.update() #prob extranious
         resp = 0
@@ -324,11 +342,42 @@ By: {1}'''.format(__version__,__author__),'About')
             print "units failed"
             
         self.retreive['state'] = 'enabled'
+    def repeat(self,master):
+        """enable/disable repeat logging"""
+        print "\nrepeat function: "
+        rtime = self.repeatTime.get()
+        if rtime=="Never":
+            util.repeat=0
+        elif rtime=="5 sec":
+            util.repeat=5
+        elif rtime=="10 sec":
+            util.repeat=10
+        elif rtime=="30 sec":
+            util.repeat=30
+        elif rtime=="1 min":
+            util.repeat=60
+        elif rtime=="5 min":
+            util.repeat=60*5
+        elif rtime=="30 min":
+            util.repeat=60*30
+        elif rtime=="1 hr":
+            util.repeat=60*60
+        print "util.repeat="+str(util.repeat)
         
+    def repeatB(self):
+        """repeat enable/disable button"""
+        if log.REEN:
+            log.REEN = 0
+            self.repeatButton['text'] = "Off"
+        else:
+            log.REEN = 1
+            self.repeatButton['text'] = "On"
+            
     def logB(self):
         """logging enable/disable button"""
         if log.LOGEN:
             log.disablelog()
+            #self.tmr.cancel()
             self.logButton['text'] = "Disabled"
         else:
             fail = log.enablelog()
@@ -414,6 +463,7 @@ By: {1}'''.format(__version__,__author__),'About')
             util.DEVICE_ID = ds['id']                
     def apply(self):
         
+        util.errlvl=4
         data = dict()
         data['baudrate'] = long(self.br.get())
         data['slave id'] = long(self.did.get())
@@ -555,6 +605,7 @@ By: {1}'''.format(__version__,__author__),'About')
         return
     def resetvf(self):
         """reset volume flow"""
+        util.errlvl=4 #error on first error
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -574,6 +625,7 @@ By: {1}'''.format(__version__,__author__),'About')
     
     def resetmf(self):
         """reset mass flow"""
+        util.errlvl=4 #error on first error
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -588,6 +640,7 @@ By: {1}'''.format(__version__,__author__),'About')
       
     def resethe(self):
         """reset heating energy"""
+        util.errlvl=4 #error on first error
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -602,6 +655,7 @@ By: {1}'''.format(__version__,__author__),'About')
         
     def resetce(self):
         """Reset cooling energy"""
+        util.errlvl=4 #error on first error
         resp = 0
         s['port'] = int(self.com.get()[-1])-1
         ser = modbus.openConn(s)
@@ -616,7 +670,11 @@ By: {1}'''.format(__version__,__author__),'About')
         
     def resete(self):
         pass
-    
+        
+    def sleeptimer(self,secs):
+        """sleep thread for secs seconds"""
+        time.sleep(secs)
+        
     def getdata(self):
         """Read the whole set of data registers once"""
         sl = self
@@ -634,6 +692,7 @@ By: {1}'''.format(__version__,__author__),'About')
             resp = modbus.getData(ser)
             ser.close()
         if resp:
+            util.errlvl=1
             print resp
             self.volr.set("%.2f"%resp[3]) #read and split response
             self.energyr.set("%.3f"%resp[4])
@@ -648,13 +707,30 @@ By: {1}'''.format(__version__,__author__),'About')
             print str(log.LOGEN)
             if log.LOGEN == 1: #log?
                 print "logging!"
-                log.log(str(resp[3:12])[1:-1].strip())
+                l = log.log(str(resp[3:12])[1:-1].strip())
+                if not l:
+                    self.logB()
+                    log.REEN = 0
+                    self.repeatButton['text'] = "Off"
         else:
+            if util.repeat and log.LOGEN:
+                self.getdata()
             if util.errlvl<=3:
+                util.errlvl+=1
                 self.getdata()
             else:
                 self.gdb['state'] = 'normal' #restore get button
                 return False
+                
+        if util.repeat and log.REEN: #repeat this function every util.repeat sec if cont log
+            print "sleeping for" + str(util.repeat)
+            thread = Thread(target=self.sleeptimer,args=(util.repeat,))
+            thread.start() #spawn thread for util.repeat secs
+            while thread.is_alive(): #while thread is alive, do nothing
+                self.master.update()
+            if log.REEN: #once thread ends, if still logging, take getdata
+                self.getdata()
+            
         self.gdb['state'] = 'normal'
     
 class Mainmenu(toplevels):
@@ -700,7 +776,7 @@ if __name__ == "__main__":
         for item in config.items('Registry Mappings'):
             modbus.reg[item[0]] = int(item[1])
     except ConfigParser.Error:
-        util.err('Error Reading Config File')
+        util.err('Error Reading Config File',1)
     try:
         defaults = ConfigParser.ConfigParser()
         cfgpath=os.environ['appdata']+'\\clark Sonic\\'
@@ -736,7 +812,7 @@ if __name__ == "__main__":
             for item in defaults.items('Settings'):
                 default[item[0]]=int(item[1])
     except:
-        util.err('Error Reading Config File')
+        util.err('Error Reading Config File',1)
     log.disablelog()    
     #init gui
     util.root = Tk()
