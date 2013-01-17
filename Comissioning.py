@@ -24,7 +24,7 @@ import modbus
 import util
 import log
 
-__version__ = '2.4.0'
+__version__ = '2.4.1'
 __author__ = 'David Tyler'
 
 util.DEVICE_ID=1
@@ -711,8 +711,8 @@ By: {1}'''.format(__version__,__author__),'About')
                     log.REEN = 0
                     self.repeatButton['text'] = "Off"
         else:
-            if util.repeat and log.LOGEN:
-                self.getdata()
+            #if util.repeat and log.REEN:
+            #    self.getdata()
             if util.errlvl<=3:
                 util.errlvl+=1
                 self.getdata()
@@ -720,12 +720,14 @@ By: {1}'''.format(__version__,__author__),'About')
                 self.gdb['state'] = 'normal' #restore get button
                 return False
                 
-        if util.repeat and log.REEN: #repeat this function every util.repeat sec if cont log
+        if util.repeat and log.REEN and util.errlvl<4: #repeat this function every util.repeat sec if cont log
             print "sleeping for" + str(util.repeat)
             thread = Thread(target=self.sleeptimer,args=(util.repeat,))
             thread.start() #spawn thread for util.repeat secs
             while thread.is_alive(): #while thread is alive, do nothing
                 self.master.update()
+                if not log.REEN: #if repeat turned off, stop right away
+                    break
             if log.REEN: #once thread ends, if still logging, take getdata
                 self.getdata()
             
