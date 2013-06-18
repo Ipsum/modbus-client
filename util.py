@@ -6,7 +6,7 @@ import tkMessageBox
 root=0
 trys=0
 errlvl=2
-repeat=0
+repeat=5
 DEVICE_ID = 12
 BAUDRATE = 9600
 PARITY = 'N'

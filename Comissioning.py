@@ -206,9 +206,9 @@ class toplevels:
         
         Label(w4, text="Repeat time").grid(row=5,column=0,pady=(20,0))
         self.rtimev = StringVar()
-        self.rtimev.set("Never")
+        self.rtimev.set("5 sec")
         self.repeatTime = Combobox(w4,textvariable=self.rtimev,justify=CENTER,width=10)
-        self.repeatTime['values'] = ("Never", "5 sec", "10 sec", "30 sec", "1 min", "5 min", "30 min", "1 hr")
+        self.repeatTime['values'] = ("5 sec", "10 sec", "30 sec", "1 min", "5 min", "30 min", "1 hr")
         self.repeatTime.grid(row=5,column=1,pady=(20,0))
         self.repeatTime['state'] = 'readonly'
         self.repeatTime.bind('<<ComboboxSelected>>', self.repeat)
@@ -456,9 +456,20 @@ By: {1}'''.format(__version__,__author__),'About')
         if self.jmprButton['text'][-1]=="N":
             self.jmprButton['text'] = "OFF"
             util.DEVICE_ID = long(self.did.get())
+            #disable reset buttons
+            self.rvf['state'] = 'disabled'
+            self.rmf['state'] = 'disabled'
+            self.rthe['state'] = 'disabled'
+            self.rce['state'] = 'disabled'
         else:
             self.jmprButton['text'] = "ON"
-            util.DEVICE_ID = ds['id']                
+            util.DEVICE_ID = ds['id']
+            #enable reset buttons
+            self.rvf['state'] = 'enabled'
+            self.rmf['state'] = 'enabled'
+            self.rthe['state'] = 'enabled'
+            self.rce['state'] = 'enabled'
+            
     def apply(self):
         
         util.errlvl=4
@@ -763,9 +774,10 @@ if __name__ == "__main__":
 
     #add this to supress error on program close
     cfgpath=os.environ['appdata']+'\\clark Sonic\\'
-    sys.stdout = open(cfgpath+"run.log", "w")
-    sys.stderr = open(cfgpath+"error.log", "w")
-    
+    #sys.stdout = open(cfgpath+"run.log", "w")
+    #sys.stderr = open(cfgpath+"error.log", "w")
+    sys.setrecursionlimit(8000) #makes my horrible use of tail 
+                                 #recursion work
     #first read in our config file to a dictionary
     try:
         config = ConfigParser.ConfigParser()
