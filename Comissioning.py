@@ -155,42 +155,50 @@ class toplevels:
         self.pot.set(self.po['values'][default["po"]])
         self.po.grid(row=6,column=1)
         self.po['state'] = 'readonly'
-
-        Label(w2, text="Temp Output Units").grid(row=7, column=0,sticky=W)
+        
+        Label(w2, text="Pulse Output Source").grid(row=7, column=0,sticky=W)
+        self.pos = StringVar()
+        self.pulos = Combobox(w2,textvariable=self.pos,justify=CENTER,width=15)
+        self.pulos['values'] = ("BOTH","HEATING","COOLING")
+        self.pos.set(self.pulos['values'][default["pulos"]])
+        self.pulos.grid(row=7,column=1)
+        self.pulos['state'] = 'readonly'
+        
+        Label(w2, text="Temp Output Units").grid(row=8, column=0,sticky=W)
         self.tou = StringVar()
         self.to = Combobox(w2,textvariable=self.tou,justify=CENTER,width=15)
         self.to['values'] = ("F","C")
         self.tou.set(self.to['values'][default["to"]])
-        self.to.grid(row=7,column=1)
+        self.to.grid(row=8,column=1)
         self.to['state'] = 'readonly'
         
-        Label(w2, text="Media Type").grid(row=8, column=0,sticky=W)
+        Label(w2, text="Media Type").grid(row=9, column=0,sticky=W)
         self.met = StringVar()
         self.me = Combobox(w2,textvariable=self.met,justify=CENTER,width=15)
         self.me['values'] = ("Water","Ethylene (92%)","Ethylene (95.5%)","Propylene (94%)","Propylene (96%)")
         self.met.set(self.me['values'][default["me"]])
-        self.me.grid(row=8,column=1)
+        self.me.grid(row=9,column=1)
         self.me.bind('<<ComboboxSelected>>', self.mediaf) #on item selection, activate correct % scrollbox
         self.me['state'] = 'readonly'
         
-        Label(w2, text="% Ethylene Glycol").grid(row=9, column=0,sticky=W)
+        Label(w2, text="% Ethylene Glycol").grid(row=10, column=0,sticky=W)
         self.peg = IntVar()
         self.peg.set(default["peg"])
         self.esb = Spinbox(w2,from_=10,to=60,increment=5,width=5,textvariable=self.peg,validate='focusout',wrap=True, justify=CENTER)
         self.esb['vcmd'] = self.pegf
-        self.esb.grid(row=9,column=1)
+        self.esb.grid(row=10,column=1)
         self.esb['state'] = 'disabled'
     
-        Label(w2, text="% Propylene Glycol").grid(row=10, column=0,sticky=W)
+        Label(w2, text="% Propylene Glycol").grid(row=11, column=0,sticky=W)
         self.ppg = StringVar()
         self.ppg.set(default["ppg"])
         self.didi = Spinbox(w2,from_=10,to=60,increment=5,width=5,textvariable=self.ppg,validate='focusout',wrap=True, justify=CENTER)
         self.didi['vcmd'] = self.ppgf
-        self.didi.grid(row=10,column=1)   
+        self.didi.grid(row=11,column=1)   
         self.didi['state'] = 'disabled'
         #Retrieve Units button
         self.retreive = Button(w2, text="Retrieve Settings", command=self.readunits)
-        self.retreive.grid(row=11,columnspan=2,sticky=E+W,pady=5) #UNCOMMENT WHEN FIXED
+        self.retreive.grid(row=12,columnspan=2,sticky=E+W,pady=5) #UNCOMMENT WHEN FIXED
         #logging - 3rd tab
         Label(w4, text="Logging").grid(row=0,column=0,padx=40,pady=(20,0))
         self.logButton = Button(w4, text="Disabled", command=self.logB)
@@ -484,6 +492,7 @@ By: {1}'''.format(__version__,__author__),'About')
         data['energy total units'] = self.et['values'].index(self.etu.get())+12
         data['mass total units'] = self.mt['values'].index(self.mtu.get())+15
         data['pulse output'] = self.po['values'].index(self.pot.get())
+        data['pulse output source'] = self.pulos['values'].index(self.pos.get())
         data['temperature units'] = self.to['values'].index(self.tou.get())
         data['media type'] = self.me['values'].index(self.me.get())
         if self.esb["state"]=="normal":
@@ -515,6 +524,7 @@ By: {1}'''.format(__version__,__author__),'About')
         defaults.set("Settings","et",str(self.et['values'].index(self.etu.get())))
         defaults.set("Settings","mt",str(self.mt['values'].index(self.mtu.get())))
         defaults.set("Settings","po",str(self.po['values'].index(self.pot.get())))
+        defaults.set("Settings","pulos",str(self.pulos['values'].index(self.pulos.get())))
         defaults.set("Settings","to",str(self.to['values'].index(self.tou.get())))
         defaults.set("Settings","me",str(default["me"]))
         defaults.set("Settings","peg",str(default["peg"]))
@@ -799,6 +809,8 @@ if __name__ == "__main__":
         defaults.readfp(open(cfgpath+'settings.cfg'))
         for item in defaults.items('Settings'):
             default[item[0]]=int(item[1])
+        if not default.has_key("pulos"): #cfg changed so make new file on install
+            raise ConfigParser.Error
     except ConfigParser.Error:
         print "error"
         if not os.path.exists(cfgpath):
@@ -816,6 +828,7 @@ if __name__ == "__main__":
             defaults.set("Settings","et","0")
             defaults.set("Settings","mt","0")
             defaults.set("Settings","po","0")
+            defaults.set("Settings","pulos","0")
             defaults.set("Settings","to","0")
             defaults.set("Settings","me","0")
             defaults.set("Settings","peg","30")
