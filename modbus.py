@@ -69,6 +69,8 @@ def setup(master,s,data):
         master.update()
         writeReg(s,fc['set'],reg['select pulse output'],data['pulse output'])
         master.update()
+        writeReg(s,fc['set'],reg['select pulse output source'],data['pulse output source'])
+        master.update()
         writeReg(s,fc['set'],reg['select temperature units'],data['temperature units'])
         master.update()
         writeReg(s,fc['set'],reg['select media type'],data['media type'])
