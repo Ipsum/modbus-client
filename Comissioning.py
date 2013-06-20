@@ -24,7 +24,7 @@ import modbus
 import util
 import log
 
-__version__ = '2.4.1'
+__version__ = '2.5.0'
 __author__ = 'David Tyler'
 
 util.DEVICE_ID=1
