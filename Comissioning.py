@@ -233,15 +233,13 @@ class toplevels:
         #Read Data Interface
         Label(w3, text="Volume Flow Rate").grid(row=1,column=0,sticky=W)
         Label(w3, text="Mass Flow Rate").grid(row=2,column=0,sticky=W)
-        Label(w3, text="Energy Rate").grid(row=3,
-        column=0,sticky=W)
+        Label(w3, text="Energy Rate").grid(row=3,column=0,sticky=W)
         Label(w3, text="Local Temperature").grid(row=4,column=0,sticky=W,pady=(15,0))
         Label(w3, text="Remote Temperature").grid(row=5,column=0,sticky=W)
         Label(w3, text="Volume Flow Total").grid(row=6,column=0,sticky=W,pady=(15,0))
         Label(w3, text="Mass Flow Total").grid(row=7,column=0,sticky=W)
         Label(w3, text="Heating Energy Total").grid(row=8,column=0,sticky=W)
         Label(w3, text="Cooling Energy Total").grid(row=9,column=0,sticky=W)
-        
         #init ttk vars
         self.blank = StringVar()
         self.volr = StringVar()
@@ -292,7 +290,6 @@ class toplevels:
         self.gdb.grid(row=10,column=2,sticky=E+W)
         w3.grid(row=0,column=2)
         self.jmp = 0
-    
     def exitcmd(self):
         """closes program"""
         os._exit(99) #unconditional shutdown signal

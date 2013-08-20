@@ -1,6 +1,5 @@
-#*        File: util.py
-#*              utilities for MODBUS communications
-#*
+# File: util.py
+# utilities for MODBUS communications
 import tkMessageBox
 
 root=0
