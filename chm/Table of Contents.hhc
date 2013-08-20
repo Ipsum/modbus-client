@@ -9,8 +9,28 @@
 </OBJECT>
 <UL>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="Device Configuration">
-		<param name="Local" value="http://clarksol.com/html/dnem.cfm">
+		<param name="Name" value="Overview">
+		<param name="Local" value="overview.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Getting Started">
+		<param name="Local" value="getting_started.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Logging">
+		<param name="Local" value="logging.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="COM Port">
+		<param name="Local" value="COM_port.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Networked Devices">
+		<param name="Local" value="networked_devices.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Troubleshooting">
+		<param name="Local" value="troubleshooting.htm">
 		</OBJECT>
 </UL>
 </BODY></HTML>

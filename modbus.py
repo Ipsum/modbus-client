@@ -47,14 +47,14 @@ reg = dict()
 def setup(master,s,data):
     """Set commisioning registers"""
     try:
-        writeReg(s,fc['set'],int(reg['set baudrate']),data['baudrate'])
-        master.update()
-        writeReg(s,fc['set'],reg['set slave id'],data['slave id'])
-        master.update()
-        writeReg(s,fc['set'],reg['set parity'],data['parity'])
-        master.update()
-        #writeReg(s,fc['set'],reg['set stop bits'],data['stop bits'])
-        
+        if util.JMP:
+            writeReg(s,fc['set'],int(reg['set baudrate']),data['baudrate'])
+            master.update()
+            writeReg(s,fc['set'],reg['set slave id'],data['slave id'])
+            master.update()
+            writeReg(s,fc['set'],reg['set parity'],data['parity'])
+            master.update()
+        util.JMP = 1
         writeReg(s,fc['set'],reg['set flow rate units'],data['flow rate units'])
         master.update()
         writeReg(s,fc['set'],reg['set energy rate units'],data['energy rate units'])
@@ -69,6 +69,8 @@ def setup(master,s,data):
         master.update()
         writeReg(s,fc['set'],reg['select pulse output'],data['pulse output'])
         master.update()
+        writeReg(s,fc['set'],reg['select pulse output source'],data['pulse output source'])
+        master.update()
         writeReg(s,fc['set'],reg['select temperature units'],data['temperature units'])
         master.update()
         writeReg(s,fc['set'],reg['select media type'],data['media type'])
@@ -79,6 +81,15 @@ def setup(master,s,data):
     except:
         return False
         
+def getUnits(s):
+    """Retrieve Units"""
+    resp = readReg(s,fc['read'],reg['pulse flow units'],5,h=1)
+    if not resp:
+        return False
+    else:
+        return resp
+    return
+        
 def getData(s):
     resp = readReg(s,fc['read'],reg['flow rate'],18)
     if not resp:
@@ -88,51 +99,52 @@ def getData(s):
 
 def openConn(s):
     """open serial connection and return the connection object""" 
-    #open serial conn
+    #open serial conn with default params
     ser = serial.Serial(port=None)
+    ser.stopbits = serial.STOPBITS_TWO #always 2 sb
     ser.port = s['port']
-    ser.baudrate = 9600
-    ser.parity = serial.PARITY_NONE
-    ser.stopbits = serial.STOPBITS_TWO
+    if not util.JMP: #if no jumper, use user settings
+        print 'modded br: '+str(util.BAUDRATE)+' par: '+util.PARITY
+        ser.baudrate = util.BAUDRATE
+        ser.parity = util.PARITY
+        util.JMP = 1
+    else:
+        ser.baudrate = 9600
+        ser.parity = serial.PARITY_NONE
     try:
         ser.open()
     except Exception, e:
         print e
         ser.close()
-        util.err('The serial port could not be opened. Check that it is not already in use.')
-        return False
-
-    #ser.sendBreak(util.rtu_delay(s['baud']))
-    
+        util.err('The COM port could not be opened. Check that it is not already in use and the correct COM port is selected.')
+        return False   
     return ser
     
 def writeSerial(ser,data):
     """Write data to serial connection"""
-
     try:
-        if not ser.writable():
+        if not ser.writable(): #check port still available
             util.err('The serial port could not be written to. Check that it is not already in use.')
             return False
-
-        #ser.sendBreak(util.rtu_delay(ser.baudrate))
-        v = ser.write(data)
+        v = ser.write(data) #simply write the data
         print data.encode('hex_codec')
-        if not v==8:
+        if not v==8: #check all bits written
             util.err('There was a problem writing to the serial port')
             return False    
-    except:
-        util.err('A serial communications error has occured')
+    except: #something happened??
+        util.err('A serial communications error has occurred')
         return False
     return True     
 
 def writeReg(ser,m_fc,m_reg,m_data):
     """Write a single comissioning setting"""
+    util.trys=0
     ser.flushInput()
     ser.flushOutput()
     m_reg -= OFFSET #MODBUS registers are offset
     print str(m_fc)+"::"+str(m_reg)+"::"+str(m_data)
-    packet = struct.pack('>BBHH',util.DEVICE_ID,m_fc,m_reg,m_data)
-    packet += struct.pack('>H',util.calc_crc(packet))
+    packet = struct.pack('>BBHH',util.DEVICE_ID,m_fc,m_reg,m_data) #build data packet
+    packet += struct.pack('>H',util.calc_crc(packet)) #append crc
     sucess = writeSerial(ser,packet)
     if not sucess:
         print "write err"
@@ -146,30 +158,35 @@ def writeReg(ser,m_fc,m_reg,m_data):
     time.sleep(1)
     return True
     
-def readReg(ser,fc,sreg,numreg):
+def readReg(ser,fc,sreg,numreg,h=0):
+    """Requests data from a register"""
     print ":::"+str(util.DEVICE_ID) + ":::"
+    util.trys=0
     sreg -= OFFSET
     packet = struct.pack('>BBHH',util.DEVICE_ID,fc,sreg,numreg)
     packet += struct.pack('>H',util.calc_crc(packet))
     sucess = writeSerial(ser,packet)
     if not sucess:
         return False
-    data = readResponse(ser,regs=18)
+    data = readResponse(ser,regs=numreg,hex=h)
     time.sleep(1)
     return data
 
-def readResponse(ser,sent=0,regs=1):
-    ser.timeout = 1
-    dsize=regs*2+6
-    if not sent:
+def readResponse(ser,sent=0,regs=1,hex=0):
+    """Read the response to a message"""
+    ser.timeout = 2
+    dsize=regs*2+6 #compute the expected message size
+    if not sent: #If reading a reg
         try:
             response = ser.read(size=dsize-1)
             print "Response: "+response.encode('hex_codec')
         except serial.SerialException,serial.SerialTimeoutException:
-            util.err('There was no response from the meter, please check all connections')
-            return False
+            if util.trys>2:
+                util.err('There was no response from the meter, please check all connections')
+                return False
+            else:
+                readResponse(ser,sent,regs,hex)
         #check crc
-        #TODO: check for error response
         if not len(response)==(dsize-1):
             print "wrong len: "+str(len(response))
             if len(response)==0:
@@ -177,24 +194,32 @@ def readResponse(ser,sent=0,regs=1):
                 return False
             util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
             return False
+        print " hex: "+str(hex)+"\n"
+        if hex: #return output in hex instead of array - retrieve units
+            return response.encode('hex_codec')
         baseresp = struct.unpack('>BBB'+str(regs/2)+'fH',response)
-        return baseresp
+        return baseresp #return an array of the response vars
         
-    else:
+    else: #setting a reg
         try:
-            response = ser.read(size=dsize)
+            response = ser.read(size=dsize) #check size
             print "response: " + response.encode('hex_codec')
         except serial.SerialException,serial.SerialTimeoutException:
             util.err('There was no response from the meter, please check all connections')
             return False   
-        if sent == response:
+        if sent == response: #response should be echo of data written
             return True
         else:
-            if len(response)==0:
-                util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+            if util.trys<=2: #automatic retrying of failed writes
+                util.trys+=1
+                writeSerial(ser,sent)
+                return readResponse(ser,sent)
+            else: #after 3 failed, throw an error
+                if len(response)==0:
+                    util.err('There was no response from the meter. Please check that the meter is powered and the jumper is correctly set')
+                    return False
+                util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
                 return False
-            util.err('The response from the meter was incorrect. Please check that the jumper correctly set.')
-            return False
             
 if __name__=="__main__":
     writeReg(s,1,6,250,9600)
