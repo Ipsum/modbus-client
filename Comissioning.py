@@ -135,7 +135,7 @@ class toplevels:
         Label(w2, text="Energy Total Units").grid(row=4, column=0,sticky=W)
         self.etu = StringVar()
         self.et = Combobox(w2,textvariable=self.etu,justify=CENTER,width=15)
-        self.et['values'] = ("kBTU","W-hrs","kW-hrs")
+        self.et['values'] = ("kBTU","W-hrs","kW-hrs","BTU")
         self.etu.set(self.et['values'][default["et"]])
         self.et.grid(row=4,column=1)
         self.et['state'] = 'readonly'        
@@ -487,6 +487,8 @@ By: {1}'''.format(__version__,__author__),'About')
         data['mass flow rate units'] = self.mf['values'].index(self.mfru.get())+7
         data['flow total units'] = self.ft['values'].index(self.ftu.get())+9
         data['energy total units'] = self.et['values'].index(self.etu.get())+12
+        if data['energy total units']==15:
+            data['energy total units'] = 17
         data['mass total units'] = self.mt['values'].index(self.mtu.get())+15
         data['pulse output'] = self.po['values'].index(self.pot.get())
         data['pulse output source'] = self.pulos['values'].index(self.pos.get())
