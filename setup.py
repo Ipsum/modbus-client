@@ -4,7 +4,7 @@
 
 from distutils.core import setup
 from glob import glob
-from Commissioning import __version__,__author__
+from Comissioning import __version__,__author__
 import py2exe
 
 appdata_files = [('res', glob(r'res/*.*')), ("Microsoft.VC90.CRT", glob(r'Microsoft.VC90.CRT/*.*'))]
