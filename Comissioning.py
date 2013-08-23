@@ -135,7 +135,7 @@ class toplevels:
         Label(w2, text="Energy Total Units").grid(row=4, column=0,sticky=W)
         self.etu = StringVar()
         self.et = Combobox(w2,textvariable=self.etu,justify=CENTER,width=15)
-        self.et['values'] = ("kBTU","W-hrs","kW-hrs")
+        self.et['values'] = ("kBTU","W-hrs","kW-hrs","BTU")
         self.etu.set(self.et['values'][default["et"]])
         self.et.grid(row=4,column=1)
         self.et['state'] = 'readonly'        
@@ -233,15 +233,13 @@ class toplevels:
         #Read Data Interface
         Label(w3, text="Volume Flow Rate").grid(row=1,column=0,sticky=W)
         Label(w3, text="Mass Flow Rate").grid(row=2,column=0,sticky=W)
-        Label(w3, text="Energy Rate").grid(row=3,
-        column=0,sticky=W)
+        Label(w3, text="Energy Rate").grid(row=3,column=0,sticky=W)
         Label(w3, text="Local Temperature").grid(row=4,column=0,sticky=W,pady=(15,0))
         Label(w3, text="Remote Temperature").grid(row=5,column=0,sticky=W)
         Label(w3, text="Volume Flow Total").grid(row=6,column=0,sticky=W,pady=(15,0))
         Label(w3, text="Mass Flow Total").grid(row=7,column=0,sticky=W)
         Label(w3, text="Heating Energy Total").grid(row=8,column=0,sticky=W)
         Label(w3, text="Cooling Energy Total").grid(row=9,column=0,sticky=W)
-        
         #init ttk vars
         self.blank = StringVar()
         self.volr = StringVar()
@@ -292,7 +290,6 @@ class toplevels:
         self.gdb.grid(row=10,column=2,sticky=E+W)
         w3.grid(row=0,column=2)
         self.jmp = 0
-    
     def exitcmd(self):
         """closes program"""
         os._exit(99) #unconditional shutdown signal
@@ -337,7 +334,10 @@ By: {1}'''.format(__version__,__author__),'About')
             self.eru.set(self.er['values'][(int(units[1])-3)%4])
             self.mfru.set(self.mf['values'][(int(units[2])-7)%2])
             self.ftu.set(self.ft['values'][(int(units[3],16)-9)%3])
-            self.etu.set(self.et['values'][(int(units[4],16)-12)%3])
+            selection = (int(units[4],16)-12)
+            if selection==5:
+                self.etu.set(self.et['values'][3])
+            self.etu.set(self.et['values'][(selection%3])
             self.mtu.set(self.mt['values'][(int(units[5],16)-15)%2])
             self.tou.set(self.to['values'][int(units[7])%2])
             self.met.set(self.me['values'][int(units[8])])
@@ -490,6 +490,8 @@ By: {1}'''.format(__version__,__author__),'About')
         data['mass flow rate units'] = self.mf['values'].index(self.mfru.get())+7
         data['flow total units'] = self.ft['values'].index(self.ftu.get())+9
         data['energy total units'] = self.et['values'].index(self.etu.get())+12
+        if data['energy total units']==15:
+            data['energy total units'] = 17
         data['mass total units'] = self.mt['values'].index(self.mtu.get())+15
         data['pulse output'] = self.po['values'].index(self.pot.get())
         data['pulse output source'] = self.pulos['values'].index(self.pos.get())
