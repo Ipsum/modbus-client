@@ -787,8 +787,8 @@ if __name__ == "__main__":
 
     #add this to supress error on program close
     cfgpath=os.environ['appdata']+'\\clark Sonic\\'
-    #sys.stdout = open(cfgpath+"run.log", "w")
-    #sys.stderr = open(cfgpath+"error.log", "w")
+    sys.stdout = open(cfgpath+"run.log", "w")
+    sys.stderr = open(cfgpath+"error.log", "w")
     sys.setrecursionlimit(8000) #makes my horrible use of tail 
                                  #recursion work
     #first read in our config file to a dictionary
