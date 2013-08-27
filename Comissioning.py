@@ -337,7 +337,8 @@ By: {1}'''.format(__version__,__author__),'About')
             selection = (int(units[4],16)-12)
             if selection==5:
                 self.etu.set(self.et['values'][3])
-            self.etu.set(self.et['values'][selection%3])
+            else:
+                self.etu.set(self.et['values'][selection%3])
             self.mtu.set(self.mt['values'][(int(units[5],16)-15)%2])
             self.tou.set(self.to['values'][int(units[7])%2])
             self.met.set(self.me['values'][int(units[8])])
