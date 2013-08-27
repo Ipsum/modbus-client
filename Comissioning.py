@@ -327,12 +327,16 @@ By: {1}'''.format(__version__,__author__),'About')
             resp = modbus.getUnits(ser)
             ser.close()
         if resp:
-            units = resp[7:24:2]+resp[24:26] #every other num in hex+last 2
+            #units = resp[7:24:2]+resp[24:26] #every other num in hex+last 2
+            readunits = resp[7:26]
+            chunks = len(units)
+            numsize = 2
+            units=[readunits[i:i+numsize] for i in range(0,chunks,numsize)]
             print "units: "+str(units)
-            self.pot.set(self.po['values'][int(units[6])%3])
-            self.fru.set(self.fr['values'][int(units[0])%3])
-            self.eru.set(self.er['values'][(int(units[1])-3)%4])
-            self.mfru.set(self.mf['values'][(int(units[2])-7)%2])
+            self.pot.set(self.po['values'][int(units[6],16)%3])
+            self.fru.set(self.fr['values'][int(units[0],16)%3])
+            self.eru.set(self.er['values'][(int(units[1],16)-3)%4])
+            self.mfru.set(self.mf['values'][(int(units[2],16)-7)%2])
             self.ftu.set(self.ft['values'][(int(units[3],16)-9)%3])
             selection = (int(units[4],16)-12)
             if selection==5:
@@ -340,9 +344,9 @@ By: {1}'''.format(__version__,__author__),'About')
             else:
                 self.etu.set(self.et['values'][selection%3])
             self.mtu.set(self.mt['values'][(int(units[5],16)-15)%2])
-            self.tou.set(self.to['values'][int(units[7])%2])
-            self.met.set(self.me['values'][int(units[8])])
-            per=str(int(units[9:],16)) #since 2 digits must specify hex
+            self.tou.set(self.to['values'][int(units[7],16)%2])
+            self.met.set(self.me['values'][int(units[8],16)])
+            per=str(int(units[9],16)) #since 2 digits must specify hex
             self.peg.set(per)
             self.ppg.set(per)
             self.mediaf(util.root)
