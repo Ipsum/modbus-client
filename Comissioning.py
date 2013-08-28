@@ -328,11 +328,13 @@ By: {1}'''.format(__version__,__author__),'About')
             ser.close()
         if resp:
             #units = resp[7:24:2]+resp[24:26] #every other num in hex+last 2
-            readunits = resp[7:26]
-            chunks = len(units)
+            print "units: "
+            readunits = resp[6:26]
+            print readunits
+            chunks = len(readunits)
             numsize = 2
             units=[readunits[i:i+numsize] for i in range(0,chunks,numsize)]
-            print "units: "+str(units)
+            print units
             self.pot.set(self.po['values'][int(units[6],16)%3])
             self.fru.set(self.fr['values'][int(units[0],16)%3])
             self.eru.set(self.er['values'][(int(units[1],16)-3)%4])
@@ -791,7 +793,7 @@ if __name__ == "__main__":
 
     #add this to supress error on program close
     cfgpath=os.environ['appdata']+'\\clark Sonic\\'
-    sys.stdout = open(cfgpath+"run.log", "w")
+    #sys.stdout = open(cfgpath+"run.log", "w")
     sys.stderr = open(cfgpath+"error.log", "w")
     sys.setrecursionlimit(8000) #makes my horrible use of tail 
                                  #recursion work
