@@ -24,7 +24,7 @@ import modbus
 import util
 import log
 
-__version__ = '2.6.0'
+__version__ = '2.6.1'
 __author__ = 'David Tyler'
 
 util.DEVICE_ID=1
@@ -327,7 +327,6 @@ By: {1}'''.format(__version__,__author__),'About')
             resp = modbus.getUnits(ser)
             ser.close()
         if resp:
-            #units = resp[7:24:2]+resp[24:26] #every other num in hex+last 2
             print "units: "
             readunits = resp[6:26]
             print readunits
@@ -782,7 +781,7 @@ class Mainmenu(toplevels):
             self.appc.focus_force()
             self.appc.wait_window(self.appc)
             #write default settings
-            with open(r'res/settings.cfg','w') as defaultwriter: #read in defaults
+            with open(cfgpath+'settings.cfg','w') as defaultwriter:
                 defaults.write(defaultwriter)
             for item in defaults.items('Settings'):
                 default[item[0]]=int(item[1])
@@ -793,7 +792,7 @@ if __name__ == "__main__":
 
     #add this to supress error on program close
     cfgpath=os.environ['appdata']+'\\clark Sonic\\'
-    #sys.stdout = open(cfgpath+"run.log", "w")
+    sys.stdout = open(cfgpath+"run.log", "w")
     sys.stderr = open(cfgpath+"error.log", "w")
     sys.setrecursionlimit(8000) #makes my horrible use of tail 
                                  #recursion work
