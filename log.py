@@ -16,7 +16,7 @@ def enablelog():
         if not os.path.isfile(PATH):
             l = open(PATH,"w")
             if TYPE == 'csv':
-                header="Time,Volume Rate,Energy Rate,Mass Rate,Volume Total," \
+                header="Date,Time,Volume Rate,Energy Rate,Mass Rate,Volume Total," \
                     "Heating Total,Cooling Total,Mass Total,Local Temp,Remote Temp\n"
                 l.write(header)
         else:
@@ -39,7 +39,7 @@ def log(message):
     d = datetime.now()
     try:
         l = open(PATH,'a')
-        l.write(d.strftime("%H:%M:%S,")+message+","+"\n")
+        l.write(d.strftime("%x,%H:%M:%S,")+message+","+"\n")
         l.close()
         return True
     except:
