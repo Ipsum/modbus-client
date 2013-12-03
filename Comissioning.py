@@ -61,7 +61,7 @@ class toplevels:
         self.com = StringVar()
         self.com.set("COM1")
         self.comp = Combobox(w1,textvariable=self.com,justify=CENTER,width=10)
-        self.comp['values'] = ("COM1","COM2","COM3","COM4")
+        self.comp['values'] = ("COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9")
         self.comp.grid(row=0,column=1,pady=(10,20))
         self.comp['state'] = 'readonly'
         #grab com port
