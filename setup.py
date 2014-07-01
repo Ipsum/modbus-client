@@ -4,19 +4,19 @@
 
 from distutils.core import setup
 from glob import glob
-from Comissioning import __version__,__author__
+from Commissioning import __version__,__author__
 import py2exe
 
 appdata_files = [('res', glob(r'res/*.*')), ("Microsoft.VC90.CRT", glob(r'Microsoft.VC90.CRT/*.*'))]
 
 setup(
-    name="clark Sonic Comissioning",
+    name="clark Sonic Commissioning",
     version=__version__,
     description="Initial setup of DNEM",
     author=__author__,
     windows=[
         {
-            "script": "Comissioning.py",
+            "script": "Commissioning.py",
             "icon_resources": [(1, "res/favicon.ico")]
         }
     ],

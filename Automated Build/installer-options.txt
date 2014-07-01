@@ -1,5 +1,5 @@
 ;aic
-SetVersion 2.5.0
-SetPackageName "clark Sonic Comissioning (x86).msi" -buildname DefaultBuild
-SetOutputLocation -buildname DefaultBuild -path "C:\Program Files\Mercurial\modbus-client\Automated Build"
+SetVersion 2.7.2
+SetPackageName "clark Sonic Commissioning Factory (x86).msi" -buildname DefaultBuild
+SetOutputLocation -buildname DefaultBuild -path "C:\Program Files\Mercurial\modbus-client-future\Automated Build"
 Rebuild

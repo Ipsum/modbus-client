@@ -38,7 +38,7 @@ import ConfigParser
 import time
 from Tkinter import *
 from ttk import *
-import Comissioning
+import Commissioning
 
 OFFSET = 40001
 fc = dict()
@@ -155,7 +155,7 @@ def writeReg(ser,m_fc,m_reg,m_data):
         print "Resp error"
         raise NameError('WriteErr')
         return False
-    time.sleep(1)
+    time.sleep(0.2)
     return True
     
 def readReg(ser,fc,sreg,numreg,h=0):
@@ -169,7 +169,7 @@ def readReg(ser,fc,sreg,numreg,h=0):
     if not sucess:
         return False
     data = readResponse(ser,regs=numreg,hex=h)
-    time.sleep(1)
+    time.sleep(0.2)
     return data
 
 def readResponse(ser,sent=0,regs=1,hex=0):
